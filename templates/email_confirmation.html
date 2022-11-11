@@ -1,0 +1,35 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Confirmation{% endblock %}
+
+
+{% block content %}
+
+{% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+{% endif %}
+
+
+{% if expired %}
+
+  <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <div class="alert alert-danger">OTP Expired</div>
+      <p class="card-text">Please Proceed to Registration Page</p>
+      <a class="btn btn-primary" role="button" href="{{url_for('register')}}">Register</a>
+      <a class="btn btn-secondary" role="button" href="{{url_for('login')}}">Login</a>    </div>
+  </div>
+
+{% else %}
+<form action="/confirm_email" method="POST">
+    <div class="form-group">
+        <p class="h3">OTP is valid for only 5 minutes</p>
+        <label for="otp">Enter OTP you have received in mail {{ email }} </label>
+        <input type="text" class="form-control" id="otp" name='otp' placeholder="OTP">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endif %}
+
+{% endblock %}

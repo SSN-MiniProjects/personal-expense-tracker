@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: iks-test
+  name: iks-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iks-test
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: iks-test
+    spec:
+      containers:
+      - image: icr.io/karthikibm/iks-test
+        name: iks-test
+        resources: {}
+status: {}

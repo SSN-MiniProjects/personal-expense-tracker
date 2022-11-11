@@ -1,0 +1,27 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+    Register
+{% endblock %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<div class="container">
+    {{ form.csrf_token() }}
+    <p class="h1">Register</p>
+
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+
+  <br>
+    {{ wtf.quick_form(form) }}
+  <br>
+  <div class="alert alert-info">
+    Have an account?
+    <a href="{{url_for('login')}}" class="alert-link">Login Here!</a>
+  </div>
+
+  
+</div>
+{% endblock %}
