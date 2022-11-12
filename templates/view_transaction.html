@@ -1,35 +1,29 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}
-    Transaction History
-{% endblock %}
-
-{% import "bootstrap/wtf.html" as wtf %}
-{% from database import fetch_user_transactions %}
-
-{% block content %}
+{% extends "bootstrap/base.html" %} {% block title %} Transaction History {%
+endblock %} {% import "bootstrap/wtf.html" as wtf %} {% block content %}
 <div class="container">
-    {{ email = request.cookies.get('email') }}
-    {{ res = fetch_user_transactions(email) }}
-    <table class="table">
-        <thead>
-            <tr>
-              <th scope="col">S.No</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Mode</th>
-              <th scope="col">Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in range(len(res)) %}
-                <tr>
-                    <th scope="row">{{ i }}</th>
-                    <td>{{ res[i]["TRANSACTION"] }}</td>
-                    <td>{{ res[i]["MODE"] }}</td>
-                    <td>{{ res[i]["NOTE"] }}</td>
-                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  {% set email = request.cookies.get('email') %}
+  <br />
+  {% set res = fetch_user_transactions(email) %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">S.No</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Mode</th>
+        <th scope="col">Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in range(res|length) %}
+      <tr>
+        <th scope="row">{{ i }}</th>
+        <td>{{ res[i]["TRANSACTION"] }}</td>
+        <td>{{ res[i]["MODE"] }}</td>
+        <td>{{ res[i]["NOTE"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   <div class="alert alert-info">
     Move back to home page?
     <a href="{{url_for('home')}}" class="alert-link">HOME!</a>

@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, redirect, flash, make_respons
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions
 
 
 app = Flask(__name__)
@@ -62,7 +62,10 @@ def login():
             if user["PASSWORD"] == form.password.data:
                 usr_obj = User(user["ID"], user["EMAIL"])
                 login_user(usr_obj)
-                return redirect(url_for('home'))
+                resp = make_response(redirect(url_for('home')))
+                resp.set_cookie('email', user['EMAIL'])
+                return resp
+
             else:
                 error = "Invalid Credentials"
         else:
@@ -73,7 +76,7 @@ def login():
 @app.route('/home')
 @login_required
 def home():
-    print(request.cookies)
+    print("request cookies",request.cookies)
     return render_template('home.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -162,7 +165,7 @@ def add_transaction():
     
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
-    return render_template('view_transaction.html')
+    return render_template('view_transaction.html',fetch_user_transactions= fetch_user_transactions)
         
 
 app.run("0.0.0.0", 5000,debug=True)

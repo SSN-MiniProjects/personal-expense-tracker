@@ -41,5 +41,5 @@ class Transaction(FlaskForm):
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
     submit = SubmitField('Submit Transaction')
     def validate_transaction(self, transaction):
-        if transaction < 0:
+        if int(transaction.data) < 0:
             raise ValidationError('Enter a valid amount')
