@@ -134,5 +134,16 @@ def confirm_email():
     else:
         resp = make_response(render_template('email_confirmation.html', email= email, error="OTP mismatch! Retry"))
         return resp
+@app.route('/confirm_email', methods=['GET','POST'])
+def confirm_email():
+    otp_generated = request.cookies.get('otp')
+    # otp_generated = 5000
+    email = request.cookies.get('email')
+    password = request.cookies.get('password')
+    if otp_generated is None:
+        print("otp expired")
+        return render_template('email_confirmation.html', email= email, expired="OTP expired!")
     
+    otp_received = request.form['otp']
+
 app.run("0.0.0.0", 5000,debug=True)
