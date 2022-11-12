@@ -122,6 +122,17 @@ def insert_user_transaction(email,transaction,mode,category,datestamp,note):
     res = ibm_db.execute(stmt, param)
     return res
 
+def fetch_user_transactions(email):
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = 'SELECT * FROM user_transactions WHERE login_id = ?'
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
+
 def update_password(username, password):
     conn = connect_db()
     query = 'UPDATE user_credentials set password = ? where username = ?'

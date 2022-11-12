@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import Email, DataRequired, ValidationError
+from wtforms.validators import Email, DataRequired, ValidationError, InputRequired, Length
 from database import fetchUserByEmail
 
 class LoginForm(FlaskForm):
@@ -27,3 +27,19 @@ class RegisterForm(FlaskForm):
         if existing_email != []:
             raise ValidationError('This email already exists!')
 
+class Transaction(FlaskForm):
+    # login_id = StringField(render_kw={"placeholder": "Login ID"})
+    transaction = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Transaction"})
+    mode = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Mode"})
+    category = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Category"})
+    datestamp = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Date"})
+    note = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    submit = SubmitField('Submit Transaction')
+    def validate_transaction(self, transaction):
+        if transaction < 0:
+            raise ValidationError('Enter a valid amount')

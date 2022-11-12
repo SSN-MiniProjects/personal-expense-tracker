@@ -1,9 +1,9 @@
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, Transaction
 from flask import Flask, render_template, url_for, redirect, flash, make_response, request
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction
 
 
 app = Flask(__name__)
@@ -134,18 +134,35 @@ def confirm_email():
     else:
         resp = make_response(render_template('email_confirmation.html', email= email, error="OTP mismatch! Retry"))
         return resp
-@app.route('/transaction', methods=['GET','POST'])
-def transaction():
-   if flask.request.method == 'POST':
-        email = flask.request.values.get('email') 
-        transaction = flask.request.values.get('transaction')
-        mode = flask.request.values.get('mode')
-        category = flask.request.values.get('categroy')
-        datestamp = flask.request.values.get('date')
-        note = flask.request.values.get('note')
-        return render_template('home.html')
-    else:
-        return render_template('home.html')
+
+   
+@app.route('/add_transaction', methods=['GET','POST'])
+def add_transaction():
+    form = Transaction();
+    useremail = request.cookies.get('email')
+    if form.validate_on_submit():
+        transaction = form.transaction.data
+        mode = form.mode.data
+        category = form.category.data
+        datestamp = form.datestamp.data
+        note = form.note.data
+        insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
+        return render_template('home.html', error="Transaction recorded")
+    return render_template('add_transaction.html', form=form, error = "Nil")
+#    if flask.request.method == 'POST':
+#         email = flask.request.values.get('email') 
+#         transaction = flask.request.values.get('transaction')
+#         mode = flask.request.values.get('mode')
+#         category = flask.request.values.get('categroy')
+#         datestamp = flask.request.values.get('date')
+#         note = flask.request.values.get('note')
+#         return render_template('home.html')
+#     else:
+#         return render_template('home.html')    
+    
+@app.route('/view_transaction', methods=['GET','POST'])
+def view_transaction():
+    return render_template('view_transaction.html')
         
 
 app.run("0.0.0.0", 5000,debug=True)
