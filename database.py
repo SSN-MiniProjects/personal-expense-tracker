@@ -130,4 +130,4 @@ def update_password(username, password):
     res = ibm_db.execute(stmt,param)
     return res
 
-insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
+# insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
