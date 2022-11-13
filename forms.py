@@ -30,7 +30,7 @@ class RegisterForm(FlaskForm):
 class Transaction(FlaskForm):
     # login_id = StringField(render_kw={"placeholder": "Login ID"})
     transaction = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Transaction"})
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense"})
     mode = SelectField('Mode', choices=["Online","Cash"],validators=[
                            InputRequired()], render_kw={"placeholder": "Category"})
     category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[

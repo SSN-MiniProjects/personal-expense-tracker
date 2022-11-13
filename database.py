@@ -93,7 +93,7 @@ def insert_user_credential(email, username):
     res = ibm_db.execute(stmt,param)
     return res
 
-def insert_user_profile(login_id):
+def insert_user_profile(login_id): #update
     conn = connect_db()
     query = 'INSERT INTO user_profiles (login_id) VALUES (?)'
     stmt = ibm_db.prepare(conn, query)
@@ -139,5 +139,14 @@ def update_password(username, password):
     param = (password, username)
     res = ibm_db.execute(stmt,param)
     return res
-
+def global_view_query(query,email=""):
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = query+ 'WHERE login_id = ?'
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
 # insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
