@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField,DateField,SelectField
 from wtforms.validators import Email, DataRequired, ValidationError, InputRequired, Length
 from database import fetchUserByEmail
 
@@ -31,12 +31,12 @@ class Transaction(FlaskForm):
     # login_id = StringField(render_kw={"placeholder": "Login ID"})
     transaction = StringField(validators=[
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Transaction"})
-    mode = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Mode"})
-    category = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Category"})
-    datestamp = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Date"})
+    mode = SelectField('Mode', choices=["Online","Cash"],validators=[
+                           InputRequired()], render_kw={"placeholder": "Category"})
+    category = SelectField('Category', choices=["Entertainment","Food","Family","Education"],validators=[
+                           InputRequired()])
+    datestamp = DateField('Start Date', format='%Y/%m/%d',validators=[
+                           InputRequired()], render_kw={"placeholder": "Date"})
     note = StringField(validators=[
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
     submit = SubmitField('Submit Transaction')
