@@ -1,5 +1,4 @@
-{% extends "bootstrap/base.html" %} {% block title %} Transaction History {%
-endblock %} {% import "bootstrap/wtf.html" as wtf %} {% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="container">
   {% set email = request.cookies.get('email') %}
   <br />
@@ -24,9 +23,5 @@ endblock %} {% import "bootstrap/wtf.html" as wtf %} {% block content %}
       {% endfor %}
     </tbody>
   </table>
-  <div class="alert alert-info">
-    Move back to home page?
-    <a href="{{url_for('home')}}" class="alert-link">HOME!</a>
-  </div>
 </div>
 {% endblock %}

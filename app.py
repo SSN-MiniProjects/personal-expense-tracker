@@ -166,6 +166,14 @@ def add_transaction():
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
     return render_template('view_transaction.html',fetch_user_transactions= fetch_user_transactions)
+
+@app.route('/base', methods=['GET'])
+def view_base():
+    return render_template('base.html')
+
+@app.route('/ref', methods=['GET'])
+def view_ref():
+    return render_template('reference.html')
         
 
 app.run("0.0.0.0", 5000,debug=True)

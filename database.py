@@ -23,7 +23,6 @@ dsn = (
 ).format(dsn_driver, dsn_database, dsn_hostname, dsn_port, dsn_protocol, dsn_uid, dsn_pwd)
 
 
-print(dsn_driver,"\n", dsn_database,"\n", dsn_hostname,"\n", dsn_port,"\n", dsn_protocol,"\n", dsn_uid,"\n", dsn_pwd)
 def connect_db():
     conn = ibm_db.connect(dsn,"","")
     return conn
