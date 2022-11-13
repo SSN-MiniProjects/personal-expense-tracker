@@ -33,7 +33,7 @@ class Transaction(FlaskForm):
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Transaction"})
     mode = SelectField('Mode', choices=["Online","Cash"],validators=[
                            InputRequired()], render_kw={"placeholder": "Category"})
-    category = SelectField('Category', choices=["Entertainment","Food","Family","Education"],validators=[
+    category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
                            InputRequired()])
     datestamp = DateField('Start Date', format='%Y/%m/%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
