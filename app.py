@@ -1,9 +1,9 @@
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, Transaction
 from flask import Flask, render_template, url_for, redirect, flash, make_response, request
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions
 
 
 app = Flask(__name__)
@@ -62,7 +62,10 @@ def login():
             if user["PASSWORD"] == form.password.data:
                 usr_obj = User(user["ID"], user["EMAIL"])
                 login_user(usr_obj)
-                return redirect(url_for('home'))
+                resp = make_response(redirect(url_for('home')))
+                resp.set_cookie('email', user['EMAIL'])
+                return resp
+
             else:
                 error = "Invalid Credentials"
         else:
@@ -73,7 +76,7 @@ def login():
 @app.route('/home')
 @login_required
 def home():
-    print(request.cookies)
+    print("request cookies",request.cookies)
     return render_template('home.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -134,5 +137,81 @@ def confirm_email():
     else:
         resp = make_response(render_template('email_confirmation.html', email= email, error="OTP mismatch! Retry"))
         return resp
+
+   
+@app.route('/add_transaction', methods=['GET','POST'])
+def add_transaction():
+    form = Transaction();
+    useremail = request.cookies.get('email')
+    if form.validate_on_submit():
+        transaction = form.transaction.data
+        mode = form.mode.data
+        category = form.category.data
+        datestamp = form.datestamp.data
+        note = form.note.data
+        insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
+        return render_template('home.html', error="Transaction recorded")
+    return render_template('add_transaction.html', form=form, error = "Nil")
+#    if flask.request.method == 'POST':
+#         email = flask.request.values.get('email') 
+#         transaction = flask.request.values.get('transaction')
+#         mode = flask.request.values.get('mode')
+#         category = flask.request.values.get('categroy')
+#         datestamp = flask.request.values.get('date')
+#         note = flask.request.values.get('note')
+#         return render_template('home.html')
+#     else:
+#         return render_template('home.html')    
     
+@app.route('/view_transaction', methods=['GET','POST'])
+def view_transaction():
+    return render_template('view_transaction.html',fetch_user_transactions= fetch_user_transactions)
+
+@app.route('/base', methods=['GET'])
+def view_base():
+    return render_template('base.html')
+
+@app.route('/ref', methods=['GET'])
+def view_ref():
+    return render_template('reference.html')
+        
+
+@app.route('/generate_repot', methods=['GET'])
+def genrate_report():
+    return render_template('reference.html')
+        
+#Sprint -3 
+"""from reportlab.lib import colors  
+from reportlab.lib.pagesizes import letter, inch  
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+   
+# creating a pdf file to add tables  
+my_doc = SimpleDocTemplate("table.pdf", pagesize = letter)  
+my_obj = []  
+# defining Data to be stored on table  
+my_data = [  
+   ["ID", "1234"],  
+   ["Name", "Den Arthur"],  
+   ["Profession", "Software Developer"],  
+   ["Age", "28"],  
+   ["Sex", "Male"]  
+]  
+# Creating the table with 5 rows  
+my_table = Table(my_data, 1 * [1.6 * inch], 5 * [0.5 * inch])  
+# setting up style and alignments of borders and grids  
+my_table.setStyle(  
+   TableStyle(  
+       [  
+           ("ALIGN", (1, 1), (0, 0), "LEFT"),  
+           ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
+           ("ALIGN", (-1, -1), (-1, -1), "RIGHT"),  
+           ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
+           ("INNERGRID", (0, 0), (-1, -1), 1, colors.black),  
+           ("BOX", (0, 0), (-1, -1), 2, colors.black),  
+       ]  
+   )  
+)  
+my_obj.append(my_table)  
+my_doc.build(my_obj)  """
+
 app.run("0.0.0.0", 5000,debug=True)

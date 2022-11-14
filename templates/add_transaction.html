@@ -1,0 +1,82 @@
+{% extends 'base.html' %} {% block content %}
+<div>
+  <div class="col-md-8">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+  </div>
+
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div>
+        {{ form.transaction.label(class="form-control-label") }} {% if
+        form.transaction.errors %} {{ form.transaction(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.transaction.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.transaction(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.mode.label(class="form-control-label") }} {% if form.mode.errors
+        %} {{ form.mode(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.mode.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.mode(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.category.label(class="form-control-label") }} {% if
+        form.category.errors %} {{ form.category(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.category.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.category(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.datestamp.label(class="form-control-label") }} {% if
+        form.datestamp.errors %} {{ form.datestamp(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.datestamp.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.datestamp(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.note.label(class="form-control-label") }} {% if form.note.errors
+        %} {{ form.note(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.note.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.note(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+
+{% endblock %}

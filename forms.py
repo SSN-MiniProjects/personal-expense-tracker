@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import Email, DataRequired, ValidationError
+from wtforms import StringField, PasswordField, SubmitField,DateField,SelectField
+from wtforms.validators import Email, DataRequired, ValidationError, InputRequired, Length
 from database import fetchUserByEmail
 
 class LoginForm(FlaskForm):
@@ -27,3 +27,37 @@ class RegisterForm(FlaskForm):
         if existing_email != []:
             raise ValidationError('This email already exists!')
 
+class Transaction(FlaskForm):
+    # login_id = StringField(render_kw={"placeholder": "Login ID"})
+    transaction = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense Amount"})
+    mode = SelectField('Mode', choices=["Online","Cash"],validators=[
+                           InputRequired()], render_kw={"placeholder": "Category"})
+    category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
+                           InputRequired()])
+    datestamp = DateField('Start Date', format='%Y/%m/%d',validators=[
+                           InputRequired()], render_kw={"placeholder": "Date"})
+    note = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    submit = SubmitField('Submit Transaction')
+    def validate_transaction(self, transaction):
+        if int(transaction.data) < 0:
+            raise ValidationError('Enter a valid amount')
+
+class Customize(FlaskForm):
+    # login_id = StringField(render_kw={"placeholder": "Login ID"})
+    name = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense Amount"})
+    budget = SelectField('Mode', choices=["Online","Cash"],validators=[
+                           InputRequired()], render_kw={"placeholder": "Category"})
+    total_spent = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
+                           InputRequired()])
+    phone = DateField('Start Date', format='%Y/%m/%d',validators=[
+                           InputRequired()], render_kw={"placeholder": "Date"})
+    profession = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    alert = BooleanField()
+    submit = SubmitField('Submit Transaction')
+    def validate_transaction(self, transaction):
+        if int(transaction.data) < 0:
+            raise ValidationError('Enter a valid amount')

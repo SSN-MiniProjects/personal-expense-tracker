@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  {% set email = request.cookies.get('email') %}
+  <br />
+  {% set res = fetch_user_transactions(email) %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">S.No</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Mode</th>
+        <th scope="col">Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in range(res|length) %}
+      <tr>
+        <th scope="row">{{ i }}</th>
+        <td>{{ res[i]["TRANSACTION"] }}</td>
+        <td>{{ res[i]["MODE"] }}</td>
+        <td>{{ res[i]["NOTE"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
