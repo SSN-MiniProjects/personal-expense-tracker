@@ -3,12 +3,12 @@ import os
 ## get the IBM db2 credentials from your IBM cloud
 # driver and protocol remains
 
-dsn_hostname = os.environ['DB_API_HOST'] #"2f3279a5-73d1-4859-88f0-a6c3e6b4b907.c3n41cmd0nqnrk39u98g.databases.appdomain.cloud"
-dsn_uid = os.environ['DB_API_UID'] #"qst27374"
-dsn_pwd = os.environ['DB_API_PWD'] #"cVc0GeCrJ5QOlOBk"
+dsn_hostname = os.environ.get('DB_API_HOST') 
+dsn_uid = os.environ.get('DB_API_UID')
+dsn_pwd = os.environ.get('DB_API_PWD') 
 dsn_driver =  "{IBM DB2 ODBC DRIVER}"
 dsn_database = "bludb"
-dsn_port = os.environ['DB_API_PORT'] #30756
+dsn_port = os.environ.get('DB_API_PORT')
 dsn_protocol = "TCPIP"
 
 dsn = (

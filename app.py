@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, redirect, flash, make_respons
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query
 
 
 app = Flask(__name__)
@@ -77,7 +77,7 @@ def login():
 @login_required
 def home():
     print("request cookies",request.cookies)
-    return render_template('home.html')
+    return render_template('home.html',global_view_query = global_view_query)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -152,16 +152,7 @@ def add_transaction():
         insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
         return render_template('home.html', error="Transaction recorded")
     return render_template('add_transaction.html', form=form, error = "Nil")
-#    if flask.request.method == 'POST':
-#         email = flask.request.values.get('email') 
-#         transaction = flask.request.values.get('transaction')
-#         mode = flask.request.values.get('mode')
-#         category = flask.request.values.get('categroy')
-#         datestamp = flask.request.values.get('date')
-#         note = flask.request.values.get('note')
-#         return render_template('home.html')
-#     else:
-#         return render_template('home.html')    
+ 
     
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
@@ -176,7 +167,7 @@ def view_ref():
     return render_template('reference.html')
         
 
-@app.route('/generate_repot', methods=['GET'])
+@app.route('/generate_report', methods=['GET'])
 def genrate_report():
     return render_template('reference.html')
         
