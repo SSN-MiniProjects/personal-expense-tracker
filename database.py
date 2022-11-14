@@ -11,6 +11,7 @@ dsn_database = "bludb"
 dsn_port = os.environ.get('DB_API_PORT')
 dsn_protocol = "TCPIP"
 
+
 dsn = (
     "DRIVER={0};"
     "DATABASE={1};"
@@ -21,7 +22,7 @@ dsn = (
     "PWD={6};"
     "SECURITY=SSL"
 ).format(dsn_driver, dsn_database, dsn_hostname, dsn_port, dsn_protocol, dsn_uid, dsn_pwd)
-
+print(dsn)
 
 def connect_db():
     conn = ibm_db.connect(dsn,"","")
