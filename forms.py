@@ -35,7 +35,7 @@ class Transaction(FlaskForm):
                            InputRequired()], render_kw={"placeholder": "Category"})
     category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
                            InputRequired()])
-    datestamp = DateField('Start Date', format='%Y/%m/%d',validators=[
+    datestamp = DateField('Start Date', format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
     note = StringField(validators=[
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
