@@ -10,7 +10,7 @@ name: Build and Deploy to IKS
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "Sprint-2" ]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
