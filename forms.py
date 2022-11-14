@@ -30,7 +30,7 @@ class RegisterForm(FlaskForm):
 class Transaction(FlaskForm):
     # login_id = StringField(render_kw={"placeholder": "Login ID"})
     transaction = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense"})
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense Amount"})
     mode = SelectField('Mode', choices=["Online","Cash"],validators=[
                            InputRequired()], render_kw={"placeholder": "Category"})
     category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
@@ -39,6 +39,24 @@ class Transaction(FlaskForm):
                            InputRequired()], render_kw={"placeholder": "Date"})
     note = StringField(validators=[
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    submit = SubmitField('Submit Transaction')
+    def validate_transaction(self, transaction):
+        if int(transaction.data) < 0:
+            raise ValidationError('Enter a valid amount')
+
+class Customize(FlaskForm):
+    # login_id = StringField(render_kw={"placeholder": "Login ID"})
+    name = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense Amount"})
+    budget = SelectField('Mode', choices=["Online","Cash"],validators=[
+                           InputRequired()], render_kw={"placeholder": "Category"})
+    total_spent = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
+                           InputRequired()])
+    phone = DateField('Start Date', format='%Y/%m/%d',validators=[
+                           InputRequired()], render_kw={"placeholder": "Date"})
+    profession = StringField(validators=[
+                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    alert = BooleanField()
     submit = SubmitField('Submit Transaction')
     def validate_transaction(self, transaction):
         if int(transaction.data) < 0:
