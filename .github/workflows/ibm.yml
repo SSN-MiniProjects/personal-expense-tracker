@@ -23,6 +23,12 @@ env:
   IKS_CLUSTER: cdm8psef0s018qv50fv0
   DEPLOYMENT_NAME: iks-test
   PORT: 5000
+  DB_API_UID: ${{ secrets.DB_API_UID }}
+  DB_API_PWD: ${{ secrets.DB_API_PWD }}
+  DB_API_HOST: ${{ secrets.DB_API_HOST }}
+  DB_API_PORT: ${{ secrets.DB_API_PORT }}
+  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+
 
 jobs:
   setup-build-publish-deploy:
