@@ -1,7 +1,9 @@
 import ibm_db
 import os
+import datetime
 ## get the IBM db2 credentials from your IBM cloud
 # driver and protocol remains
+
 
 dsn_hostname = os.environ.get('DB_API_HOST') 
 dsn_uid = os.environ.get('DB_API_UID')
@@ -160,3 +162,35 @@ def insert_user_customize(email, name, budget, total_spent, phone, profession, a
     param = (login_id,name, budget, total_spent, phone, profession, alert)
     res = ibm_db.execute(stmt, param)
     return res
+def get_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
+    conn = connect_db()
+    reqd_month_date = datetime.strptime(reqd_month_datestr, '%Y-%m-%d').date()
+    first= reqd_month_date.replace(day=1)
+    next_month_date= first + datetime.timedelta(days=40)
+    next_month_datestr=next_month_date.strftime('%Y-%m-%d')
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = query+ 'WHERE login_id = ?'
+    query = ''' select transaction,datestamp from user_transactions  
+    where datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(?)  
+    and  login_id = ?'''
+    stmt = ibm_db.prepare(conn, query)
+    param = (reqd_month_datestr,next_month_datestr,login_id,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
+def get_annual_expense(email,reqd_year_datestr): #use format yyyy-mm-dd
+    conn = connect_db()
+    reqd_year_date = datetime.strptime(reqd_year_datestr, '%Y-%m-%d').date()
+    first= reqd_year_date.replace(year=year_date.year + 1)
+    next_year_datestr=first.strftime('%Y-%m-%d')
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = query+ 'WHERE login_id = ?'
+    query = ''' select transaction,datestamp from user_transactions  
+    where datestamp >=THIS_YEAR(?) and datestamp < THIS_YEAR(?)  
+    and  login_id = ?'''
+    stmt = ibm_db.prepare(conn, query)
+    param = (reqd_year_datestr,next_year_datestr,login_id,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
