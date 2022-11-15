@@ -4,7 +4,8 @@ from flask_login import login_user, LoginManager, login_required, logout_user, c
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
 from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
-
+from helper import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data
+from datetime import date
 app = Flask(__name__)
 Bootstrap(app)
 
@@ -76,17 +77,22 @@ def login():
 @app.route('/home')
 @login_required
 def home():
-    print("request cookies",request.cookies)
+    useremail = request.cookies.get('email')
+    datestr = date.today().strftime("%Y-%m-%d")
+    Monthly = get_month_graph_data(useremail,date.today())
+    Annual = get_year_graph_data(useremail,date.today())
+    Category = get_category_graph_data(useremail,date.today())
+    Cards= get_card_details(useremail,date.today())
     CardData={
-        "MonthlyExpense":40,
-        "AnnualExpense":40,
-        "BudgetPercentage":100,
-        "UserCount":10,
+        "MonthlyExpense":sum(Monthly[1]),
+        "AnnualExpense":sum(Annual[1]),
+        "BudgetPercentage":sum(Monthly[1])/Cards[0]['Budget']*100,
+        "UserCount":Cards[1],
     }
     GraphData={
-        "ChartArea":{"labels":["jun","may","june"],"data":[400,500,1000]},
-        "ChartPie":{"labels":["jun","may","june"],"data":[400,500,1000]},
-        "ChartBar":{"labels":["jun","may","june"],"data":[400,500,1000]}
+        "ChartArea":{"labels": Monthly[0],"data":Monthly[1]},
+        "ChartPie":{"labels":Category[0],"data":Category[1]},
+        "ChartBar":{"labels":Annual[0],"data":Annual[1]}
     }
     return render_template('home.html',GraphData=GraphData,CardData=CardData)
 
