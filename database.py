@@ -11,7 +11,6 @@ dsn_database = "bludb"
 dsn_port = os.environ.get('DB_API_PORT')
 dsn_protocol = "TCPIP"
 
-
 dsn = (
     "DRIVER={0};"
     "DATABASE={1};"
@@ -140,6 +139,7 @@ def update_password(username, password):
     param = (password, username)
     res = ibm_db.execute(stmt,param)
     return res
+
 def global_view_query(query,email=""):
     conn = connect_db()
     login_id = fetchUserByEmail(email)[0]['ID']
@@ -151,3 +151,12 @@ def global_view_query(query,email=""):
     ibm_db.close(conn)
     return result_set
 # insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
+
+def insert_user_customize(email, name, budget, total_spent, phone, profession, alert):
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = 'INSERT INTO user_profiles (login_id, name, budget, total_spent, phone, profession, alert) VALUES (?,?,?,?,?,?,?)'
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,name, budget, total_spent, phone, profession, alert)
+    res = ibm_db.execute(stmt, param)
+    return res

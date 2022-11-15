@@ -1,0 +1,234 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<div>
+  <div class="col-md-8">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+  </div>
+
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+
+    <div>
+        {{ form.name.label(class="form-control-label") }} {% if
+        form.name.errors %} {{ form.name(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.name.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.name(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+
+    <div>
+        {{ form.budget.label(class="form-control-label") }} {% if
+        form.budget.errors %} {{ form.budget(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.budget.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.budget(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.total_spent.label(class="form-control-label") }} {% if
+        form.total_spent.errors %} {{ form.total_spent(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.total_spent.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.total_spent(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      
+        <div>
+            {{ form.phone.label(class="form-control-label") }} {% if
+            form.phone.errors %} {{ form.phone(class="form-control
+            form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.phone.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %} {{ form.phone(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div>
+            {{ form.profession.label(class="form-control-label") }} {% if
+            form.profession.errors %} {{ form.profession(class="form-control
+            form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.profession.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.profession(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+
+          <div>
+            {{ form.alert.label(class="form-control-label") }} {% if
+            form.alert.errors %} {{ form.alert(class="form-control
+            form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.alert.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.alert(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- {% extends 'base.html' %} 
+{% block content %}
+
+<head>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='customize_style.css') }}" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customize</title>
+</head>
+
+<div>
+  <div class="form-body">
+    <div class="row">
+        <div class="form-holder">
+            <div class="form-content">
+                <div class="form-items">
+                    <h3>Customize </h3>
+                    <p>Fill in the data below.</p>
+                    <form class="requires-validation" method="POST" action="" novalidate>
+                      {{ form.hidden_tag() }}
+                          
+                      <div class="col-md-12">
+                          {{ form.name.label(class="form-control-label") }} {% if
+                          form.name.errors %} {{ form.name(class="form-control
+                          form-control-lg is-invalid") }}
+                          <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                          </div>
+                          {% else %} {{ form.name(class="form-control") }}
+                          <div class="valid-feedback">Name field is valid!</div>
+                          {% endif %}
+                      </div>
+
+                      <div class="col-md-12">
+                          {{ form.budget.label(class="form-control-label") }} {% if
+                          form.budget.errors %} {{ form.budget(class="form-control
+                          form-control-lg is-invalid") }}
+                          <div class="invalid-feedback">
+                            {% for error in form.budget.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                          </div>
+                          {% else %} {{ form.budget(class="form-control") }}
+                          <div class="valid-feedback">Budget field is valid!</div>
+                          {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                          {{ form.total_spent.label(class="form-control-label") }} {% if
+                          form.total_spent.errors %} {{ form.total_spent(class="form-control
+                          form-control-lg is-invalid") }}
+                          <div class="invalid-feedback">
+                            {% for error in form.total_spent.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                          </div>
+                          {% else %} {{ form.total_spent(class="form-control") }}
+                          <div class="valid-feedback">Spent field is valid!</div>
+                          {% endif %}
+                        </div>
+
+                        
+                          <div class="col-md-12">
+                              {{ form.phone.label(class="form-control-label") }} {% if
+                              form.phone.errors %} {{ form.phone(class="form-control
+                              form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.phone.errors %}
+                                  <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                              {% else %} {{ form.phone(class="form-control") }}
+                              <div class="valid-feedback">Phone field is valid!</div>
+                              {% endif %}
+                          </div>
+
+                          <div class="col-md-12">
+                              {{ form.profession.label(class="form-control-label") }} {% if
+                              form.profession.errors %} {{ form.profession(class="form-control
+                              form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.profession.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %} {{ form.profession(class="form-control") }}
+                              <div class="valid-feedback">Profession field is valid!</div>
+                              {% endif %}
+                            </div>
+
+                            <div class="col-md-12">
+                              {{ form.alert.label(class="form-control-label") }} {% if
+                              form.alert.errors %} {{ form.alert(class="form-control
+                              form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.alert.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %} {{ form.alert(class="form-control") }}
+                              {% endif %}
+                            </div>
+
+                      <div class="form-button mt-3">
+                        {{ form.submit(class="btn btn-primary") }}
+                      </div>
+                    </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %} -->

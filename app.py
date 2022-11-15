@@ -1,10 +1,9 @@
-from forms import LoginForm, RegisterForm, Transaction
+from forms import LoginForm, RegisterForm, Transaction, Customize
 from flask import Flask, render_template, url_for, redirect, flash, make_response, request
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query
-
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -17,6 +16,7 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = "error"
 
 sendgrid_obj = SendGrid()
+
 
 class User:   
 
@@ -152,6 +152,21 @@ def add_transaction():
         insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
         return render_template('home.html', error="Transaction recorded")
     return render_template('add_transaction.html', form=form, error = "Nil")
+
+@app.route('/customize', methods=['GET','POST'])
+def add_customization():
+    form = Customize();
+    useremail = request.cookies.get('email')
+    if form.validate_on_submit():
+        name = form.name.data
+        budget = form.budget.data
+        total_spent = form.total_spent.data
+        phone = form.phone.data
+        profession = form.profession.data
+        alert = form.alert.data
+        insert_user_customize(useremail, name, budget, total_spent, phone, profession, alert)
+        return render_template('home.html', error="Customization set successfully")
+    return render_template('customize.html', form=form)
  
     
 @app.route('/view_transaction', methods=['GET','POST'])
