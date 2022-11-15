@@ -77,7 +77,18 @@ def login():
 @login_required
 def home():
     print("request cookies",request.cookies)
-    return render_template('home.html',global_view_query = global_view_query)
+    CardData={
+        "MonthlyExpense":40,
+        "AnnualExpense":40,
+        "BudgetPercentage":100,
+        "UserCount":10,
+    }
+    GraphData={
+        "ChartArea":{"labels":["jun","may","june"],"data":[400,500,1000]},
+        "ChartPie":{"labels":["jun","may","june"],"data":[400,500,1000]},
+        "ChartBar":{"labels":["jun","may","june"],"data":[400,500,1000]}
+    }
+    return render_template('home.html',GraphData=GraphData,CardData=CardData)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
