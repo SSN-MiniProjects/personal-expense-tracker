@@ -4,7 +4,7 @@ from flask_login import login_user, LoginManager, login_required, logout_user, c
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
 from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
-from helper import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data
+from utility import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data
 from datetime import date
 app = Flask(__name__)
 Bootstrap(app)
@@ -82,11 +82,13 @@ def home():
     Monthly = get_month_graph_data(useremail,date.today())
     Annual = get_year_graph_data(useremail,date.today())
     Category = get_category_graph_data(useremail,date.today())
-    Cards= get_card_details(useremail,date.today())
+    Cards= get_card_details(useremail)
+    if(Cards[0]['BUDGET']==0):
+        Cards[0]['BUDGET']=1
     CardData={
         "MonthlyExpense":sum(Monthly[1]),
         "AnnualExpense":sum(Annual[1]),
-        "BudgetPercentage":sum(Monthly[1])/Cards[0]['Budget']*100,
+        "BudgetPercentage":sum(Monthly[1])/Cards[0]['BUDGET']*100,
         "UserCount":Cards[1],
     }
     GraphData={

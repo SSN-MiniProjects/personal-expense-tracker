@@ -23,7 +23,7 @@ dsn = (
     "PWD={6};"
     "SECURITY=SSL"
 ).format(dsn_driver, dsn_database, dsn_hostname, dsn_port, dsn_protocol, dsn_uid, dsn_pwd)
-print(dsn)
+
 
 def connect_db():
     conn = ibm_db.connect(dsn,"","")
@@ -106,7 +106,7 @@ def insert_user_profile(login_id): #update
 
 def fetchUserByEmail(email): 
     conn = connect_db()
-    query = 'SELECT * FROM user_credentials WHERE email = ?'
+    query = 'SELECT ID,EMAIL,PASSWORD FROM user_credentials WHERE email = ?'
     stmt = ibm_db.prepare(conn, query)
     param = (email,)
     ibm_db.execute(stmt,param)
@@ -144,11 +144,17 @@ def update_password(username, password):
 
 def global_view_query(query,email=""):
     conn = connect_db()
-    login_id = fetchUserByEmail(email)[0]['ID']
-    query = query+ 'WHERE login_id = ?'
-    stmt = ibm_db.prepare(conn, query)
-    param = (login_id,)
-    ibm_db.execute(stmt,param)
+    query = query
+    if(email != ""):
+        login_id = fetchUserByEmail(email)
+        login_id=login_id[0]['ID']
+        query = query+ 'WHERE login_id = ?'
+        stmt = ibm_db.prepare(conn, query)
+        param = (login_id,)
+        ibm_db.execute(stmt,param)
+    else:
+        stmt = ibm_db.prepare(conn, query)
+        ibm_db.execute(stmt)
     result_set = fetchResults(stmt)
     ibm_db.close(conn)
     return result_set
@@ -165,11 +171,12 @@ def insert_user_customize(email, name, budget, total_spent, phone, profession, a
 def get_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
     conn = connect_db()
     login_id = fetchUserByEmail(email)[0]['ID']
-    query = ''' select SUM(transaction),DAY(datestamp) as dt from user_transactions  
-    where login_id = ? having datestamp >=THIS_MONTH(?) and datestamp  < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1));  
-    group by dt'''
+    query = ''' 
+    select SUM(transaction) as  "TRANSACTION",DAY(datestamp) as "DT" from user_transactions  
+    where login_id = ? and datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1))  
+    group by datestamp;'''
     stmt = ibm_db.prepare(conn, query)
-    param = (reqd_month_datestr,reqd_month_datestr,login_id,)
+    param = (login_id,reqd_month_datestr,reqd_month_datestr,)
     ibm_db.execute(stmt,param)
     result_set = fetchResults(stmt)
     ibm_db.close(conn)
@@ -177,11 +184,11 @@ def get_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
 def get_category_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
     conn = connect_db()
     login_id = fetchUserByEmail(email)[0]['ID']
-    query = ''' select SUM(transaction),category from user_transactions  
-    where login_id = ? having datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1)) 
+    query = ''' select SUM(transaction) as "TRANSACTION",category from user_transactions  
+    where login_id = ? and datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1))  
     group by category;'''
     stmt = ibm_db.prepare(conn, query)
-    param = (reqd_month_datestr,reqd_month_datestr,login_id,)
+    param = (login_id,reqd_month_datestr,reqd_month_datestr,)
     ibm_db.execute(stmt,param)
     result_set = fetchResults(stmt)
     ibm_db.close(conn)
@@ -189,11 +196,12 @@ def get_category_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
 def get_annual_expense(email,reqd_year_datestr): #use format yyyy-mm-dd
     conn = connect_db()
     login_id = fetchUserByEmail(email)[0]['ID']
-    query = ''' select SUM(transaction)),YEAR(datestamp) as mt from user_transactions  
-    where login_id = ? having datestamp >=THIS_YEAR(?) and mt datestamp THIS_YEAR(ADD_YEARS(LAST_DAY(?), 1));  
-    and  login_id = ? group by mt;'''
+    query = ''' select SUM(transaction) as "TRANSACTION" , MONTH(datestamp) AS "MT" 
+    from user_transactions  
+    where login_id = ? and datestamp >=THIS_YEAR(?) and datestamp < THIS_YEAR(ADD_YEARS(LAST_DAY(?), 1)) 
+    group by MONTH(datestamp);'''
     stmt = ibm_db.prepare(conn, query)
-    param = (reqd_year_datestr,next_year_datestr,login_id,)
+    param = (login_id,reqd_year_datestr,reqd_year_datestr,)
     ibm_db.execute(stmt,param)
     result_set = fetchResults(stmt)
     ibm_db.close(conn)
