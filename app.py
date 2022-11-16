@@ -87,9 +87,9 @@ def home():
     if(Cards[0]['BUDGET']==0):
         Cards[0]['BUDGET']=1
     CardData={
-        "MonthlyExpense":sum(Monthly[1]),
+        "MonthlyExpense":Cards[0]['TOTAL_SPENT'],
         "AnnualExpense":sum(Annual[1]),
-        "BudgetPercentage":sum(Monthly[1])/Cards[0]['BUDGET']*100,
+        "BudgetPercentage":Cards[0]['TOTAL_SPENT']/Cards[0]['BUDGET']*100,
         "UserCount":Cards[1],
     }
     Month_vice_data=[month_names[i-1] for i in Annual[0]]
