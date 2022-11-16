@@ -179,7 +179,7 @@ def add_transaction():
             print("success: sending alert mail")
         else:
             print("failed: sending alert mail")
-        return render_template('home.html', error="Transaction recorded")
+        return redirect(url_for('login',error="Transaction recorded"))
     return render_template('add_transaction.html', form=form, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
