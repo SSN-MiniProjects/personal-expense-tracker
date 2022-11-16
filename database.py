@@ -42,8 +42,8 @@ def initialise():
         name VARCHAR(30),\
         budget INT DEFAULT 0,\
         total_spent INT DEFAULT 0,\
-        phone CHAR(10),\
-        profession VARCHAR(20),\
+        phone VARCHAR(30),\
+        profession VARCHAR(30),\
         alert BOOLEAN DEFAULT FALSE,\
         FOREIGN KEY (login_id) REFERENCES USER_CREDENTIALS(id) ON DELETE CASCADE);"
     createUserTransactions = "CREATE TABLE user_transactions (\
