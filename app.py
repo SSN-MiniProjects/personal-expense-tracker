@@ -4,7 +4,7 @@ from flask_login import login_user, LoginManager, login_required, logout_user, c
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
 from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
-from utility import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data
+from utility import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data, get_card_details
 from datetime import date
 app = Flask(__name__)
 Bootstrap(app)
@@ -169,8 +169,16 @@ def add_transaction():
         mode = form.mode.data
         category = form.category.data
         datestamp = form.datestamp.data
-        note = form.note.data
+        note = form.note.data 
         insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
+        result = get_card_details(useremail)[0]
+        total_expense = result["TOTAL_SPENT"]
+        budget = result["BUDGET"]
+        alert_mail = sendgrid_obj.alert_overbudget(useremail, budget, total_expense)
+        if alert_mail:
+            print("success: sending alert mail")
+        else:
+            print("failed: sending alert mail")
         return render_template('home.html', error="Transaction recorded")
     return render_template('add_transaction.html', form=form, error = "Nil")
 
