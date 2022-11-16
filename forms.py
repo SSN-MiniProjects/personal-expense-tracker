@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,DateField,SelectField,BooleanField
 from wtforms.validators import Email, DataRequired, ValidationError, InputRequired, Length
 import phonenumbers
+import datetime
 from database import fetchUserByEmail
 
 class LoginForm(FlaskForm):
@@ -44,6 +45,9 @@ class Transaction(FlaskForm):
     def validate_transaction(self, transaction):
         if int(transaction.data) < 0:
             raise ValidationError('Enter a valid amount')
+    def validate_date(form, field):
+        if field.data > datetime.date.today():
+            raise ValidationError("The date cannot be in the Future!")
 
 class Customize(FlaskForm):
     # login_id = StringField(render_kw={"placeholder": "Login ID"})
