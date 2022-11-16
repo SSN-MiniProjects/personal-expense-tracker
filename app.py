@@ -83,6 +83,7 @@ def home():
     Annual = get_year_graph_data(useremail,date.today())
     Category = get_category_graph_data(useremail,date.today())
     Cards= get_card_details(useremail)
+    month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     if(Cards[0]['BUDGET']==0):
         Cards[0]['BUDGET']=1
     CardData={
@@ -91,8 +92,9 @@ def home():
         "BudgetPercentage":sum(Monthly[1])/Cards[0]['BUDGET']*100,
         "UserCount":Cards[1],
     }
+    Monthly_data=[for i in Monthly[0]: month_names[i]]
     GraphData={
-        "ChartArea":{"labels": Monthly[0],"data":Monthly[1]},
+        "ChartArea":{"labels": Monthly_data,"data":Monthly[1]},
         "ChartPie":{"labels":Category[0],"data":Category[1]},
         "ChartBar":{"labels":Annual[0],"data":Annual[1]}
     }
