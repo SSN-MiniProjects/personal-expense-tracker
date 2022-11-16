@@ -248,5 +248,6 @@ def genrate_report():
     my_doc.build(my_obj)
     path = file_name
     return send_file(path, as_attachment=True)
+    
 
 app.run("0.0.0.0", 5000,debug=True)
