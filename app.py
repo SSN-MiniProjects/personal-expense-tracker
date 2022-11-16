@@ -1,11 +1,14 @@
 from forms import LoginForm, RegisterForm, Transaction, Customize
-from flask import Flask, render_template, url_for, redirect, flash, make_response, request
+from flask import Flask, render_template, url_for, redirect, flash, make_response, request,send_file
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
 from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
 from utility import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data, get_card_details
 from datetime import date
+from reportlab.lib import colors  
+from reportlab.lib.pagesizes import letter, inch  
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 app = Flask(__name__)
 Bootstrap(app)
 
@@ -179,7 +182,7 @@ def add_transaction():
             print("success: sending alert mail")
         else:
             print("failed: sending alert mail")
-        return redirect(url_for('login',error="Transaction recorded"))
+        return redirect(url_for('home',error="Transaction recorded"))
     return render_template('add_transaction.html', form=form, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
@@ -213,40 +216,37 @@ def view_ref():
 
 @app.route('/generate_report', methods=['GET'])
 def genrate_report():
-    return render_template('reference.html')
-        
-#Sprint -3 
-"""from reportlab.lib import colors  
-from reportlab.lib.pagesizes import letter, inch  
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-   
-# creating a pdf file to add tables  
-my_doc = SimpleDocTemplate("table.pdf", pagesize = letter)  
-my_obj = []  
-# defining Data to be stored on table  
-my_data = [  
-   ["ID", "1234"],  
-   ["Name", "Den Arthur"],  
-   ["Profession", "Software Developer"],  
-   ["Age", "28"],  
-   ["Sex", "Male"]  
-]  
-# Creating the table with 5 rows  
-my_table = Table(my_data, 1 * [1.6 * inch], 5 * [0.5 * inch])  
-# setting up style and alignments of borders and grids  
-my_table.setStyle(  
-   TableStyle(  
-       [  
-           ("ALIGN", (1, 1), (0, 0), "LEFT"),  
-           ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
-           ("ALIGN", (-1, -1), (-1, -1), "RIGHT"),  
-           ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
-           ("INNERGRID", (0, 0), (-1, -1), 1, colors.black),  
-           ("BOX", (0, 0), (-1, -1), 2, colors.black),  
-       ]  
-   )  
-)  
-my_obj.append(my_table)  
-my_doc.build(my_obj)  """
+    # creating a pdf file to add tables 
+    file_name = "Report.pdf"  
+    my_doc = SimpleDocTemplate(file_name, pagesize = letter)  
+    my_obj = []  
+    # defining Data to be stored on table  
+    email = "karthikraja19048@cse.ssn.edu.in" #request.cookies.get('email')
+    my_data = [  
+    ["ID", "Amount","Mode","Date",	"Note"],
+    ]  
+    res = fetch_user_transactions(email)
+    for i in range(len(res)):
+        temp = [i,res[i]["TRANSACTION"],res[i]["MODE"],res[i]["DATESTAMP"],res[i]["NOTE"]]
+        my_data.append(temp)
+    # Creating the table with 7 rows  
+    my_table = Table(my_data, 1 * [1.6 * inch], 7 * [0.5 * inch])  
+    # setting up style and alignments of borders and grids  
+    my_table.setStyle(  
+    TableStyle(  
+        [  
+            ("ALIGN", (1, 1), (0, 0), "LEFT"),  
+            ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
+            ("ALIGN", (-1, -1), (-1, -1), "RIGHT"),  
+            ("VALIGN", (-1, -1), (-1, -1), "TOP"),  
+            ("INNERGRID", (0, 0), (-1, -1), 1, colors.black),  
+            ("BOX", (0, 0), (-1, -1), 2, colors.black),  
+        ]  
+    )  
+    )  
+    my_obj.append(my_table)  
+    my_doc.build(my_obj)
+    path = file_name
+    return send_file(path, as_attachment=True)
 
 app.run("0.0.0.0", 5000,debug=True)
