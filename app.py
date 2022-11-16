@@ -197,7 +197,7 @@ def add_customization():
         profession = form.profession.data
         alert = form.alert.data
         insert_user_customize(useremail, name, budget, total_spent, phone, profession, alert)
-        returnredirect(url_for('home', error="Customization set successfully"))
+        return redirect(url_for('home'))
     return render_template('customize.html', form=form)
  
     
