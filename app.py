@@ -92,11 +92,11 @@ def home():
         "BudgetPercentage":sum(Monthly[1])/Cards[0]['BUDGET']*100,
         "UserCount":Cards[1],
     }
-    Monthly_data=[month_names[i-1] for i in Monthly[0]]
+    Month_vice_data=[month_names[i-1] for i in Annual[0]]
     GraphData={
-        "ChartArea":{"labels": Monthly_data,"data":Monthly[1]},
+        "ChartArea":{"labels": Monthly[0],"data":Monthly[1]},
         "ChartPie":{"labels":Category[0],"data":Category[1]},
-        "ChartBar":{"labels":Annual[0],"data":Annual[1]}
+        "ChartBar":{"labels":Month_vice_data,"data":Annual[1]}
     }
     return render_template('home.html',GraphData=GraphData,CardData=CardData)
 
