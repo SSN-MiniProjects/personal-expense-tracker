@@ -121,7 +121,7 @@ def insert_user_transaction(email,transaction,mode,category,datestamp,note):
     stmt = ibm_db.prepare(conn, query)
     param = (login_id,transaction,mode,category,datestamp,note)
     res = ibm_db.execute(stmt, param)
-    query = 'update user_profiles set total_spent=total_spent+? where Id=?;'
+    query = 'update user_profiles set total_spent=total_spent+? where login_id=?;'
     stmt = ibm_db.prepare(conn, query)
     param = (transaction,login_id,)
     res = ibm_db.execute(stmt, param)
