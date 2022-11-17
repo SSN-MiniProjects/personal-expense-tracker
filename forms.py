@@ -50,10 +50,8 @@ class Transaction(FlaskForm):
             raise ValidationError("The date cannot be in the Future!")
 
 class Customize(FlaskForm):
-    # login_id = StringField(render_kw={"placeholder": "Login ID"})
     name = StringField(validators=[InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Name"})
     budget = StringField('Budget', validators=[InputRequired()], render_kw={"placeholder": "Budget"})
-    total_spent = StringField('Total_Spent', validators=[DataRequired()], render_kw={"placeholder": "Total Spent"})
     phone = StringField('Phone', validators=[DataRequired()], render_kw={"placeholder": "Phone"})
     profession = StringField(validators=[InputRequired(), Length(min=1, max=40)], render_kw={"placeholder": "Profession"})
     alert = BooleanField()
