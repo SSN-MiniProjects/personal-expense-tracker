@@ -162,7 +162,7 @@ def confirm_email():
         resp = make_response(render_template('email_confirmation.html', email= email, error="OTP mismatch! Retry"))
         return resp
 
-   
+@login_required
 @app.route('/add_transaction', methods=['GET','POST'])
 def add_transaction():
     form = Transaction();
@@ -189,6 +189,7 @@ def add_transaction():
     return render_template('add_transaction.html', form=form, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
+@login_required
 def add_customization():
     form = Customize();
     useremail = request.cookies.get('email')
