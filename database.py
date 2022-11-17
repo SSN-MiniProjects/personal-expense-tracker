@@ -164,12 +164,12 @@ def global_view_query(query,email=""):
     return result_set
 # insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
 
-def insert_user_customize(email, name, budget, total_spent, phone, profession, alert):
+def update_user_customize(email, name, budget, phone, profession, alert):
     conn = connect_db()
     login_id = fetchUserByEmail(email)[0]['ID']
-    query = 'INSERT INTO user_profiles (login_id, name, budget, total_spent, phone, profession, alert) VALUES (?,?,?,?,?,?,?)'
+    query = 'UPDATE user_profiles set name=?, budget=?, phone=?, profession=?, alert=? where login_id=?'
     stmt = ibm_db.prepare(conn, query)
-    param = (login_id,name, budget, total_spent, phone, profession, alert)
+    param = (name, budget, phone, profession, alert, login_id)
     res = ibm_db.execute(stmt, param)
     return res
 def get_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
