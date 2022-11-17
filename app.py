@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, redirect, flash, make_respons
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
-from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, insert_user_customize, initialise
+from database import insert_user_credential, insert_user_profile, fetchUserByEmail, fetchUserById, insert_user_transaction,fetch_user_transactions,global_view_query, update_user_customize, initialise
 from utility import get_month_graph_data,get_year_graph_data,get_card_details,get_category_graph_data, get_card_details
 from datetime import date
 from reportlab.lib import colors  
@@ -177,12 +177,15 @@ def add_transaction():
         result = get_card_details(useremail)[0]
         total_expense = result["TOTAL_SPENT"]
         budget = result["BUDGET"]
-        alert_mail = sendgrid_obj.alert_overbudget(useremail, budget, total_expense)
+        
+        if total_expense > budget:
+            alert_mail = sendgrid_obj.alert_overbudget(useremail, budget, total_expense)
+        
         if alert_mail:
             print("success: sending alert mail")
         else:
             print("failed: sending alert mail")
-        return redirect(url_for('home',error="Transaction recorded"))
+        return redirect(url_for('home'))
     return render_template('add_transaction.html', form=form, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
@@ -192,11 +195,10 @@ def add_customization():
     if form.validate_on_submit():
         name = form.name.data
         budget = form.budget.data
-        total_spent = form.total_spent.data
         phone = form.phone.data
         profession = form.profession.data
         alert = form.alert.data
-        insert_user_customize(useremail, name, budget, total_spent, phone, profession, alert)
+        update_user_customize(useremail, name, budget, phone, profession, alert)
         return redirect(url_for('home'))
     return render_template('customize.html', form=form)
  
