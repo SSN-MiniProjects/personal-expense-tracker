@@ -77,6 +77,28 @@
       {{ form.submit(class="btn btn-outline-info") }}
     </div>
   </form>
+  <div>OR</div>
+  <hr />
+  <div class="form-group">
+    Upload csv file with Transaction,Mode,Category,Start-date,Note in the same
+    order. Note:first row will be ignored
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {{ form2.hidden_tag() }}
+
+    <div>
+      {{ form2.file.label(class="form-control-label") }} {% if form2.file.errors
+      %} {{ form2.file(class="form-control form-control-lg is-invalid") }}
+      <div class="invalid-feedback">
+        {% for error in form2.file.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+      {% else %} {{ form2.file(class="form-control form-control-lg") }} {% endif
+      %}
+    </div>
+    <input type="submit" />
+  </form>
 </div>
 
 {% endblock %}
