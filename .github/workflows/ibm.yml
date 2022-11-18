@@ -59,7 +59,7 @@ jobs:
     - name: Build with Docker
       run: |
         docker build -t "$REGISTRY_HOSTNAME"/"$ICR_NAMESPACE"/"$IMAGE_NAME":latest .
-          ibmcloud cr login
+        ibmcloud cr login
 
     # Push the image to IBM Container Registry
     - name: Push the image to ICR
