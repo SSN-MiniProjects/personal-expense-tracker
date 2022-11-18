@@ -82,7 +82,7 @@ jobs:
         kubectl set env deployment/$DEPLOYMENT_NAME DB_API_HOST=${{ secrets.DB_API_HOST }}
         kubectl set env deployment/$DEPLOYMENT_NAME DB_API_PORT=${{ secrets.DB_API_PORT }}
         kubectl set env deployment/$DEPLOYMENT_NAME  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} 
-        kubectl expose deployment/$IMAGE_NAME --type="NodePort" --port 5000
+        kubectl expose deployment/$IMAGE_NAME --type="NodePort"
         kubectl describe services/$IMAGE_NAME
-        ibmcloud cs workers --cluster $IKS_CLUSTER
+        ibmcloud cs workers --cluster $IKS_CLUSTER11
         
