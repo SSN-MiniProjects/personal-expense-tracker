@@ -82,7 +82,7 @@ jobs:
         kubectl set env deployment/$DEPLOYMENT_NAME  DB_API_PWD=${{ secrets.DB_API_PWD }}
         kubectl set env deployment/$DEPLOYMENT_NAME DB_API_HOST=${{ secrets.DB_API_HOST }}
         kubectl set env deployment/$DEPLOYMENT_NAME DB_API_PORT=${{ secrets.DB_API_PORT }}
-        kubectl set env deployment/$DEPLOYMENT_NAME  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }
+        kubectl set env deployment/$DEPLOYMENT_NAME  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
         kubectl describe services/$IMAGE_NAME
         ibmcloud cs workers --cluster $IKS_CLUSTER
         
