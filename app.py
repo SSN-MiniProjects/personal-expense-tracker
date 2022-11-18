@@ -245,8 +245,9 @@ def genrate_report():
     for i in range(len(res)):
         temp = [i,res[i]["TRANSACTION"],res[i]["MODE"],res[i]["DATESTAMP"],res[i]["NOTE"]]
         my_data.append(temp)
-    # Creating the table with 6 rows  
-    my_table = Table(my_data, 1 * [1.6 * inch], 6 * [0.5 * inch])  
+    # Creating the table with 6 rows
+    row_count = len(res) + 1  
+    my_table = Table(my_data, 1 * [1.6 * inch], row_count * [0.5 * inch])  
     # setting up style and alignments of borders and grids  
     my_table.setStyle(  
     TableStyle(  
