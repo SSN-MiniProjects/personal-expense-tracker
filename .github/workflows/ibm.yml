@@ -78,6 +78,11 @@ jobs:
         kubectl create deployment $DEPLOYMENT_NAME --image=$REGISTRY_HOSTNAME/$ICR_NAMESPACE/$IMAGE_NAME:latest
         kubectl delete svc $DEPLOYMENT_NAME 
         kubectl expose deployment/$IMAGE_NAME --type="NodePort"
+        kubectl set env deployment/$DEPLOYMENT_NAME  DB_API_UID=${{ secrets.DB_API_UID }}
+        kubectl set env deployment/$DEPLOYMENT_NAME  DB_API_PWD=${{ secrets.DB_API_PWD }}
+        kubectl set env deployment/$DEPLOYMENT_NAME DB_API_HOST=${{ secrets.DB_API_HOST }}
+        kubectl set env deployment/$DEPLOYMENT_NAME DB_API_PORT=${{ secrets.DB_API_PORT }}
+        kubectl set env deployment/$DEPLOYMENT_NAME  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }
         kubectl describe services/$IMAGE_NAME
         ibmcloud cs workers --cluster $IKS_CLUSTER
         
