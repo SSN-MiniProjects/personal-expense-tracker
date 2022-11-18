@@ -9,7 +9,8 @@ from random import randint
 class SendGrid:
     def __init__(self):
         self.sg = SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
-        self.from_email = "personalExpenseTracker7@gmail.com"
+        # self.from_email = "personalExpenseTracker7@gmail.com"
+        self.from_email = "abhisheknarayan19006@cse.ssn.edu.in"
 
     def otp_generation(self):
         value = randint(1000, 10000)

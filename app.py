@@ -1,5 +1,6 @@
 from forms import LoginForm, RegisterForm, Transaction, Customize
 from flask import Flask, render_template, url_for, redirect, flash, make_response, request,send_file
+import flask
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
 from sendgrid_integration import SendGrid
@@ -77,9 +78,9 @@ def login():
 
     return render_template('login.html', form=form, error = error)
 
-@app.route('/home')
+@app.route('/dashboard')
 @login_required
-def home():
+def dashboard():
     useremail = request.cookies.get('email')
     datestr = date.today().strftime("%Y-%m-%d")
     Monthly = get_month_graph_data(useremail,date.today())
@@ -101,12 +102,19 @@ def home():
         "ChartPie":{"labels":Category[0],"data":Category[1]},
         "ChartBar":{"labels":Month_vice_data,"data":Annual[1]}
     }
-    return render_template('home.html',GraphData=GraphData,CardData=CardData)
+    return render_template('dashboard.html',GraphData=GraphData,CardData=CardData)
+
+
+@app.route('/home')
+@login_required
+def home():
+    return render_template('home.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
+    resp.set_cookie('email', expires=0)
     return redirect(url_for('login'))
 
 @app.route('/', methods=['GET', 'POST'])
@@ -119,8 +127,7 @@ def register():
         resp = make_response(render_template('email_confirmation.html', email= entered_email))
         resp.set_cookie('email', entered_email)
         resp.set_cookie('password', entered_password, max_age=3000)
-        # otp = sendgrid_obj.confirmation_mail(entered_email)
-        otp = 5000
+        otp = sendgrid_obj.confirmation_mail(entered_email)
         if otp == None:
             return render_template('register.html', form=form, error="Please try again!")
         
@@ -185,6 +192,8 @@ def add_transaction():
             print("success: sending alert mail")
         else:
             print("failed: sending alert mail")
+        
+        flash("Expense added successfully", "success")
         return redirect(url_for('home'))
     return render_template('add_transaction.html', form=form, error = "Nil")
 
@@ -200,6 +209,7 @@ def add_customization():
         profession = form.profession.data
         alert = form.alert.data
         update_user_customize(useremail, name, budget, phone, profession, alert)
+        flash("Profile updated successfully", "success")
         return redirect(url_for('home'))
     return render_template('customize.html', form=form)
  
@@ -224,16 +234,19 @@ def genrate_report():
     my_doc = SimpleDocTemplate(file_name, pagesize = letter)  
     my_obj = []  
     # defining Data to be stored on table  
-    email = "karthikraja19048@cse.ssn.edu.in" #request.cookies.get('email')
+    email = request.cookies.get('email')
     my_data = [  
     ["ID", "Amount","Mode","Date",	"Note"],
     ]  
     res = fetch_user_transactions(email)
+    if res == []:
+        flash("Please add transactions", "error")
+        return redirect('home')
     for i in range(len(res)):
         temp = [i,res[i]["TRANSACTION"],res[i]["MODE"],res[i]["DATESTAMP"],res[i]["NOTE"]]
         my_data.append(temp)
-    # Creating the table with 7 rows  
-    my_table = Table(my_data, 1 * [1.6 * inch], 7 * [0.5 * inch])  
+    # Creating the table with 6 rows  
+    my_table = Table(my_data, 1 * [1.6 * inch], 6 * [0.5 * inch])  
     # setting up style and alignments of borders and grids  
     my_table.setStyle(  
     TableStyle(  
@@ -253,4 +266,4 @@ def genrate_report():
     return send_file(path, as_attachment=True)
     
 
-app.run("0.0.0.0", 5000,debug=True)
+app.run("0.0.0.0", 5000,debug=False)
