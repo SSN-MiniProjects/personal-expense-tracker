@@ -1,4 +1,4 @@
-from forms import LoginForm, RegisterForm, Transaction, Customize
+from forms import LoginForm, RegisterForm, Transaction, Customize,TransactionFile
 from flask import Flask, render_template, url_for, redirect, flash, make_response, request,send_file
 import flask
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
@@ -10,6 +10,8 @@ from datetime import date
 from reportlab.lib import colors  
 from reportlab.lib.pagesizes import letter, inch  
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from werkzeug.utils import secure_filename
+import pandas
 app = Flask(__name__)
 Bootstrap(app)
 
@@ -173,7 +175,8 @@ def confirm_email():
 @login_required
 @app.route('/add_transaction', methods=['GET','POST'])
 def add_transaction():
-    form = Transaction();
+    form = Transaction()
+    form2 = TransactionFile()
     useremail = request.cookies.get('email')
     if form.validate_on_submit():
         transaction = form.transaction.data
@@ -196,7 +199,21 @@ def add_transaction():
         
         flash("Expense added successfully", "success")
         return redirect(url_for('home'))
-    return render_template('add_transaction.html', form=form, error = "Nil")
+    if form2.validate_on_submit():
+        filename = secure_filename(form2.file.data.filename)
+        df = pandas.read_csv(form2.file.data)
+        df = df[1:]
+        for i in range(len(df)):
+            transaction = df.iloc[i, 0]
+            mode = df.iloc[i, 1]
+            category =  df.iloc[i, 2]
+            datestamp = df.iloc[i,3]
+            note = df.iloc[i,4]
+            insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
+        flash("Expense file added successfully", "success")
+        return redirect(url_for('home'))
+
+    return render_template('add_transaction.html', form=form,form2=form2, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
 @login_required
