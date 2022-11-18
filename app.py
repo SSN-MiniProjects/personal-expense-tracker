@@ -185,7 +185,7 @@ def add_transaction():
         result = get_card_details(useremail)[0]
         total_expense = result["TOTAL_SPENT"]
         budget = result["BUDGET"]
-        
+        alert_mail = None
         if total_expense > budget:
             alert_mail = sendgrid_obj.alert_overbudget(useremail, budget, total_expense)
         
