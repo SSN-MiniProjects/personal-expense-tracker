@@ -114,6 +114,7 @@ def home():
 @login_required
 def logout():
     logout_user()
+    resp = make_response(redirect(location=url_for('login')))
     resp.set_cookie('email', expires=0)
     return redirect(url_for('login'))
 
@@ -267,4 +268,4 @@ def genrate_report():
     return send_file(path, as_attachment=True)
     
 
-app.run("0.0.0.0", 5000,debug=False)
+app.run("0.0.0.0", 5000,debug=True)
