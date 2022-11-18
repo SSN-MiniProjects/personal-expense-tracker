@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,DateField,SelectField,BooleanField
 from wtforms.validators import Email, DataRequired, ValidationError, InputRequired, Length
+import phonenumbers
+import datetime
 from database import fetchUserByEmail
 
 class LoginForm(FlaskForm):
@@ -35,7 +37,7 @@ class Transaction(FlaskForm):
                            InputRequired()], render_kw={"placeholder": "Category"})
     category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
                            InputRequired()])
-    datestamp = DateField('Start Date', format='%Y/%m/%d',validators=[
+    datestamp = DateField('Start Date', format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
     note = StringField(validators=[
                            InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
@@ -43,21 +45,26 @@ class Transaction(FlaskForm):
     def validate_transaction(self, transaction):
         if int(transaction.data) < 0:
             raise ValidationError('Enter a valid amount')
+    def validate_date(form, field):
+        if field.data > datetime.date.today():
+            raise ValidationError("The date cannot be in the Future!")
 
 class Customize(FlaskForm):
-    # login_id = StringField(render_kw={"placeholder": "Login ID"})
-    name = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Expense Amount"})
-    budget = SelectField('Mode', choices=["Online","Cash"],validators=[
-                           InputRequired()], render_kw={"placeholder": "Category"})
-    total_spent = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
-                           InputRequired()])
-    phone = DateField('Start Date', format='%Y/%m/%d',validators=[
-                           InputRequired()], render_kw={"placeholder": "Date"})
-    profession = StringField(validators=[
-                           InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    name = StringField(validators=[InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Name"})
+    budget = StringField('Budget', validators=[InputRequired()], render_kw={"placeholder": "Budget"})
+    phone = StringField('Phone', validators=[DataRequired()], render_kw={"placeholder": "Phone"})
+    profession = StringField(validators=[InputRequired(), Length(min=1, max=40)], render_kw={"placeholder": "Profession"})
     alert = BooleanField()
     submit = SubmitField('Submit Transaction')
-    def validate_transaction(self, transaction):
-        if int(transaction.data) < 0:
-            raise ValidationError('Enter a valid amount')
+
+    def validate_phone(self, phone):
+        try:
+            p = phonenumbers.parse(phone.data)
+            if not phonenumbers.is_valid_number(p):
+                raise ValueError()
+        except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
+            raise ValidationError('Invalid phone number')
+        
+    def validate_budget(self, budget):
+        if int(budget.data) < 0:
+            raise ValidationError('Enter a valid budget')

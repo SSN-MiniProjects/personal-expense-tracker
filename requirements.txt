@@ -14,7 +14,10 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 login==0.0.6
 MarkupSafe==2.1.1
+phonenumbers==8.11.0
+Pillow==9.3.0
 python-http-client==3.3.7
+reportlab==3.6.12
 sendgrid==6.9.7
 starkbank-ecdsa==2.2.0
 visitor==0.1.3

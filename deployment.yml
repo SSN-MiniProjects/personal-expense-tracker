@@ -7,12 +7,12 @@ metadata:
   name: iks-test
 spec:
   ports:
-  - name: 80-5000
-    port: 80
-    protocol: TCP
-    targetPort: 5000
+    - name: 80-5000
+      port: 80
+      protocol: TCP
+      targetPort: 5000
   selector:
     app: iks-test
   type: NodePort
 status:
-  loadBalancer: {}    
+  loadBalancer: {}

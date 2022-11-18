@@ -1,7 +1,9 @@
 import ibm_db
 import os
+import datetime
 ## get the IBM db2 credentials from your IBM cloud
 # driver and protocol remains
+
 
 dsn_hostname = os.environ.get('DB_API_HOST') 
 dsn_uid = os.environ.get('DB_API_UID')
@@ -40,8 +42,8 @@ def initialise():
         name VARCHAR(30),\
         budget INT DEFAULT 0,\
         total_spent INT DEFAULT 0,\
-        phone CHAR(10),\
-        profession VARCHAR(20),\
+        phone VARCHAR(30),\
+        profession VARCHAR(30),\
         alert BOOLEAN DEFAULT FALSE,\
         FOREIGN KEY (login_id) REFERENCES USER_CREDENTIALS(id) ON DELETE CASCADE);"
     createUserTransactions = "CREATE TABLE user_transactions (\
@@ -104,7 +106,7 @@ def insert_user_profile(login_id): #update
 
 def fetchUserByEmail(email): 
     conn = connect_db()
-    query = 'SELECT * FROM user_credentials WHERE email = ?'
+    query = 'SELECT ID,EMAIL,PASSWORD FROM user_credentials WHERE email = ?'
     stmt = ibm_db.prepare(conn, query)
     param = (email,)
     ibm_db.execute(stmt,param)
@@ -118,6 +120,10 @@ def insert_user_transaction(email,transaction,mode,category,datestamp,note):
     query = 'INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note) VALUES (?,?,?,?,?,?)'
     stmt = ibm_db.prepare(conn, query)
     param = (login_id,transaction,mode,category,datestamp,note)
+    res = ibm_db.execute(stmt, param)
+    query = 'update user_profiles set total_spent=total_spent+? where login_id=?;'
+    stmt = ibm_db.prepare(conn, query)
+    param = (transaction,login_id,)
     res = ibm_db.execute(stmt, param)
     return res
 
@@ -139,14 +145,69 @@ def update_password(username, password):
     param = (password, username)
     res = ibm_db.execute(stmt,param)
     return res
+
 def global_view_query(query,email=""):
     conn = connect_db()
-    login_id = fetchUserByEmail(email)[0]['ID']
-    query = query+ 'WHERE login_id = ?'
-    stmt = ibm_db.prepare(conn, query)
-    param = (login_id,)
-    ibm_db.execute(stmt,param)
+    query = query
+    if(email != ""):
+        login_id = fetchUserByEmail(email)
+        login_id=login_id[0]['ID']
+        query = query+ 'WHERE login_id = ?'
+        stmt = ibm_db.prepare(conn, query)
+        param = (login_id,)
+        ibm_db.execute(stmt,param)
+    else:
+        stmt = ibm_db.prepare(conn, query)
+        ibm_db.execute(stmt)
     result_set = fetchResults(stmt)
     ibm_db.close(conn)
     return result_set
 # insert_user_transaction("karthikraja19048@cse.ssn.edu.in",1343.54,"online","food","2022-12-20","at the airport to shillong")
+
+def update_user_customize(email, name, budget, phone, profession, alert):
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = 'UPDATE user_profiles set name=?, budget=?, phone=?, profession=?, alert=? where login_id=?'
+    stmt = ibm_db.prepare(conn, query)
+    param = (name, budget, phone, profession, alert, login_id)
+    res = ibm_db.execute(stmt, param)
+    return res
+def get_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = ''' 
+    select SUM(transaction) as  "TRANSACTION",DAY(datestamp) as "DT" from user_transactions  
+    where login_id = ? and datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1))  
+    group by datestamp;'''
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,reqd_month_datestr,reqd_month_datestr,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
+def get_category_month_expense(email,reqd_month_datestr): #use format yyyy-mm-dd
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = ''' select SUM(transaction) as "TRANSACTION",category from user_transactions  
+    where login_id = ? and datestamp >=THIS_MONTH(?) and datestamp < THIS_MONTH(ADD_MONTHS(LAST_DAY(?), 1))  
+    group by category;'''
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,reqd_month_datestr,reqd_month_datestr,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
+def get_annual_expense(email,reqd_year_datestr): #use format yyyy-mm-dd
+    conn = connect_db()
+    login_id = fetchUserByEmail(email)[0]['ID']
+    query = ''' select SUM(transaction) as "TRANSACTION" , MONTH(datestamp) AS "MT" 
+    from user_transactions  
+    where login_id = ? and datestamp >=THIS_YEAR(?) and datestamp < THIS_YEAR(ADD_YEARS(LAST_DAY(?), 1)) 
+    group by MONTH(datestamp);'''
+    stmt = ibm_db.prepare(conn, query)
+    param = (login_id,reqd_year_datestr,reqd_year_datestr,)
+    ibm_db.execute(stmt,param)
+    result_set = fetchResults(stmt)
+    ibm_db.close(conn)
+    return result_set
+

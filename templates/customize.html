@@ -1,0 +1,84 @@
+{% extends 'base.html' %} {% block content %}
+
+<div>
+  <div class="col-md-8">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{category}}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+  </div>
+
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div>
+        {{ form.name.label(class="form-control-label") }} {% if form.name.errors
+        %} {{ form.name(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.name.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.name(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.budget.label(class="form-control-label") }} {% if
+        form.budget.errors %} {{ form.budget(class="form-control form-control-lg
+        is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.budget.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.budget(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.phone.label(class="form-control-label") }} {% if
+        form.phone.errors %} {{ form.phone(class="form-control form-control-lg
+        is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.phone.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.phone(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+
+      <div>
+        {{ form.profession.label(class="form-control-label") }} {% if
+        form.profession.errors %} {{ form.profession(class="form-control
+        form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.profession.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.profession(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.alert.label(class="form-control-label") }} {% if
+        form.alert.errors %} {{ form.alert(class="form-control form-control-lg
+        is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.alert.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %} {{ form.alert(class="form-control form-control-lg") }} {%
+        endif %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+
+{% endblock %}
