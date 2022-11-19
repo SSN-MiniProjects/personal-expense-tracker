@@ -204,7 +204,6 @@ def add_transaction():
     if form2.validate_on_submit():
         filename = secure_filename(form2.file.data.filename)
         df = pandas.read_csv(form2.file.data)
-        df = df[1:]
         print("step 1")
         for i in range(len(df)):
             print("step 2")
