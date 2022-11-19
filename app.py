@@ -12,6 +12,8 @@ from reportlab.lib.pagesizes import letter, inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from werkzeug.utils import secure_filename
 import pandas
+import datetime
+
 app = Flask(__name__)
 Bootstrap(app)
 
@@ -203,12 +205,17 @@ def add_transaction():
         filename = secure_filename(form2.file.data.filename)
         df = pandas.read_csv(form2.file.data)
         df = df[1:]
+        print("step 1")
         for i in range(len(df)):
-            transaction = df.iloc[i, 0]
+            print("step 2")
+            transaction = str(df.iloc[i, 0])
             mode = df.iloc[i, 1]
             category =  df.iloc[i, 2]
-            datestamp = df.iloc[i,3]
+            datestamp = str(df.iloc[i,3])
+            date_time_obj = datetime.datetime.strptime(datestamp, '%d-%m-%Y')
+            datestamp = date_time_obj.strftime("%Y-%m-%d")
             note = df.iloc[i,4]
+            print((useremail, transaction, mode, category, datestamp, note))
             insert_user_transaction(useremail, transaction, mode, category, datestamp, note)
         flash("Expense file added successfully", "success")
         return redirect(url_for('home'))
