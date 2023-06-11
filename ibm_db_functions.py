@@ -69,14 +69,6 @@ def fetchResults(res): # Returns a list of dictionaries
         d = ibm_db.fetch_assoc(res)
     return result_set
 
-# def fetchAllUsers():
-#     conn = connect_db()
-#     query = f'SELECT * FROM user'
-#     res = ibm_db.exec_immediate(conn, query)
-#     result_set = fetchResults(res)
-#     ibm_db.close(conn)
-#     return result_set
-
 def fetchUserById(id):
     conn = connect_db()
     query = 'SELECT * FROM user_credentials WHERE id = ?'
@@ -139,13 +131,6 @@ def fetch_user_transactions(email):
     ibm_db.close(conn)
     return result_set
 
-def update_password(username, password):
-    conn = connect_db()
-    query = 'UPDATE user_credentials set password = ? where username = ?'
-    stmt = ibm_db.prepare(conn, query)
-    param = (password, username)
-    res = ibm_db.execute(stmt,param)
-    return res
 
 def global_view_query(query,email=""):
     conn = connect_db()

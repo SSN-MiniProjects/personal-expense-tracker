@@ -1,5 +1,3 @@
-# using SendGrid's Python Library
-# https://github.com/sendgrid/sendgrid-python
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -45,6 +43,7 @@ class SendGrid:
 
 # obj = SendGrid()
 
-# # code = obj.confirmation_mail("jagadish19039@cse.ssn.edu.in")
+# code = obj.confirmation_mail("jagadish19039@cse.ssn.edu.in")
 
+# print(code)
 # print(obj.otp_generation())
