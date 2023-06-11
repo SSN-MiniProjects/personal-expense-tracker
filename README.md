@@ -1,4 +1,12 @@
-# personal-expense-tracker
+This is a mini project developed during our study in SSN College of Engineering
 
-- Completed with Sprint-1
-- Link to [Online hosting](http://159.122.187.65:31180/)
+Personal Expense Tracker
+
+
+
+
+Made by:
+  - Karthik Raja A
+  - Jagadish R
+  - Jeet Golecha M
+  - Murali Krishnan R
