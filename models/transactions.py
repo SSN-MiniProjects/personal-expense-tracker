@@ -47,7 +47,7 @@ def get_transactions(email):
 def get_month_expense(email,required_month_str): #use format yyyy-mm-dd
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = fetchUserByEmail(email)[0]
+    login_id = get_user_by_email(email)["id"]
     query = '''
         select sum(transaction) as TRANSACTION, extract(day from datestamp) as DT
         from 
@@ -69,7 +69,7 @@ def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
 
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = fetchUserByEmail(email)[0]
+    login_id = get_user_by_email(email)["id"]
     query = '''
         select sum(transaction) as TRANSACTION, extract(month from datestamp) as MT
         from 
@@ -89,7 +89,7 @@ def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
 def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = fetchUserByEmail(email)[0]
+    login_id = get_user_by_email(email)["id"]
     query = '''
         select sum(transaction) as TRANSACTION, category
         from 
