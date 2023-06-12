@@ -1,16 +1,16 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, BooleanField
-from wtforms.validators import InputRequired, Length, DataRequired
+from wtforms import StringField, SubmitField, BooleanField, FloatField
+from wtforms.validators import InputRequired, Length, DataRequired, ValidationError
 import phonenumbers
 
 
 class UserProfile(FlaskForm):
     name = StringField(validators=[InputRequired(), Length(min=1, max=20)], render_kw={"placeholder": "Name"})
-    budget = StringField('Budget', validators=[InputRequired()], render_kw={"placeholder": "Budget"})
+    budget = FloatField('Budget', validators=[InputRequired()], render_kw={"placeholder": "Budget"})
     phone = StringField('Phone', validators=[DataRequired()], render_kw={"placeholder": "Phone"})
     profession = StringField(validators=[InputRequired(), Length(min=1, max=40)], render_kw={"placeholder": "Profession"})
     alert = BooleanField()
-    submit = SubmitField('Submit Transaction')
+    submit = SubmitField('Update Profile')
 
     def validate_phone(self, phone):
         try:

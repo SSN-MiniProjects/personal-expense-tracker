@@ -26,7 +26,7 @@ def get_transactions(email):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
-    query = 'SELECT * FROM user_transactions WHERE login_id = %s'
+    query = 'SELECT transaction, mode, datestamp, note FROM user_transactions WHERE login_id = %s'
     param = (login_id,)
     cursor.execute(query, param)
     result = cursor.fetchall()
