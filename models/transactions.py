@@ -49,7 +49,7 @@ def get_month_expense(email,required_month_str): #use format yyyy-mm-dd
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
     query = '''
-        select sum(transaction) as TRANSACTION, extract(day from datestamp) as DT
+        select sum(transaction), extract(day from datestamp)
         from 
         public.user_transactions
         where login_id = %s AND (date_part('month', datestamp) = extract(month from timestamp %s))
@@ -59,10 +59,15 @@ def get_month_expense(email,required_month_str): #use format yyyy-mm-dd
     param = (login_id, required_month_str, required_month_str)
     cursor.execute(query,param)
     result = cursor.fetchall()
+    d = []
+    for item in result:
+        d.append({
+            "sum" : item[0],
+            "day" : int(item[1])
+        })
     cursor.close()
     conn.close()
-    return result
-
+    return d
 
 # get monthwise expenses in a given year of an user
 def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
@@ -71,7 +76,7 @@ def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
     query = '''
-        select sum(transaction) as TRANSACTION, extract(month from datestamp) as MT
+        select sum(transaction), extract(month from datestamp)
         from 
         public.user_transactions
         where login_id = %s AND (date_part('year', datestamp) = extract(year from timestamp %s)) 
@@ -80,9 +85,15 @@ def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
     param = (login_id, required_year_str)
     cursor.execute(query, param)
     result = cursor.fetchall()
+    d = []
+    for item in result:
+        d.append({
+            "sum" : item[0],
+            "month" : int(item[1])
+        })
     cursor.close()
     conn.close()
-    return result
+    return d
 
 
 # get categorywise expenses in given month and given year of an user
@@ -91,7 +102,7 @@ def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
     query = '''
-        select sum(transaction) as TRANSACTION, category
+        select sum(transaction), category
         from 
         public.user_transactions
         where login_id = %s AND (date_part('month', datestamp) = extract(month from timestamp %s)) 
@@ -101,6 +112,12 @@ def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
     param = (login_id, required_month_str, required_month_str)
     cursor.execute(query,param)
     result = cursor.fetchall()
+    d = []
+    for item in result:
+        d.append({
+            "sum" : item[0],
+            "category" : item[1]
+        })
     cursor.close()
     conn.close()
-    return result
+    return d

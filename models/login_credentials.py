@@ -55,4 +55,4 @@ def get_user_count():
     result = cursor.fetchone()
     cursor.close()
     conn.close()
-    return result
+    return result[0]
