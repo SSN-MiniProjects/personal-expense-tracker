@@ -297,4 +297,5 @@ def generate_report():
     return send_file(path, as_attachment=True)
     
 
-app.run("0.0.0.0", 5000,debug=True)
+if __name__ == "__main__":
+	app.run(debug=True)
