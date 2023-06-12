@@ -17,7 +17,8 @@ from config.db import (
 from models.login_credentials import (
     get_user_by_email,
     get_user_by_id,
-    add_user_credential
+    add_user_credential,
+    get_user_count
 )
 
 from models.users_profiles import (
@@ -49,6 +50,10 @@ from forms.transaction import (
 
 from utilities.integrations import (
     SendGrid
+)
+
+from utilities.visualisations import (
+    get_month_graph_data, get_year_graph_data, get_category_graph_data
 )
 
 from dotenv import load_dotenv
@@ -120,31 +125,37 @@ def login():
 
     return render_template('login.html', form=form, error = error)
 
-# @app.route('/dashboard')
-# @login_required
-# def dashboard():
-#     user_email = request.cookies.get('email')
-#     date_str = date.today().strftime("%Y-%m-%d")
-#     Monthly = get_month_graph_data(useremail,date.today())
-#     Annual = get_year_graph_data(useremail,date.today())
-#     Category = get_category_graph_data(useremail,date.today())
-#     Cards= get_card_details(useremail)
-#     month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-#     if(Cards[0]['BUDGET']==0):
-#         Cards[0]['BUDGET']=1
-#     CardData={
-#         "MonthlyExpense":Cards[0]['TOTAL_SPENT'],
-#         "AnnualExpense":sum(Annual[1]),
-#         "BudgetPercentage":Cards[0]['TOTAL_SPENT']/Cards[0]['BUDGET']*100,
-#         "UserCount":Cards[1],
-#     }
-#     Month_vice_data=[month_names[i-1] for i in Annual[0]]
-#     GraphData={
-#         "ChartArea":{"labels": Monthly[0],"data":Monthly[1]},
-#         "ChartPie":{"labels":Category[0],"data":Category[1]},
-#         "ChartBar":{"labels":Month_vice_data,"data":Annual[1]}
-#     }
-#     return render_template('dashboard.html',GraphData=GraphData,CardData=CardData)
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    user_email = request.cookies.get('email')
+
+    Monthly = get_month_graph_data(user_email, date.today())
+    Annual = get_year_graph_data(user_email, date.today())
+    Category = get_category_graph_data(user_email, date.today())
+
+    result = get_spent_and_budget(user_email)
+    total_spent = result["total_expense"]
+    budget = result["budget"] if result["budget"] > 0 else 1
+
+    user_count = get_user_count()
+
+    month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    
+    CardData = {
+        "MonthlyExpense": total_spent,
+        "AnnualExpense": sum(Annual[1]),
+        "BudgetPercentage": total_spent/budget*100,
+        "UserCount": user_count,
+    }
+    Month_vice_data = [month_names[i-1] for i in Annual[0]]
+
+    GraphData = {
+        "ChartArea": {"labels": Monthly[0], "data": Monthly[1]},
+        "ChartPie": {"labels": Category[0], "data": Category[1]},
+        "ChartBar": {"labels": Month_vice_data, "data": Annual[1]}
+    }
+    return render_template('dashboard.html', GraphData = GraphData, CardData = CardData)
 
 
 @app.route('/home')
@@ -274,7 +285,7 @@ def add_new_transaction():
 
 @app.route('/customize', methods=['GET','POST'])
 @login_required
-def add_customization():
+def customize():
     form = UserProfile()
     user_email = request.cookies.get('email')
     if form.validate_on_submit():
