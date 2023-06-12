@@ -4,3 +4,4 @@ PET.db
 *.env
 *.bat
 Report*.pdf
+.vercel
