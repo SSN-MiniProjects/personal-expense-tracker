@@ -303,16 +303,7 @@ def customize():
     
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
-    return render_template('view_transaction.html',fetch_user_transactions= get_transactions)
-
-# @app.route('/base', methods=['GET'])
-# def view_base():
-#     return render_template('base.html')
-
-# @app.route('/ref', methods=['GET'])
-# def view_ref():
-#     return render_template('reference.html')
-        
+    return render_template('view_transaction.html',fetch_user_transactions= get_transactions)       
 
 @app.route('/generate_report', methods=['GET'])
 def generate_report():
