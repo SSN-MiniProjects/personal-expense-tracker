@@ -48,9 +48,6 @@ from forms.transaction import (
     Transaction, TransactionFile
 )
 
-from utilities.integrations import (
-    SendGrid
-)
 
 from utilities.visualisations import (
     get_month_graph_data, get_year_graph_data, get_category_graph_data
@@ -68,7 +65,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = "error"
 
-sendgrid_obj = SendGrid()
 init_db()
 
 
@@ -193,46 +189,8 @@ def register():
 
         return resp
 
-        # otp = sendgrid_obj.confirmation_mail(entered_email)
-        # if otp == None:
-        #     return render_template('register.html', form=form, error="Please try again!")
-        
-        # resp.set_cookie('otp', str(otp),max_age=3000)
-        # return resp
-
     return render_template('register.html', form=form)
 
-
-# @app.route('/confirm_email', methods=['POST'])
-# def confirm_email():
-#     otp_generated = request.cookies.get('otp')
-#     email = request.cookies.get('email')
-#     password = request.cookies.get('password')
-#     if otp_generated is None:
-#         print("otp expired")
-#         return render_template('email_confirmation.html', email= email, expired="OTP expired!")
-    
-#     otp_received = request.form['otp']
-
-#     if str(otp_generated) == otp_received:
-#         # insert the new user credential
-#         add_user_credential(email, password)
-
-#         res = get_user_by_email(email)
-#         login_id = res["id"]
-
-#         # insert new user profile for created credential
-#         add_user_profile(login_id)
-#         resp = make_response(redirect(location=url_for('login')))
-
-#         # delete the otp and password cookies before rendering the page
-#         resp.set_cookie('password', expires=0)
-#         resp.set_cookie('otp', expires=0)
-#         return resp
-
-#     else:
-#         resp = make_response(render_template('email_confirmation.html', email= email, error="OTP mismatch! Retry"))
-#         return resp
 
 @login_required
 @app.route('/add_transaction', methods=['GET','POST'])
@@ -248,18 +206,6 @@ def add_new_transaction():
         datestamp = form.datestamp.data
         note = form.note.data 
         add_transaction(user_email, transaction, mode, category, datestamp, note)
-        result = get_spent_and_budget(user_email)
-        total_expense = result["total_expense"]
-        budget = result["budget"]
-        alert_mail = None
-        if total_expense > budget:
-            alert_mail = sendgrid_obj.alert_overbudget(user_email, budget, total_expense)
-        
-        if alert_mail:
-            print("success: sending alert mail")
-        else:
-            print("failed: sending alert mail")
-        
         flash("Expense added successfully", "success")
         return redirect(url_for('home'))
 
