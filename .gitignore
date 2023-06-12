@@ -3,4 +3,4 @@ __pycache__/
 PET.db
 *.env
 *.bat
-Report.pdf
+Report*.pdf
