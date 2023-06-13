@@ -68,7 +68,7 @@
 								</div>
 								<div class="row no-gutters align-items-center">
 
-									{% if not CardData["BudgetPercentage"] %}
+									{% if CardData["BudgetPercentage"] ==-1 %}
 									<div>Budget is not set up. Please set <a href="/customize">here</a></div>
 
 									{% else %}
@@ -85,7 +85,6 @@
 												id="BudgetPercentage"
 												class="progress-bar bg-info"
 												role="progressbar"
-												style="width: 40%"
 												aria-valuemin="0"
 												aria-valuemax="100"
 											></div>
@@ -186,9 +185,11 @@
 		<!-- Page level plugins -->
 		<script src="{{ url_for('static',filename='js/chart.min.js') }}"></script>
 		<script type="text/javascript">
-
-			
-					// document.getElementById("BudgetPercentage").style.width = {{ CardData["BudgetPercentage"] }}+"%";
+				var budget_percentage = {{ CardData["BudgetPercentage"] }}
+				if (budget_percentage !== -1){
+					document.getElementById("BudgetPercentage").style.width = budget_percentage +"%";
+				}
+					
 			      // Area Chart Code
 			      var ctx = document.getElementById("myAreaChart");
 			      var myLineChart = new Chart(ctx, {
