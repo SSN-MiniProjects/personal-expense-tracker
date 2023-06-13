@@ -1,78 +1,117 @@
 {% extends 'base.html' %} {% block content %}
 
 <div>
+	<div class="card card-frame">
+		<div class="card-body">
+			<h3 class="pl-2 text-center">Current Data</h3>
+			<div class="row">
+				<div class="border-left-primary col-auto">Name</div>
+				<div class="col"><strong>{{ details["name"] }}</strong></div>
+			</div>
 
-  <form method="POST" action="">
-    {{ form.hidden_tag() }}
-    <fieldset class="form-group">
-      <div>
-        {{ form.name.label(class="form-control-label") }} {% if form.name.errors
-        %} {{ form.name(class="form-control form-control-lg is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.name.errors %}
-          <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-        {% else %} {{ form.name(class="form-control form-control-lg") }} {%
-        endif %}
-      </div>
+			<div class="row">
+				<div class="border-left-primary col-auto">Budget</div>
+				<div class="col"><strong>{{ details["budget"] }}</strong></div>
+			</div>
 
-      <div>
-        {{ form.budget.label(class="form-control-label") }} {% if
-        form.budget.errors %} {{ form.budget(class="form-control form-control-lg
-        is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.budget.errors %}
-          <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-        {% else %} {{ form.budget(class="form-control form-control-lg") }} {%
-        endif %}
-      </div>
+			<div class="row">
+				<div class="border-left-primary col-auto">Phone</div>
+				<div class="col"><strong>{{ details["phone"] }}</strong></div>
+			</div>
 
-      <div>
-        {{ form.phone.label(class="form-control-label") }} {% if
-        form.phone.errors %} {{ form.phone(class="form-control form-control-lg
-        is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.phone.errors %}
-          <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-        {% else %} {{ form.phone(class="form-control form-control-lg") }} {%
-        endif %}
-      </div>
+			<div class="row">
+				<div class="border-left-primary col-auto">Profession</div>
+				<div class="col">
+					<strong>{{ details["profession"] }}</strong>
+				</div>
+			</div>
 
-      <div>
-        {{ form.profession.label(class="form-control-label") }} {% if
-        form.profession.errors %} {{ form.profession(class="form-control
-        form-control-lg is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.profession.errors %}
-          <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-        {% else %} {{ form.profession(class="form-control form-control-lg") }}
-        {% endif %}
-      </div>
+			<div class="row">
+				<div class="border-left-primary col-auto">
+					Alert on spent over budget
+				</div>
+				<div class="col"><strong>{{ details["alert"] }}</strong></div>
+			</div>
+		</div>
+	</div>
+	<br />
+	<h3 class="text-center">Update Profile</h3>
 
-      <div>
-        {{ form.alert.label(class="form-control-label") }} {% if
-        form.alert.errors %} {{ form.alert(class="form-control form-control-lg
-        is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.alert.errors %}
-          <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-        {% else %} {{ form.alert(class="form-control form-control-lg") }} {%
-        endif %}
-      </div>
-    </fieldset>
-    <div class="form-group">
-      {{ form.submit(class="btn btn-outline-info") }}
-    </div>
-  </form>
+	<div class="container my-4">
+		<form method="POST" action="" class="col-lg-5">
+			{{ form.hidden_tag() }}
+			<fieldset class="form-group">
+				<div class="row pb-4">
+					{{ form.name.label(class="form-control-label") }} {% if
+					form.name.errors %} {{ form.name(class="form-control
+					form-control-lg is-invalid") }}
+					<div class="invalid-feedback">
+						{% for error in form.name.errors %}
+						<span>{{ error }}</span>
+						{% endfor %}
+					</div>
+					{% else %} {{ form.name(class="form-control
+					form-control-lg") }} {% endif %}
+				</div>
+
+				<div class="row pb-4">
+					{{ form.budget.label(class="form-control-label") }} {% if
+					form.budget.errors %} {{ form.budget(class="form-control
+					form-control-lg is-invalid") }}
+					<div class="invalid-feedback">
+						{% for error in form.budget.errors %}
+						<span>{{ error }}</span>
+						{% endfor %}
+					</div>
+					{% else %} {{ form.budget(class="form-control
+					form-control-lg") }} {% endif %}
+				</div>
+
+				<div class="row pb-4">
+					{{ form.phone.label(class="form-control-label") }} {% if
+					form.phone.errors %} {{ form.phone(class="form-control
+					form-control-lg is-invalid") }}
+					<div class="invalid-feedback">
+						{% for error in form.phone.errors %}
+						<span>{{ error }}</span>
+						{% endfor %}
+					</div>
+					{% else %} {{ form.phone(class="form-control
+					form-control-lg") }} {% endif %}
+				</div>
+
+				<div class="row pb-4">
+					{{ form.profession.label(class="form-control-label") }} {%
+					if form.profession.errors %} {{
+					form.profession(class="form-control form-control-lg
+					is-invalid") }}
+					<div class="invalid-feedback">
+						{% for error in form.profession.errors %}
+						<span>{{ error }}</span>
+						{% endfor %}
+					</div>
+					{% else %} {{ form.profession(class="form-control
+					form-control-lg") }} {% endif %}
+				</div>
+
+				<div class="row pb-4">
+					{{ form.alert.label(class="form-control-label") }} {% if
+					form.alert.errors %} {{ form.alert(class="form-control
+					form-control-lg is-invalid") }}
+					<div class="invalid-feedback">
+						{% for error in form.alert.errors %}
+						<span>{{ error }}</span>
+						{% endfor %}
+					</div>
+					{% else %} {{ form.alert(class="form-control
+					form-control-lg") }} {% endif %}
+				</div>
+			</fieldset>
+			<div class="form-group text-center">
+				{{ form.submit(class="btn btn-outline-info") }}
+			</div>
+		</form>
+	</div>
 </div>
 
 {% endblock %}

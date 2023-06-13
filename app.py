@@ -24,7 +24,8 @@ from models.login_credentials import (
 from models.users_profiles import (
     add_user_profile,
     get_spent_and_budget,
-    update_user_profile
+    update_user_profile,
+    get_user_profile
 )
 
 from models.transactions import (
@@ -235,17 +236,21 @@ def add_new_transaction():
 def customize():
     form = UserProfile()
     user_email = request.cookies.get('email')
+    details = get_user_profile(user_email)
+    entered_budget = form.data['budget']
+    entered_phone = form.data['phone']
+
     if form.validate_on_submit():
-        name = form.name.data
-        budget = form.budget.data
-        phone = form.phone.data
-        profession = form.profession.data
+        name = form.name.data if form.name.data != '' else details["name"]
+        budget = float(form.budget.data) if form.budget.data != '' else details["budget"]
+        phone = form.phone.data if form.phone.data != '' else details["phone"]
+        profession = form.profession.data if form.profession.data != '' else details["profession"]
         alert = form.alert.data
         update_user_profile(user_email, name, budget, phone, profession, alert)
         flash("Profile updated successfully", "success")
         return redirect(url_for('home'))
 
-    return render_template('customize.html', form = form)
+    return render_template('customize.html', form = form, details = details)
  
     
 @app.route('/view_transaction', methods=['GET','POST'])
