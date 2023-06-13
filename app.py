@@ -198,7 +198,6 @@ def register():
 @app.route('/add_transaction', methods=['GET','POST'])
 def add_new_transaction():
     form = Transaction()
-    form2 = TransactionFile()
     user_email = request.cookies.get('email')
 
     if form.validate_on_submit():
@@ -211,25 +210,7 @@ def add_new_transaction():
         flash("Expense added successfully", "success")
         return redirect(url_for('home'))
 
-
-    if form2.validate_on_submit():
-        filename = secure_filename(form2.file.data.filename)
-        df = pandas.read_csv(form2.file.data)
-
-        for i in range(len(df)):
-            transaction = str(df.iloc[i, 0])
-            mode = df.iloc[i, 1]
-            category =  df.iloc[i, 2]
-            datestamp = str(df.iloc[i,3])
-            date_time_obj = datetime.datetime.strptime(datestamp, '%d-%m-%Y')
-            datestamp = date_time_obj.strftime("%Y-%m-%d")
-            note = df.iloc[i,4]
-            insert_user_transaction(user_email, transaction, mode, category, datestamp, note)
-
-        flash("Expense file added successfully", "success")
-        return redirect(url_for('home'))
-
-    return render_template('add_transaction.html', form = form, form2 = form2, error = "Nil")
+    return render_template('add_transaction.html', form = form, error = "Nil")
 
 @app.route('/customize', methods=['GET','POST'])
 @login_required
