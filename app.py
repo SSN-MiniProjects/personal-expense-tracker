@@ -134,7 +134,7 @@ def dashboard():
     result = get_spent_and_budget(user_email)
     total_spent = result["total_expense"]
     budget = result["budget"]
-    budget_percentage = total_spent/budget*100 if budget > 0 else -1
+    budget_percentage = round(total_spent/budget*100,2) if budget > 0 else -1
     user_count = get_user_count()
 
     month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
