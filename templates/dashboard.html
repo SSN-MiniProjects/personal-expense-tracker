@@ -55,13 +55,8 @@
 
 		<!-- Tasks Card Example -->
 		<div class="col-xl-3 col-md-6 mb-4">
-			{% if CardData["BudgetPercentage"] >= 100 %}
-			<div
-				class="card border-left-info shadow h-100 py-2 alert alert-danger"
-			>
-				{% else %}
+			
 				<div class="card border-left-info shadow h-100 py-2">
-					{% endif %}
 
 					<div class="card-body">
 						<div class="row no-gutters align-items-center">
@@ -72,6 +67,11 @@
 									Budget Tracker
 								</div>
 								<div class="row no-gutters align-items-center">
+
+									{% if not CardData["BudgetPercentage"] %}
+									<div>Budget is not set up. Please set <a href="/customize">here</a></div>
+
+									{% else %}
 									<div class="col-auto">
 										<div
 											class="h5 mb-0 mr-3 font-weight-bold text-gray-800"
@@ -91,6 +91,7 @@
 											></div>
 										</div>
 									</div>
+									{% endif %}
 								</div>
 							</div>
 							<div class="col-auto">
@@ -186,7 +187,8 @@
 		<script src="{{ url_for('static',filename='js/chart.min.js') }}"></script>
 		<script type="text/javascript">
 
-			document.getElementById("BudgetPercentage").style.width = {{ CardData["BudgetPercentage"] }}+"%";
+			
+					// document.getElementById("BudgetPercentage").style.width = {{ CardData["BudgetPercentage"] }}+"%";
 			      // Area Chart Code
 			      var ctx = document.getElementById("myAreaChart");
 			      var myLineChart = new Chart(ctx, {

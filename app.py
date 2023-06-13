@@ -132,8 +132,8 @@ def dashboard():
 
     result = get_spent_and_budget(user_email)
     total_spent = result["total_expense"]
-    budget = result["budget"] if result["budget"] > 0 else 1
-
+    budget = result["budget"]
+    budget_percentage = total_spent/budget*100 if budget > 0 else None
     user_count = get_user_count()
 
     month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -141,9 +141,10 @@ def dashboard():
     CardData = {
         "MonthlyExpense": total_spent,
         "AnnualExpense": sum(Annual[1]),
-        "BudgetPercentage": total_spent/budget*100,
+        "BudgetPercentage": budget_percentage,
         "UserCount": user_count,
     }
+
     Month_vice_data = [month_names[i-1] for i in Annual[0]]
 
     GraphData = {
