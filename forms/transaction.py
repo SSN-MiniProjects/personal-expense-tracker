@@ -18,7 +18,7 @@ class Transaction(FlaskForm):
                            InputRequired()])
     datestamp = DateField('Start Date', format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
-    note = StringField(validators = [Length(min=1, max=20)], render_kw={"placeholder": "Note"})
+    note = StringField(render_kw={"placeholder": "Note"})
     submit = SubmitField('Submit')
 
 
