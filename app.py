@@ -54,6 +54,8 @@ from utilities.visualisations import (
     get_month_graph_data, get_year_graph_data, get_category_graph_data
 )
 
+import hashlib
+
 from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
@@ -107,8 +109,9 @@ def login():
     error = None
     if form.validate_on_submit():
         user = get_user_by_email(form.email.data)
+        hashedPassword = hashlib.sha256(form.password.data.encode('utf-8')).hexdigest()
         if user is not None:
-            if user["password"] == form.password.data:
+            if user["password"] == hashedPassword:
                 usr_obj = SessionUser(user["id"], user["email"])
                 login_user(usr_obj)
                 resp = make_response(redirect(url_for('home')))

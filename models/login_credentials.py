@@ -2,9 +2,12 @@ from config.db import (
     connect_db
 )
 
-def add_user_credential(email, password):
+import hashlib
+
+def add_user_credential(email, given_password):
     conn = connect_db()
     cursor = conn.cursor()
+    password = hashlib.sha256(given_password.encode('utf-8')).hexdigest()
     query = 'INSERT INTO user_credentials (email, password) VALUES (%s, %s)'
     param = (email, password)
     res = cursor.execute(query,param)
