@@ -3,6 +3,21 @@
   {% set email = request.cookies.get('email') %}
   <br />
   {% set res = fetch_user_transactions(email) %}
+  <h3>Filter By</h3>
+  <form method="get" id="Search">
+  <label for="options">Select an option:</label>
+  <select name = "options" id="options" onchange="handleOptionChange()">
+    <option value="dates_between">Dates</option>
+    <option value="amounts_range">Amount</option>
+    <option value="mode">Mode</option>
+  </select>
+  <div id="content"></div>
+  <button type="submit">Filter</button>
+</form>
+
+
+
+
   <table class="table">
     <thead>
       <tr>

@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, flash, make_respons
 import flask
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bootstrap import Bootstrap
-from datetime import date
+from datetime import date,datetime
 from reportlab.lib import colors  
 from reportlab.lib.pagesizes import letter, inch  
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -239,7 +239,33 @@ def customize():
     
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
-    return render_template('view_transaction.html',fetch_user_transactions= get_transactions)       
+    query = request.args.get('options')
+    user_email = request.cookies.get('email')
+    temp_result = get_transactions(user_email)
+    result = []
+    if(query=='between_dates'):
+        input1 = datetime.datetime.strptime(request.args.get('input1'),"%Y-%m-%d")
+        input2 = datetime.datetime.strptime(request.args.get('input2'),"%Y-%m-%d")
+        for item in temp_result:
+            item_date =  datetime.datetime.strptime(item['datestamp'],"%Y-%m-%d")
+            if input1 <= item_date <= input2:
+                result.append(item)
+    elif(query=='amount_range'):
+        input1 = int(request.args.get('input1'))
+        input2 = int(request.args.get('input2'))
+        for item in temp_result:
+            item_amount = item['transaction']
+            if input1 <= item_amount <= input2:
+                result.append(item)
+    elif (query=='mode'):
+        input1 = request.args.get('input1')
+        for item in temp_result:
+            item_mode = item['mode']
+            if item_mode==input1:
+                result.append(item)
+
+
+    return render_template('view_transaction.html',res= result)       
 
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():

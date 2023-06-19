@@ -34,6 +34,60 @@
 			type="text/css"
 			href="{{ url_for('static',filename='style.css') }}"
 		/>
+
+		<script>
+			function handleOptionChange() { // used in view_transactions
+      var selectElement = document.getElementById('options');
+      var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+
+      var contentElement = document.getElementById('content');
+      
+      // Clear previous content
+      contentElement.innerHTML = '';
+
+      if (selectedOption === 'dates_between') {
+        var x = document.createElement("INPUT");
+		x.setAttribute("type", "date");
+
+		var y = document.createElement("INPUT");
+		y.setAttribute("type", "date");
+
+		x.setAttribute("name", "input1");
+		y.setAttribute("name", "input2");
+
+        contentElement.appendChild(x);
+        contentElement.appendChild(y);
+      } else if (selectedOption === 'amount_range') {
+		var x = document.createElement("INPUT");
+		x.setAttribute("type", "number");
+		x.setAttribute("min", 0);
+		x.setAttribute("format", "dd/mm/yyyy");
+		var y = document.createElement("INPUT");
+		y.setAttribute("type", "number");
+		y.setAttribute("min", 0);
+		y.setAttribute("format", "dd/mm/yyyy");
+
+
+		
+		x.setAttribute("name", "input1");
+		y.setAttribute("name", "input2");
+
+		contentElement.appendChild(x);
+        contentElement.appendChild(y)
+      }
+	  else if (selectedOption === 'amount_range') {
+		var x = document.createElement("INPUT");
+		x.setAttribute("type", "text");
+		x.setAttribute("name", "input1");
+		contentElement.appendChild(x);
+      }
+     
+    }
+  </script>
+
+
+
+		</script>
 	</head>
 
 	<body id="page-top">
