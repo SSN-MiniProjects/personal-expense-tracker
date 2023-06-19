@@ -137,6 +137,8 @@ def get_day_expense(email, required_date):
     param = (login_id, required_date)
     cursor.execute(query,param)
     res = cursor.fetchone()
+    if res is None:
+        return 0
     return res[0]
 
 # get specific month expense
@@ -153,6 +155,8 @@ def get_month_expense(email, required_date):
     param = (login_id, required_date, required_date)
     cursor.execute(query,param)
     res = cursor.fetchone()
+    if res is None:
+        return 0
     return res[0]
 
 
@@ -169,4 +173,6 @@ def get_year_expense(email, required_date):
     param = (login_id, required_date)
     cursor.execute(query,param)
     res = cursor.fetchone()
+    if res is None:
+        return 0
     return res[0]
