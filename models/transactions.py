@@ -44,7 +44,7 @@ def get_transactions(email):
 
 
 # get daywise expenses in a given month and given year of an user
-def get_month_expense(email,required_month_str): #use format yyyy-mm-dd
+def get_daily_expense(email,required_month_str): #use format yyyy-mm-dd
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
@@ -70,7 +70,7 @@ def get_month_expense(email,required_month_str): #use format yyyy-mm-dd
     return d
 
 # get monthwise expenses in a given year of an user
-def get_annual_expense(email, required_year_str):  # use format yyyy-mm-dd
+def get_monthly_expense(email, required_year_str):  # use format yyyy-mm-dd
 
     conn = connect_db()
     cursor = conn.cursor()
@@ -121,3 +121,52 @@ def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
     cursor.close()
     conn.close()
     return d
+
+
+# get specific day expense
+def get_day_expense(email, required_date):
+    conn = connect_db()
+    cursor = conn.cursor()
+    login_id = get_user_by_email(email)["id"]
+    query = '''
+        select sum(transaction) from 
+        public.user_transactions
+        where login_id = %s AND datestamp =  %s 
+        group by datestamp
+    '''
+    param = (login_id, required_date)
+    cursor.execute(query,param)
+    res = cursor.fetchone()
+    return res[0]
+
+# get specific month expense
+def get_month_expense(email, required_date):
+    conn = connect_db()
+    cursor = conn.cursor()
+    login_id = get_user_by_email(email)["id"]
+    query = '''select sum(transaction)
+        from 
+        public.user_transactions
+        where login_id = %s AND (date_part('month', datestamp) = extract(month from timestamp %s))
+        AND (date_part('year', datestamp) = extract(year from timestamp %s)) 
+        group by date_part('month', datestamp)'''
+    param = (login_id, required_date, required_date)
+    cursor.execute(query,param)
+    res = cursor.fetchone()
+    return res[0]
+
+
+# get specific year expense
+def get_year_expense(email, required_date):
+    conn = connect_db()
+    cursor = conn.cursor()
+    login_id = get_user_by_email(email)["id"]
+    query = '''select sum(transaction)
+        from 
+        public.user_transactions
+        where login_id = %s AND (date_part('year', datestamp) = extract(year from timestamp %s)) 
+        group by date_part('year', datestamp)'''
+    param = (login_id, required_date)
+    cursor.execute(query,param)
+    res = cursor.fetchone()
+    return res[0]
