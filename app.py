@@ -14,6 +14,8 @@ from config.db import (
     init_db
 )
 
+import humanize
+
 from models.login_credentials import (
     get_user_by_email,
     get_user_by_id,
@@ -146,16 +148,15 @@ def dashboard():
     current_month_expense = get_month_expense(user_email, date.today().strftime("%Y-%m-%d"))
     current_year_expense = get_year_expense(user_email, date.today().strftime("%Y-%m-%d"))
 
-
     month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     
     CardData = {
-        "TotalExpense": total_spent,
-        "TodayExpense" : today_expense,
-        "CurrentMonthExpense" : current_month_expense,
-        "CurrentYearExpense" : current_year_expense,
+        "TotalExpense": humanize.intcomma(total_spent),
+        "TodayExpense" : humanize.intcomma(today_expense),
+        "CurrentMonthExpense" : humanize.intcomma(current_month_expense),
+        "CurrentYearExpense" : humanize.intcomma(current_year_expense),
         "BudgetPercentage": budget_percentage,
-        "UserCount": user_count,
+        "UserCount": humanize.intcomma(user_count),
     }
 
     Month_vice_data = [month_names[i-1] for i in Monthly[0]]
