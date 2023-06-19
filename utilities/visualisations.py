@@ -1,6 +1,6 @@
 from models.transactions import (
-    get_month_expense,
-    get_annual_expense,
+    get_daily_expense,
+    get_monthly_expense,
     get_category_expense
 )
 
@@ -18,7 +18,7 @@ def get_month_graph_data(email, given_date):
     # assign initial spent to zero for all days
     data = [0]*len(labels)
 
-    result = get_month_expense(email, given_date.strftime("%Y-%m-%d"))
+    result = get_daily_expense(email, given_date.strftime("%Y-%m-%d"))
 
     # based on result from db, update the expense corresponding to its day
     for item in result:
@@ -33,7 +33,7 @@ def get_year_graph_data(email, given_date):
     labels = list(range(1,13))
     data = [0]*len(labels)
 
-    result = get_annual_expense(email, given_date.strftime("%Y-%m-%d"))
+    result = get_monthly_expense(email, given_date.strftime("%Y-%m-%d"))
     # based on result from db, update the expense corresponding to its day
     for item in result:
         data[item["month"]-1] = int(item["sum"])
