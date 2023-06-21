@@ -26,7 +26,7 @@ def get_transactions(email):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
-    query = 'SELECT transaction, mode, datestamp, note FROM user_transactions WHERE login_id = %s'
+    query = 'SELECT transaction, mode, datestamp, note, category FROM user_transactions WHERE login_id = %s'
     param = (login_id,)
     cursor.execute(query, param)
     result = cursor.fetchall()
@@ -36,7 +36,8 @@ def get_transactions(email):
             "transaction" : float(item[0]),
             "mode" : item[1],
             "datestamp" : item[2],
-            "note" : item[3]
+            "note" : item[3],
+            "category" : item[4]
         })
     cursor.close()
     conn.close()
