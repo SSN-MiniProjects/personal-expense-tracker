@@ -14,11 +14,11 @@ class Transaction(FlaskForm):
                            )
     mode = SelectField('Mode', choices=["Online","Cash"],validators=[
                            InputRequired()], render_kw={"placeholder": "Category"})
-    category = SelectField('Category', choices=["Housing","Transport","Food","Family","Medical","Debt Payment","Entertainment","Food","Other"],validators=[
+    category = SelectField('Category', choices=["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"],validators=[
                            InputRequired()])
-    datestamp = DateField('Start Date', format='%Y-%m-%d',validators=[
+    datestamp = DateField('Date of Expense',default=datetime.datetime.today,format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
-    note = StringField(render_kw={"placeholder": "Note"})
+    note = StringField()
     submit = SubmitField('Submit')
 
 
