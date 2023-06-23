@@ -1,17 +1,9 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}
-    Login
-{% endblock %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block content %}
+{% extends 'home.html' %} {% block title %} Login {% endblock %} {% block
+content %} {% import "bootstrap/wtf.html" as wtf %}
+
 <div class="container">
     {{ form.csrf_token() }}
     <p class="h1">Login</p>
-    {% if error %}
-    <div class="alert alert-danger">
-        {{ error }}
-    </div>
-    {% endif %}
 
   <br>
     {{ wtf.quick_form(form) }}
