@@ -119,7 +119,7 @@ def login():
             if user["password"] == hashedPassword:
                 usr_obj = SessionUser(user["id"], user["email"])
                 login_user(usr_obj)
-                resp = make_response(redirect(url_for('home')))
+                resp = make_response(redirect(url_for('dashboard')))
                 resp.set_cookie('email', user['email'])
                 return resp
 
@@ -169,11 +169,6 @@ def dashboard():
     return render_template('dashboard.html', GraphData = GraphData, CardData = CardData)
 
 
-@app.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
-
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
@@ -221,7 +216,7 @@ def add_new_transaction():
         note = form.note.data 
         add_transaction(user_email, transaction, mode, category, datestamp, note)
         flash("Expense added successfully", "success")
-        return redirect(url_for('home'))
+        return redirect(url_for('view_transaction'))
 
     return render_template('add_transaction.html', form = form, error = "Nil")
 
@@ -231,8 +226,6 @@ def customize():
     form = UserProfile()
     user_email = request.cookies.get('email')
     details = get_user_profile(user_email)
-    entered_budget = form.data['budget']
-    entered_phone = form.data['phone']
 
     if form.validate_on_submit():
         name = form.name.data if form.name.data != '' else details["name"]
@@ -242,11 +235,11 @@ def customize():
         alert = form.alert.data
         update_user_profile(user_email, name, budget, phone, profession, alert)
         flash("Profile updated successfully", "success")
-        return redirect(url_for('home'))
+        return redirect(url_for('customize'))
 
     return render_template('customize.html', form = form, details = details)
  
-    
+@login_required
 @app.route('/view_transaction', methods=['GET','POST'])
 def view_transaction():
     return render_template('view_transaction.html',fetch_user_transactions= get_transactions)       
@@ -269,7 +262,6 @@ def view_transaction():
 #     res = get_transactions(email)
 #     if res is None:
 #         flash("Please add transactions", "error")
-#         return redirect('home')
 
 #     for i in range(len(res)):
 #         temp = [i,res[i]["transaction"],res[i]["mode"],res[i]["datestamp"],res[i]["note"]]
