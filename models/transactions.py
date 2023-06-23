@@ -26,7 +26,7 @@ def get_transactions(email):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
-    query = 'SELECT transaction, mode, datestamp, note, category FROM user_transactions WHERE login_id = %s'
+    query = 'SELECT transaction, mode, datestamp, note, category FROM user_transactions WHERE login_id = %s order by datestamp desc'
     param = (login_id,)
     cursor.execute(query, param)
     result = cursor.fetchall()
