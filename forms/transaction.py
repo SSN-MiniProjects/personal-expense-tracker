@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, DateField, FloatField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import InputRequired, Length, ValidationError
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 import datetime
 
@@ -26,7 +26,7 @@ class Transaction(FlaskForm):
         if int(transaction.data) <= 0:
             raise ValidationError('Enter a valid amount')
     
-    def validate_date(self, field):
+    def validate_datestamp(self, field):
         if field.data > datetime.date.today():
             raise ValidationError("The date cannot be in the Future!")
 
