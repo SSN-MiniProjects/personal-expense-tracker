@@ -12,9 +12,4 @@ class Register(FlaskForm):
     password = PasswordField('Password',
                              id='password_create',
                              validators=[DataRequired()])
-    submit = SubmitField('Register')
-
-    def validate_email(self, email):
-        existing_email = get_user_by_email(email.data)
-        if existing_email is not None:
-            raise ValidationError('This email already exists!')
+    submit = SubmitField('Submit')

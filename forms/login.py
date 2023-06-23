@@ -10,4 +10,4 @@ class Login(FlaskForm):
     password = PasswordField('Password',
                              id='password_login',
                              validators=[DataRequired()])
-    submit = SubmitField('Login')
+    submit = SubmitField('Submit')
