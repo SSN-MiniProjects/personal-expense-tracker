@@ -202,8 +202,8 @@ def register():
     return render_template('register.html', form=form)
 
 
-@login_required
 @app.route('/add_transaction', methods=['GET','POST'])
+@login_required
 def add_new_transaction():
     form = Transaction()
     user_email = request.cookies.get('email')
@@ -239,8 +239,8 @@ def customize():
 
     return render_template('customize.html', form = form, details = details)
  
-@login_required
 @app.route('/view_transaction', methods=['GET','POST'])
+@login_required
 def view_transaction():
     return render_template('view_transaction.html',fetch_user_transactions= get_transactions)       
 
