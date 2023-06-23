@@ -118,17 +118,19 @@ def login():
         if user is not None:
             if user["password"] == hashedPassword:
                 usr_obj = SessionUser(user["id"], user["email"])
-                login_user(usr_obj)
-                resp = make_response(redirect(url_for('dashboard')))
+                login_user(usr_obj, remember=True)
+                next = flask.request.args.get('next')
+                resp = make_response(redirect(next or url_for('dashboard')))
                 resp.set_cookie('email', user['email'])
+                flash("Logged In","success")
                 return resp
 
             else:
-                error = "Invalid Credentials"
+                flash("Incorrect Password","error")
         else:
-            error = "There is no account registered with this email"
+            flash("Account Not Found","error")
 
-    return render_template('login.html', form=form, error = error)
+    return render_template('login.html', form=form)
 
 @app.route('/dashboard')
 @login_required
@@ -173,6 +175,7 @@ def dashboard():
 @login_required
 def logout():
     logout_user()
+    flash('Logged Out', 'success')
     resp = make_response(redirect(location=url_for('login')))
     resp.set_cookie('email', expires=0)
     return redirect(url_for('login'))
@@ -184,20 +187,25 @@ def register():
     if form.validate_on_submit():
         entered_email = form.email.data
         entered_password = form.password.data
-        resp = make_response(render_template('email_confirmation.html', email= entered_email))
-        resp.set_cookie('email', entered_email)
 
-        # insert the new user credential
-        add_user_credential(entered_email, entered_password)
+        existing_email = get_user_by_email(entered_email)
+        if existing_email is not None:
+            flash('This email already exists', 'error')
+        else:
+            resp = make_response(render_template('email_confirmation.html', email= entered_email))
+            resp.set_cookie('email', entered_email)
 
-        res = get_user_by_email(entered_email)
-        login_id = res["id"]
+            # insert the new user credential
+            add_user_credential(entered_email, entered_password)
 
-        # insert new user profile for created credential
-        add_user_profile(login_id)
-        resp = make_response(redirect(location=url_for('login')))
+            res = get_user_by_email(entered_email)
+            login_id = res["id"]
 
-        return resp
+            # insert new user profile for created credential
+            add_user_profile(login_id)
+            resp = make_response(redirect(location=url_for('login')))
+
+            return resp
 
     return render_template('register.html', form=form)
 
