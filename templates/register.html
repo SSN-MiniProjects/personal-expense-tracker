@@ -5,7 +5,7 @@ content %} {% import "bootstrap/wtf.html" as wtf %}
 	<p class="h2">Register</p>
 
 	<br />
-	{{ wtf.quick_form(form) }}
+  {{ wtf.quick_form(form, form_type="horizontal", button_map={'submit' : 'success'}) }}
 	<br />
 	<div class="alert alert-info">
 		Have an account?
