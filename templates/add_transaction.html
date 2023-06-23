@@ -1,12 +1,5 @@
 {% extends 'base.html' %} {% block content %}
 <div>
-	<div class="col-md-8">
-		{% with messages = get_flashed_messages(with_categories=true) %} {% if
-		messages %} {% for category, message in messages %}
-		<div class="alert alert-{{category}}">{{ message }}</div>
-		{% endfor %} {% endif %} {% endwith %}
-	</div>
-
 	<h3 class="text-center">Add New Expense</h3>
 
 	<div class="container">
