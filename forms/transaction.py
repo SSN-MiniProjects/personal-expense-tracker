@@ -23,7 +23,7 @@ class Transaction(FlaskForm):
 
 
     def validate_transaction(self, transaction):
-        if int(transaction.data) < 0:
+        if int(transaction.data) <= 0:
             raise ValidationError('Enter a valid amount')
     
     def validate_date(self, field):
