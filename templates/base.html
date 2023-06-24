@@ -40,11 +40,11 @@
       var selectElement = document.getElementById('options');
       var selectedOption = selectElement.options[selectElement.selectedIndex].value;
 
-      var contentElement = document.getElementById('content');
+      var contentElement = document.getElementById('filter-content');
       
       // Clear previous content
       contentElement.innerHTML = '';
-
+	console.log(selectedOption);
       if (selectedOption === 'dates_between') {
         var x = document.createElement("INPUT");
 		x.setAttribute("type", "date");
@@ -57,26 +57,37 @@
 
         contentElement.appendChild(x);
         contentElement.appendChild(y);
-      } else if (selectedOption === 'amount_range') {
+      } else if (selectedOption === 'amounts_range') {
 		var x = document.createElement("INPUT");
 		x.setAttribute("type", "number");
-		x.setAttribute("min", 0);
+		// x.setAttribute("min", 0);
 		x.setAttribute("format", "dd/mm/yyyy");
 		var y = document.createElement("INPUT");
 		y.setAttribute("type", "number");
-		y.setAttribute("min", 0);
+		// y.setAttribute("min", 0);
 		y.setAttribute("format", "dd/mm/yyyy");
 
-
-		
 		x.setAttribute("name", "input1");
 		y.setAttribute("name", "input2");
 
 		contentElement.appendChild(x);
         contentElement.appendChild(y)
       }
-	  else if (selectedOption === 'amount_range') {
-		var x = document.createElement("INPUT");
+	  else if (selectedOption === 'mode') {
+		var x = document.createElement("select");
+		var y = document.createElement("option");
+		y.setAttribute("value", "online");
+  		var t = document.createTextNode("online");
+  		y.appendChild(t);
+		x.appendChild(y);
+		
+		var y = document.createElement("option");
+		y.setAttribute("value", "offline");
+  		var t = document.createTextNode("offline");
+  		y.appendChild(t);
+		x.appendChild(y);
+		
+		
 		x.setAttribute("type", "text");
 		x.setAttribute("name", "input1");
 		contentElement.appendChild(x);
