@@ -87,10 +87,21 @@
   		y.appendChild(t);
 		x.appendChild(y);
 		
-		
+		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+		x.setAttribute("class", "form-control");
 		x.setAttribute("type", "text");
 		x.setAttribute("name", "input1");
+		var z = document.createElement('label');
+		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
+		z.innerHTML = " Available Options: ";
+		contentElement.appendChild(z);
 		contentElement.appendChild(x);
+		var z = document.createElement('input');
+		z.setAttribute("type", "submit");
+		z.setAttribute("value", "Filter");
+		z.setAttribute("class", "btn btn-primary");
+		z.setAttribute("style", "display:inline;");
+		contentElement.appendChild(z);
       }
      
     }
