@@ -253,14 +253,14 @@ def view_transaction():
     user_email = request.cookies.get('email')
     temp_result = get_transactions(user_email)
     result = []
-    if(query=='between_dates'):
+    if(query=='dates_between'):
         input1 = datetime.datetime.strptime(request.args.get('input1'),"%Y-%m-%d")
         input2 = datetime.datetime.strptime(request.args.get('input2'),"%Y-%m-%d")
         for item in temp_result:
-            item_date =  datetime.datetime.strptime(item['datestamp'],"%Y-%m-%d")
+            item_date =  datetime.datetime.strptime(str(item['datestamp']),"%Y-%m-%d")
             if input1 <= item_date <= input2:
                 result.append(item)
-    elif(query=='amount_range'):
+    elif(query=='amounts_range'):
         input1 = int(request.args.get('input1'))
         input2 = int(request.args.get('input2'))
         for item in temp_result:
@@ -271,8 +271,10 @@ def view_transaction():
         input1 = request.args.get('input1')
         for item in temp_result:
             item_mode = item['mode']
-            if item_mode==input1:
+            if item_mode.lower() == input1.lower():
                 result.append(item)
+    else:
+        result=temp_result
 
 
     return render_template('view_transaction.html',res= result)       
