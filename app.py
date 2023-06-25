@@ -38,6 +38,12 @@ from models.transactions import (
     get_year_expense
 )
 
+from models.users_events import (
+    add_user_event,
+    get_user_events,
+    get_event_by_id
+)
+
 from forms.login import (
     Login
 )
@@ -48,6 +54,10 @@ from forms.register import (
 
 from forms.profile import (
     UserProfile
+)
+
+from forms.events import (
+    UserEvent
 )
 
 from forms.transaction import (
@@ -212,21 +222,42 @@ def register():
 
 @app.route('/add_transaction', methods=['GET','POST'])
 @login_required
-def add_new_transaction():
-    form = Transaction()
+def add_new_transaction(): 
     user_email = request.cookies.get('email')
-
+    form = Transaction()
+    events = get_user_events(user_email)
+    l = [(None, None)] + [(event["id"], event["name"]) for event in events]
+    form.event.choices = l
     if form.validate_on_submit():
         transaction = form.transaction.data
         mode = form.mode.data
         category = form.category.data
         datestamp = form.datestamp.data
-        note = form.note.data 
-        add_transaction(user_email, transaction, mode, category, datestamp, note)
+        note = form.note.data
+        event = form.event.data
+        add_transaction(user_email, transaction, mode, category, datestamp, note, event)
         flash("Expense added successfully", "success")
         return redirect(url_for('view_transaction'))
 
     return render_template('add_transaction.html', form = form, error = "Nil")
+
+
+@app.route('/add_event', methods=['GET','POST'])
+@login_required
+def add_event():
+    form = UserEvent()
+    user_email = request.cookies.get('email')
+
+    if form.validate_on_submit():
+        name = form.name.data
+        budget = form.budget.data
+        add_user_event(user_email, name, budget)
+        flash("Event added successfully", "success")
+        return redirect(url_for('event_list'))
+
+    return render_template('add_event.html', form = form)
+
+
 
 @app.route('/customize', methods=['GET','POST'])
 @login_required
@@ -288,6 +319,21 @@ def view_transaction():
 
 
     return render_template('view_transaction.html',res= result, filters = filters)       
+
+
+@app.route('/event_list', methods=['GET'])
+@login_required 
+def event_list():
+    user_email = request.cookies.get('email')
+    events = get_user_events(user_email)
+    return render_template("event_list.html", events = events)
+
+@app.route('/event_list/<int:id>', methods=['GET'])
+@login_required 
+def get_specific_event(id):
+    user_email = request.cookies.get('email')
+    event_details = get_event_by_id(id)[0]
+    return render_template("view_event.html", event = event_details)
 
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():

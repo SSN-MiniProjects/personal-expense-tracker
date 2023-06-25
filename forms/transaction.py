@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.form import _Auto
 from wtforms import StringField, SubmitField, SelectField, DateField, FloatField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -19,8 +20,8 @@ class Transaction(FlaskForm):
     datestamp = DateField('Date of Expense',default=datetime.datetime.today,format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
     note = StringField()
+    event = SelectField()
     submit = SubmitField('Submit')
-
 
     def validate_transaction(self, transaction):
         if int(transaction.data) <= 0:

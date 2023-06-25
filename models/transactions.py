@@ -7,16 +7,27 @@ from models.login_credentials import (
 )
 
 
-def add_transaction(email, transaction, mode, category, datestamp, note):
+def add_transaction(email, transaction, mode, category, datestamp, note, event):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
-    query = 'INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note) VALUES (%s,%s,%s,%s,%s,%s)'
-    param = (login_id, transaction, mode, category, datestamp, note)
-    cursor.execute(query, param)
+    
+    if event == "None":
+        query = 'INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note) VALUES (%s,%s,%s,%s,%s,%s)'
+        param = (login_id, transaction, mode, category, datestamp, note)
+        cursor.execute(query, param)
+
+    else:
+        query = 'INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note, event_id) VALUES (%s,%s,%s,%s,%s,%s,%s)'
+        param = (login_id, transaction, mode, category, datestamp, note, event)
+        cursor.execute(query, param)
+        query = 'update user_events set spent=spent+%s where id=%s'
+        param = (transaction, event,)
+        cursor.execute(query, param)
+    
     query = 'update user_profiles set total_spent=total_spent+%s where login_id=%s;'
     param = (transaction, login_id,)
-    cursor.execute(query, param)
+    cursor.execute(query, param)    
     conn.commit()
     cursor.close()
     conn.close()
