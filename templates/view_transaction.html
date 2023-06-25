@@ -2,8 +2,8 @@
 <div class="container">
 
 	<form method="get" id="Search" style="padding: 2;margin:2">
-		<h3 style="width:fit-content;display:inline">Filter By:</h3>
-		<select class="form-control" style="width:fit-content;display:inline" placeholder="filter-options"
+		<h3 style="width:fit-content;display:inline;">Filter By:</h3>
+		<select class="form-control" style="width:fit-content;display:block;margin:10px" placeholder="filter-options"
 			name="options" id="options" onchange="handleOptionChange()">
 			<option disabled selected value> -- select an option -- </option>
 			<option value="mode">Mode</option>
@@ -57,7 +57,7 @@
 			submit_element.setAttribute("type", "submit");
 			submit_element.setAttribute("value", "Filter");
 			submit_element.setAttribute("class", "btn btn-primary");
-			submit_element.setAttribute("style", "display:inline;");
+			submit_element.setAttribute("style", "display:inline;margin-left:10px");
 
 			// Clear previous content
 			contentElement.innerHTML = '';
@@ -76,11 +76,11 @@
 				y.setAttribute("class", "form-control")
 				y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
 				y.setAttribute("placeholder", "To Date");
-
-				contentElement.appendChild(x);
-				contentElement.appendChild(y);
 				label_element.innerHTML = 'Choose Range'
 				contentElement.appendChild(label_element);
+				contentElement.appendChild(x);
+				contentElement.appendChild(y);
+				
 				contentElement.appendChild(submit_element);
 
 			}
@@ -90,7 +90,7 @@
 				x.setAttribute("name", "input1");
 				x.setAttribute("type", "number");
 				x.setAttribute("class", "form-control")
-				x.setAttribute("style", "width:fit-content;display:inline;margin:5px");
+				x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
 				x.setAttribute("placeholder", "Min Amount");
 				x.setAttribute("min", 0);
 
@@ -99,14 +99,14 @@
 				y.setAttribute("min", 0);
 				y.setAttribute("name", "input2");
 				y.setAttribute("class", "form-control")
-				y.setAttribute("style", "width:fit-content;display:inline;margin:5px");
+				y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
 				y.setAttribute("placeholder", "Max Amount");
-
+				label_element.innerHTML = "Choose Range";
+				contentElement.appendChild(label_element);
 				contentElement.appendChild(x);
 				contentElement.appendChild(y);
 
-				label_element.innerHTML = "Choose Range";
-				contentElement.appendChild(label_element);
+				
 				contentElement.appendChild(submit_element);
 
 			}
@@ -132,11 +132,12 @@
 				option_element.appendChild(text_node)
 				select_element.appendChild(option_element)
 			}
+			label_element.innerHTML = "Available Options";
+			contentElement.appendChild(label_element);
 
 			contentElement.appendChild(select_element);
 
-			label_element.innerHTML = "Available Options";
-			contentElement.appendChild(label_element);
+			
 
 			contentElement.appendChild(submit_element);
 		}
