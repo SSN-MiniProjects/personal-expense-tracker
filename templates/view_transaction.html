@@ -1,46 +1,148 @@
 {% extends 'user_base.html' %} {% block content %}
 <div class="container">
 
-  <form method="get" id="Search" style="padding: 2;margin:2">
-  <h3 style="width:fit-content;display:inline">Filter By:</h3>
-  <select class="form-control" style="width:fit-content;display:inline" placeholder="filter-options" name = "options" id="options" onchange="handleOptionChange()">
-    <option disabled selected value> -- select an option -- </option>
-    <option value="mode">Mode</option>
-    <option value="dates_between">Dates</option>
-    <option value="amounts_range">Amount</option>
-  </select>
-  <div id="filter-content" style="display:inline;">
-  </div>
-  
-</form>
-</br>
+	<form method="get" id="Search" style="padding: 2;margin:2">
+		<h3 style="width:fit-content;display:inline">Filter By:</h3>
+		<select class="form-control" style="width:fit-content;display:inline" placeholder="filter-options"
+			name="options" id="options" onchange="handleOptionChange()">
+			<option disabled selected value> -- select an option -- </option>
+			<option value="mode">Mode</option>
+			<option value="category">Category</option>
+			<option value="dates_between">Dates</option>
+			<option value="amounts_range">Amount</option>
+		</select>
+		<div id="filter-content" style="display:inline;">
+		</div>
 
+	</form>
+	</br>
 
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">S.No</th>
+				<th scope="col">Amount</th>
+				<th scope="col">Mode</th>
+				<th scope="col">Category</th>
+				<th scope="col">Date</th>
+				<th scope="col">Note</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in range(res|length) %}
+			<tr>
+				<th scope="row">{{ i+1 }}</th>
+				<td>{{ res[i]["transaction"] }}</td>
+				<td>{{ res[i]["mode"] }}</td>
+				<td>{{ res[i]["category"] }}</td>
+				<td>{{ res[i]["datestamp"] }}</td>
+				<td>{{ res[i]["note"] }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 
+	{% block javascript %}
+	<script>
+		function handleOptionChange() {
+			var selectElement = document.getElementById('options');
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">S.No</th>
-        <th scope="col">Amount</th>
-        <th scope="col">Mode</th>
-        <th scope="col">Category</th>
-        <th scope="col">Date</th>
-        <th scope="col">Note</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for i in range(res|length) %}
-      <tr>
-        <th scope="row">{{ i+1 }}</th>
-        <td>{{ res[i]["transaction"] }}</td>
-        <td>{{ res[i]["mode"] }}</td>
-        <td>{{ res[i]["category"] }}</td>
-        <td>{{ res[i]["datestamp"] }}</td>
-        <td>{{ res[i]["note"] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+			var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+
+			var contentElement = document.getElementById('filter-content');
+
+			var label_element = document.createElement('label');
+
+			var submit_element = document.createElement('input');
+			submit_element.setAttribute("type", "submit");
+			submit_element.setAttribute("value", "Filter");
+			submit_element.setAttribute("class", "btn btn-primary");
+			submit_element.setAttribute("style", "display:inline;");
+
+			// Clear previous content
+			contentElement.innerHTML = '';
+
+			if (selectedOption === 'dates_between') {
+				var x = document.createElement("INPUT");
+				x.setAttribute("type", "date");
+				x.setAttribute("name", "input1");
+				x.setAttribute("class", "form-control")
+				x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+				x.setAttribute("placeholder", "From Date");
+
+				var y = document.createElement("INPUT");
+				y.setAttribute("type", "date");
+				y.setAttribute("name", "input2");
+				y.setAttribute("class", "form-control")
+				y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+				y.setAttribute("placeholder", "To Date");
+
+				contentElement.appendChild(x);
+				contentElement.appendChild(y);
+				label_element.innerHTML = 'Choose Range'
+				contentElement.appendChild(label_element);
+				contentElement.appendChild(submit_element);
+
+			}
+
+			else if (selectedOption === 'amounts_range') {
+				var x = document.createElement("INPUT");
+				x.setAttribute("name", "input1");
+				x.setAttribute("type", "number");
+				x.setAttribute("class", "form-control")
+				x.setAttribute("style", "width:fit-content;display:inline;margin:5px");
+				x.setAttribute("placeholder", "Min Amount");
+				x.setAttribute("min", 0);
+
+				var y = document.createElement("INPUT");
+				y.setAttribute("type", "number");
+				y.setAttribute("min", 0);
+				y.setAttribute("name", "input2");
+				y.setAttribute("class", "form-control")
+				y.setAttribute("style", "width:fit-content;display:inline;margin:5px");
+				y.setAttribute("placeholder", "Max Amount");
+
+				contentElement.appendChild(x);
+				contentElement.appendChild(y);
+
+				label_element.innerHTML = "Choose Range";
+				contentElement.appendChild(label_element);
+				contentElement.appendChild(submit_element);
+
+			}
+			else if (selectedOption === 'mode' || selectedOption == 'category') {
+				var options = ''
+			if (selectedOption === 'mode'){
+				options = {{ filters['mode'] | tojson}}
+			}
+			else{
+				options = {{ filters['category'] | tojson}}
+			}
+			console.log(options)
+
+			var select_element = document.createElement("select");
+			select_element.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+			select_element.setAttribute("class", "form-control");
+			select_element.setAttribute("type", "text");
+			select_element.setAttribute("name", "input1");
+			for (var i = 0; i < options.length; i++) {
+				var option_element = document.createElement("option");
+				option_element.setAttribute("value", options[i]);
+				var text_node = document.createTextNode(options[i]);
+				option_element.appendChild(text_node)
+				select_element.appendChild(option_element)
+			}
+
+			contentElement.appendChild(select_element);
+
+			label_element.innerHTML = "Available Options";
+			contentElement.appendChild(label_element);
+
+			contentElement.appendChild(submit_element);
+		}
+
+		}
+	</script>
+	{% endblock %}
 </div>
 {% endblock %}

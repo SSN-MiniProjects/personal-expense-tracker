@@ -251,6 +251,11 @@ def customize():
 @login_required
 def view_transaction():
     query = request.args.get('options')
+    filters = {
+        "category" : ["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"],
+        "mode" : ['Online', 'Cash']
+    }
+    
     user_email = request.cookies.get('email')
     temp_result = get_transactions(user_email)
     result = []
@@ -271,14 +276,18 @@ def view_transaction():
     elif (query=='mode'):
         input1 = request.args.get('input1')
         for item in temp_result:
-            item_mode = item['mode']
-            if item_mode.lower() == input1.lower():
+            if item['mode'] == input1:           
+                result.append(item)
+    elif (query=='category'):
+        input1 = request.args.get('input1')
+        for item in temp_result:
+            if item['category'] == input1:           
                 result.append(item)
     else:
         result=temp_result
 
 
-    return render_template('view_transaction.html',res= result)       
+    return render_template('view_transaction.html',res= result, filters = filters)       
 
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():
