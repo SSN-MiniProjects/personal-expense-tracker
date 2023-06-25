@@ -62,7 +62,11 @@
 		y.setAttribute("type", "date");
 
 		x.setAttribute("name", "input1");
+		x.setAttribute("class", "form-control")
 		y.setAttribute("name", "input2");
+		y.setAttribute("class", "form-control")
+
+
 
 		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
 		y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
@@ -71,13 +75,14 @@
 		// x.setAttribute("class", "flatpickr flatpickr-input");
 		// y.setAttribute("class", "form-control datepicker");
 
-		x.setAttribute("placeholder", "Please select from-date");
-		y.setAttribute("placeholder", "Please select to-date");
+		x.setAttribute("placeholder", "From Date");
+		y.setAttribute("placeholder", "To Date");
 
 		
 		var z = document.createElement('label');
-		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
-		z.innerHTML = " Choose Range: ";
+		// z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
+		// Z.setAttribute("class","form-control-label")
+		z.innerHTML = "Choose Range: ";
 		contentElement.appendChild(z);
 
 		contentElement.appendChild(x);
@@ -102,22 +107,24 @@
 		y.setAttribute("min", 0);
 
 		x.setAttribute("name", "input1");
+		x.setAttribute("class", "form-control")
 		y.setAttribute("name", "input2");
+		y.setAttribute("class", "form-control")
 
-		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
-		y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+		x.setAttribute("style", "width:fit-content;display:inline;margin:5px");
+		y.setAttribute("style", "width:fit-content;display:inline;margin:5px");
 
 
 		// x.setAttribute("class", "flatpickr flatpickr-input");
 		// y.setAttribute("class", "form-control datepicker");
 
-		x.setAttribute("placeholder", "Please select min-amount");
-		y.setAttribute("placeholder", "Please select max-amount");
+		x.setAttribute("placeholder", "Min Amount");
+		y.setAttribute("placeholder", "Max Amount");
 
 		
 		var z = document.createElement('label');
 		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
-		z.innerHTML = " Choose Range: ";
+		z.innerHTML = "Choose Range: ";
 		contentElement.appendChild(z);
 
 		contentElement.appendChild(x);
@@ -141,8 +148,8 @@
 		x.appendChild(y);
 		
 		var y = document.createElement("option");
-		y.setAttribute("value", "offline");
-  		var t = document.createTextNode("offline");
+		y.setAttribute("value", "cash");
+  		var t = document.createTextNode("cash");
   		y.appendChild(t);
 		x.appendChild(y);
 		
