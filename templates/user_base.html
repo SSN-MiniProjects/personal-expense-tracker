@@ -43,6 +43,132 @@
 			type="text/css"
 			href="{{ url_for('static',filename='style.css') }}"
 		/>
+
+		<script>
+			function handleOptionChange() { // used in view_transactions
+      var selectElement = document.getElementById('options');
+      var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+
+      var contentElement = document.getElementById('filter-content');
+      
+      // Clear previous content
+      contentElement.innerHTML = '';
+	console.log(selectedOption);
+      if (selectedOption === 'dates_between') {
+        var x = document.createElement("INPUT");
+		x.setAttribute("type", "date");
+
+		var y = document.createElement("INPUT");
+		y.setAttribute("type", "date");
+
+		x.setAttribute("name", "input1");
+		y.setAttribute("name", "input2");
+
+		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+		y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+
+
+		// x.setAttribute("class", "flatpickr flatpickr-input");
+		// y.setAttribute("class", "form-control datepicker");
+
+		x.setAttribute("placeholder", "Please select from-date");
+		y.setAttribute("placeholder", "Please select to-date");
+
+		
+		var z = document.createElement('label');
+		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
+		z.innerHTML = " Choose Range: ";
+		contentElement.appendChild(z);
+
+		contentElement.appendChild(x);
+        contentElement.appendChild(y);
+
+		var z = document.createElement('input');
+		z.setAttribute("type", "submit");
+		z.setAttribute("value", "Filter");
+		z.setAttribute("class", "btn btn-primary");
+		z.setAttribute("style", "display:inline;");
+		contentElement.appendChild(z);
+
+
+
+      } else if (selectedOption === 'amounts_range') {
+		var x = document.createElement("INPUT");
+		x.setAttribute("type", "number");
+		x.setAttribute("min", 0);
+
+		var y = document.createElement("INPUT");
+		y.setAttribute("type", "number");
+		y.setAttribute("min", 0);
+
+		x.setAttribute("name", "input1");
+		y.setAttribute("name", "input2");
+
+		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+		y.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+
+
+		// x.setAttribute("class", "flatpickr flatpickr-input");
+		// y.setAttribute("class", "form-control datepicker");
+
+		x.setAttribute("placeholder", "Please select min-amount");
+		y.setAttribute("placeholder", "Please select max-amount");
+
+		
+		var z = document.createElement('label');
+		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
+		z.innerHTML = " Choose Range: ";
+		contentElement.appendChild(z);
+
+		contentElement.appendChild(x);
+        contentElement.appendChild(y);
+
+		var z = document.createElement('input');
+		z.setAttribute("type", "submit");
+		z.setAttribute("value", "Filter");
+		z.setAttribute("class", "btn btn-primary");
+		z.setAttribute("style", "display:inline;");
+		contentElement.appendChild(z);
+
+		
+      }
+	  else if (selectedOption === 'mode') {
+		var x = document.createElement("select");
+		var y = document.createElement("option");
+		y.setAttribute("value", "online");
+  		var t = document.createTextNode("online");
+  		y.appendChild(t);
+		x.appendChild(y);
+		
+		var y = document.createElement("option");
+		y.setAttribute("value", "offline");
+  		var t = document.createTextNode("offline");
+  		y.appendChild(t);
+		x.appendChild(y);
+		
+		x.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+		x.setAttribute("class", "form-control");
+		x.setAttribute("type", "text");
+		x.setAttribute("name", "input1");
+		var z = document.createElement('label');
+		z.setAttribute("style", "padding-left: 20px;paddiing-right:10px;");
+		z.innerHTML = " Available Options: ";
+		contentElement.appendChild(z);
+		contentElement.appendChild(x);
+		var z = document.createElement('input');
+		z.setAttribute("type", "submit");
+		z.setAttribute("value", "Filter");
+		z.setAttribute("class", "btn btn-primary");
+		z.setAttribute("style", "display:inline;");
+		contentElement.appendChild(z);
+      }
+     
+    }
+  </script>
+
+
+
+		</script>
 	</head>
 
 	<body id="page-top">
@@ -221,6 +347,8 @@
 			integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
 			crossorigin="anonymous"
 		></script>
+
+		
 
 		<script defer src="/_vercel/insights/script.js"></script>
 
