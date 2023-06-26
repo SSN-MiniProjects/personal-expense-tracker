@@ -55,3 +55,13 @@ def get_event_by_id(id):
     cursor.close()
     conn.close()
     return d
+
+def update_event_by_id(event_id, name, budget):
+    conn = connect_db()
+    cursor = conn.cursor()
+    query = 'update user_events set name=%s,budget=%s where id=%s'
+    param = (name, budget, event_id)
+    cursor.execute(query, param)
+    conn.commit()
+    cursor.close()
+    conn.close()

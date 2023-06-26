@@ -1,0 +1,13 @@
+{% extends 'user_base.html' %} {% import "bootstrap/wtf.html" as wtf %} {% block
+content %}
+<div class="container">
+	{{ form.csrf_token() }}
+	<p class="h1">Update Event</p>
+
+	<br />
+	{{ wtf.quick_form(form, form_type="horizontal", button_map={'submit' :
+	'success'}) }}
+	<br />
+</div>
+
+{% endblock %}

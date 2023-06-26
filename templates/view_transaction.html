@@ -24,8 +24,10 @@
 				<th scope="col">Amount</th>
 				<th scope="col">Mode</th>
 				<th scope="col">Category</th>
+				<th scope="col">Event</th>
 				<th scope="col">Date</th>
 				<th scope="col">Note</th>
+				<th scope="col">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -35,8 +37,18 @@
 				<td>{{ res[i]["transaction"] }}</td>
 				<td>{{ res[i]["mode"] }}</td>
 				<td>{{ res[i]["category"] }}</td>
+				<td>{{ res[i]["event"] }}</td>
 				<td>{{ res[i]["datestamp"] }}</td>
 				<td>{{ res[i]["note"] }}</td>
+				<td>
+					<a href="{{'/view_transaction/%s/update'%res[i]['id']}}">
+						<i class="bi bi-pencil-square"></i>
+					</a>
+
+					<a href="{{'/view_transaction/%s/delete'%res[i]['id']}}">
+						<i class="bi bi-trash3-fill"></i>
+					</a>
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>

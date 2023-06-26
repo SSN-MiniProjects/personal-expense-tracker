@@ -35,13 +35,18 @@ from models.transactions import (
     get_transactions,
     get_day_expense,
     get_month_expense,
-    get_year_expense
+    get_year_expense,
+    get_transactions_by_event,
+    get_transaction_by_id,
+    update_transaction_by_id,
+    delete_transaction_by_id
 )
 
 from models.users_events import (
     add_user_event,
     get_user_events,
-    get_event_by_id
+    get_event_by_id,
+    update_event_by_id
 )
 
 from forms.login import (
@@ -333,8 +338,72 @@ def event_list():
 def get_specific_event(id):
     user_email = request.cookies.get('email')
     event_details = get_event_by_id(id)[0]
-    return render_template("view_event.html", event = event_details)
+    event_transactions = get_transactions_by_event(id)
+    return render_template("view_event.html", event = event_details, transactions=event_transactions)
 
+
+@app.route('/event_list/<int:id>/update', methods=['GET', 'POST'])
+@login_required 
+def update_event(id):
+    event_details = get_event_by_id(id)[0]
+    form = UserEvent(name = event_details["name"], budget = event_details["budget"])
+    
+    if form.validate_on_submit():
+        name = form.name.data
+        budget = form.budget.data
+        print(name, budget)
+        update_event_by_id(event_details['id'], name, budget)
+        flash(event_details["name"] + " updated !", "success")
+        return redirect(url_for('event_list'))
+
+    return render_template('update_event.html', form = form)
+
+@app.route('/view_transaction/<int:id>/update', methods=['GET', 'POST'])
+@login_required 
+def update_specific_transaction(id):
+    data = get_transaction_by_id(id)[0]
+    user_email = request.cookies.get('email')
+    form = Transaction(
+        transaction = data["transaction"], 
+        mode = data["mode"],
+        category = data["category"],
+        datestamp = data["datestamp"],
+        note = data["note"],
+        )
+    user_events = get_user_events(user_email)
+    l = [(None, None)]
+    for event in user_events:
+        pair = (event["id"], event["name"])
+        if event["id"] == data["event"]:
+            l.insert(0, pair)
+        else:
+            l.append(pair)
+    
+    form.event.choices = l
+    
+    if form.validate_on_submit():
+        transaction = form.transaction.data
+        mode = form.mode.data
+        category = form.category.data
+        datestamp = form.datestamp.data
+        note = form.note.data
+        event = form.event.data
+        update_transaction_by_id(data['id'], user_email,transaction, mode, category, datestamp, note, event)
+        flash("Transaction updated", "success")
+        return redirect(url_for('event_list'))
+
+    return render_template('update_transaction.html', form = form)
+
+
+
+@app.route('/view_transaction/<int:id>/delete', methods=['GET', 'POST'])
+@login_required 
+def delete_specific_transaction(id):
+    user_email = request.cookies.get('email')
+    delete_transaction_by_id(id, user_email)
+    flash("Transaction deleted", "success")
+    return redirect(url_for('view_transaction'))
+ 
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():
 

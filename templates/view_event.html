@@ -2,7 +2,23 @@
 
 <div class="container-fluid">
 	<!-- Page Heading -->
-	<h1 class="h4 mb-2 text-gray-800 m-3">Event - {{ event["name"] }}</h1>
+
+	<div class="row">
+		<div class="col-xl-3 col-md-6 mb-5">
+			<h1 class="h4 mb-2 text-gray-800 text-center mt-1"> Event - {{ event["name"] }}</h1>
+		</div>
+		<div class="col-xl-3 col-md-6 mb-5">
+			<div class="btn btn-link">
+				<a class="text-primary" href="{{ '/event_list/%s/update'%event['id'] }}">
+					Update
+				</a>
+				
+				<i class="bi bi-pencil-square"></i>
+			</div>
+		</div>
+	</div>
+	
+	
 	<!-- Content Row -->
 
 	<div class="row">
@@ -17,10 +33,7 @@
 							>
 								Budget Tracker
 							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-800">
-								{{event["spent"]/event["budget"]*100}}%
-							</div>
-							<div class="row no-gutters align-items-center mt-3">
+							<div class="row no-gutters align-items-center mt-3 mb-2">
 								<div class="col">
 									<div class="progress progress-sm mr-2">
 										<div
@@ -29,17 +42,17 @@
 											role="progressbar"
 											aria-valuemin="0"
 											aria-valuemax="100"
-                                            style="width: {{event["spent"]/event["budget"]*100}}%;"
+											style="width: {{event["spent"]/event["budget"]*100}}%;"
 										></div>
-									</div>
+									
 								</div>
 							</div>
-						</div>
-
-						<div class="col-auto">
-							<i
-								class="fas fa-dollar-sign fa-2x text-gray-300"
-							></i>
+							
+							</div>
+								<div class="h5 mb-0 font-weight-bold text-center text-gray-800">
+									{{event["spent"]/event["budget"]*100}}%
+								</div>
+							
 						</div>
 					</div>
 				</div>
@@ -47,21 +60,19 @@
 		</div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-			<div class="card border-left-primary shadow h-100 py-2">
+			<div class="card border-left-success shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
 						<div class="col mr-2">
 							<div
-								class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+								class="text-xs font-weight-bold text-success text-uppercase mt-1"
 							>
 								Total Spent
 							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-800">
-								{{event["spent"]}}
+							<div class="h5 mb-0 mt-3 font-weight-bold text-gray-800">
+								₹ {{ event["spent"] }}
 							</div>
-							
 						</div>
-
 						<div class="col-auto">
 							<i
 								class="fas fa-dollar-sign fa-2x text-gray-300"
@@ -73,17 +84,17 @@
 		</div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-			<div class="card border-left-primary shadow h-100 py-2">
+			<div class="card border-left-success shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
 						<div class="col mr-2">
 							<div
-								class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+								class="text-xs font-weight-bold text-success text-uppercase mt-1"
 							>
 								Budget
 							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-800">
-								{{event["budget"]}}
+							<div class="h5 mb-0 mt-3 font-weight-bold text-gray-800">
+								₹ {{event["budget"]}}
 							</div>
 							
 						</div>
@@ -98,6 +109,42 @@
 			</div>
 		</div>
 	</div>
+
+	<h1 class="h4 mb-2 text-gray-800 m-3">Expenses</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">S.No</th>
+				<th scope="col">Amount</th>
+				<th scope="col">Mode</th>
+				<th scope="col">Category</th>
+				<th scope="col">Date</th>
+				<th scope="col">Note</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in range(transactions|length) %}
+			<tr>
+				<th scope="row">{{ i+1 }}</th>
+				<td>{{ transactions[i]["transaction"] }}</td>
+				<td>{{ transactions[i]["mode"] }}</td>
+				<td>{{ transactions[i]["category"] }}</td>
+				<td>{{ transactions[i]["datestamp"] }}</td>
+				<td>{{ transactions[i]["note"] }}</td>
+				<td>
+					<a href="{{'/view_transaction/%s/update'%transactions[i]['id']}}">
+						<i class="bi bi-pencil-square"></i>
+					</a>
+					<a href="{{'/view_transaction/%s/delete'%transactions[i]['id']}}">
+						<i class="bi bi-trash3-fill"></i>
+					</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
 
 {% endblock %}
