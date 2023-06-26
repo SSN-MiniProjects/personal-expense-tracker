@@ -12,17 +12,23 @@
 			<div class="card border-left-primary shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
+						
+
 						<div class="col mr-2">
 							<div
 								class="text-xs font-weight-bold text-primary text-uppercase mb-1"
 							>
-                            <a href="{{ '/event_list/%s'%events[i]['id'] }}">
-								{{ events[i]["name"] }}</a>
+							<a href="{{ '/event_list/%s'%events[i]['id']}}" class="btn btn-link stretched-link">
+								{{ events[i]["name"] }}
+							</a>
+                            
+								
 							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-800">
+
+							<div class="h5 mb-0 font-weight-bold text-gray-800 ml-3">
 								{{events[i]["spent"]/events[i]["budget"]*100}}%
 							</div>
-							<div class="row no-gutters align-items-center mt-3">
+							<div class="row no-gutters align-items-center mt-3 ml-3">
 								<div class="col">
 									<div class="progress progress-sm mr-2">
 										<div
