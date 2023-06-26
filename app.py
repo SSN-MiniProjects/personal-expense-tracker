@@ -228,11 +228,19 @@ def register():
 
 @app.route('/add_transaction', methods=['GET','POST'])
 @login_required
-def add_new_transaction(): 
+def add_new_transaction():
+    event_id = request.args.get('event_id') 
     user_email = request.cookies.get('email')
     form = Transaction()
     events = get_user_events(user_email)
-    l = [(None, None)] + [(event["id"], event["name"]) for event in events]
+
+    l = [(None, None)]
+    for event in events:
+        pair = (event["id"], event["name"])  
+        if str(event["id"]) == event_id:
+            l.insert(0, pair)
+        else:
+            l.append(pair)
     form.event.choices = l
     if form.validate_on_submit():
         transaction = form.transaction.data
