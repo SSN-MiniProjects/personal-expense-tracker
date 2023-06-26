@@ -5,16 +5,17 @@
 
 	<div class="row">
 		<div class="col-xl-3 col-md-6 mb-5">
-			<h1 class="h4 mb-2 text-gray-800 text-center mt-1"> Event - {{ event["name"] }}</h1>
+			<div class="h4 mb-2 text-gray-800 text-center mt-1"> Event - {{ event["name"] }}</div>
 		</div>
 		<div class="col-xl-3 col-md-6 mb-5">
-			<div class="btn btn-link">
-				<a class="text-primary" href="{{ '/event_list/%s/update'%event['id'] }}">
-					Update
-				</a>
+				<button class="btn btn-primary" onclick="updateEvent({{event['id']}})">
+					<i class="bi bi-pencil-square"></i>
+				</button>
+
+				<button class="btn btn-danger" onclick="deleteEvent({{event['id']}})">
+					<i class="bi bi-trash3-fill"></i>
+				</button>
 				
-				<i class="bi bi-pencil-square"></i>
-			</div>
 		</div>
 	</div>
 	
@@ -134,17 +135,65 @@
 				<td>{{ transactions[i]["datestamp"] }}</td>
 				<td>{{ transactions[i]["note"] }}</td>
 				<td>
-					<a href="{{'/view_transaction/%s/update'%transactions[i]['id']}}">
+					<button class="btn btn-primary" onclick="handleEditTransaction({{transactions[i]['id']}})">
 						<i class="bi bi-pencil-square"></i>
-					</a>
-					<a href="{{'/view_transaction/%s/delete'%transactions[i]['id']}}">
+					</button>
+
+					<button class="btn btn-danger" onclick="handleDeleteTransaction({{transactions[i]['id']}})">
 						<i class="bi bi-trash3-fill"></i>
-					</a>
+					</button>
 				</td>
 			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
+
+	{% block javascript %}
+	<script>
+
+		function updateEvent(id){
+			window.location.href = '/event_list/'+id+'/update'
+		}
+
+		function deleteEvent(id){
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "This will delete all transactions created for this event!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.replace('/event_list/'+id+'/delete')				
+				
+				}
+				})
+		}
+		
+		function handleDeleteTransaction(id){
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.replace('/view_transaction/'+id+'/delete')				
+				
+				}
+				})
+		}
+
+		function handleEditTransaction(id){
+			window.location.href = '/view_transaction/'+id+'/update'
+		}
+	</script>
+	{% endblock %}
 </div>
 
 {% endblock %}
