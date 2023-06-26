@@ -65,3 +65,21 @@ def update_event_by_id(event_id, name, budget):
     conn.commit()
     cursor.close()
     conn.close()
+
+def delete_event_by_id(event_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    query = 'delete from user_events where id=%s'
+    param = (event_id, )
+    cursor.execute(query, param)
+
+
+    # delete the transactions having this event id
+    query = 'delete from user_transactions where event_id=%s'
+    param = (event_id, )
+    cursor.execute(query, param)
+
+
+    conn.commit()
+    cursor.close()
+    conn.close()
