@@ -46,7 +46,8 @@ from models.users_events import (
     add_user_event,
     get_user_events,
     get_event_by_id,
-    update_event_by_id
+    update_event_by_id,
+    delete_event_by_id
 )
 
 from forms.login import (
@@ -267,21 +268,27 @@ def add_event():
 @app.route('/customize', methods=['GET','POST'])
 @login_required
 def customize():
-    form = UserProfile()
     user_email = request.cookies.get('email')
     details = get_user_profile(user_email)
-
+    
+    form = UserProfile(
+        name = details["name"], 
+        budget = details["budget"],
+        phone = details["phone"],
+        profession = details["profession"],
+        alert = details["alert"])
+    
     if form.validate_on_submit():
-        name = form.name.data if form.name.data != '' else details["name"]
-        budget = float(form.budget.data) if form.budget.data != '' else details["budget"]
-        phone = form.phone.data if form.phone.data != '' else details["phone"]
-        profession = form.profession.data if form.profession.data != '' else details["profession"]
+        name = form.name.data
+        budget = float(form.budget.data)
+        phone = form.phone.data
+        profession = form.profession.data
         alert = form.alert.data
         update_user_profile(user_email, name, budget, phone, profession, alert)
         flash("Profile updated successfully", "success")
         return redirect(url_for('customize'))
 
-    return render_template('customize.html', form = form, details = details)
+    return render_template('customize.html', form = form)
  
 @app.route('/view_transaction', methods=['GET','POST'])
 @login_required
@@ -354,7 +361,7 @@ def update_event(id):
         print(name, budget)
         update_event_by_id(event_details['id'], name, budget)
         flash(event_details["name"] + " updated !", "success")
-        return redirect(url_for('event_list'))
+        return redirect(url_for('get_specific_event', id= event_details["id"]))
 
     return render_template('update_event.html', form = form)
 
@@ -403,6 +410,13 @@ def delete_specific_transaction(id):
     delete_transaction_by_id(id, user_email)
     flash("Transaction deleted", "success")
     return redirect(url_for('view_transaction'))
+
+@app.route('/event_list/<int:id>/delete', methods=['GET', 'POST'])
+@login_required 
+def delete_specific_event(id):
+    delete_event_by_id(id)
+    flash("Event deleted", "success")
+    return redirect(url_for('event_list'))
  
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():
