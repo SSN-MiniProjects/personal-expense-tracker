@@ -4,6 +4,12 @@ content %}
 	{{ form.csrf_token() }}
 	<p class="h1">Add New Event</p>
 
+	<div>
+		Users can now create events such as 'Trip to Goa', 'Visit Taj Mahal'
+		etc.. and add the expenses corresponding to those particular events and
+		track their budget for them
+	</div>
+
 	<br />
 	{{ wtf.quick_form(form, form_type="horizontal", button_map={'submit' :
 	'success'}) }}
