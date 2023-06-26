@@ -9,7 +9,7 @@ class UserProfile(FlaskForm):
     budget = StringField('Budget')
     phone = StringField('Phone', render_kw={"placeholder" : "Enter 10-digit number with country code"})
     profession = StringField()
-    alert = BooleanField(default= None)
+    alert = BooleanField(default= False)
     submit = SubmitField('Submit')
 
     def validate_phone(self, phone):
@@ -24,8 +24,6 @@ class UserProfile(FlaskForm):
             raise ValidationError('Invalid phone number')
         
     def validate_budget(self, budget):
-        if budget.data == '':
-            raise StopValidation
 
         if int(budget.data) < 0:
             raise ValidationError('Enter a valid budget')
