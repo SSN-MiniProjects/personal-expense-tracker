@@ -11,6 +11,7 @@ def add_transaction(email, transaction, mode, category, datestamp, note, event):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
+    note = note.strip()
     
     if event == "None":
         query = 'INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note) VALUES (%s,%s,%s,%s,%s,%s)'
@@ -37,6 +38,7 @@ def update_transaction_by_id(t_id, email, transaction, mode, category, datestamp
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
+    note = note.strip()
 
     query = "select transaction, event_id from user_transactions where id = %s"
     param = (t_id, )

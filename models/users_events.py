@@ -10,6 +10,7 @@ def add_user_event(email, name, budget):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
+    name = name.strip()
 
     ## check for same name!
     query = 'SELECT * from user_events where login_id=%s and name=%s'
@@ -68,6 +69,8 @@ def get_event_by_id(id):
 def update_event_by_id(event_id, name, budget):
     conn = connect_db()
     cursor = conn.cursor()
+    name = name.strip()
+
     query = 'update user_events set name=%s,budget=%s where id=%s'
     param = (name, budget, event_id)
     cursor.execute(query, param)
