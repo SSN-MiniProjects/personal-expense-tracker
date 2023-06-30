@@ -9,6 +9,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from werkzeug.utils import secure_filename
 import pandas
 import datetime
+from psycopg2.errors import UniqueViolation
+
 
 from config.db import (
     init_db
@@ -265,9 +267,12 @@ def add_event():
     if form.validate_on_submit():
         name = form.name.data
         budget = form.budget.data
-        add_user_event(user_email, name, budget)
-        flash("Event added successfully", "success")
-        return redirect(url_for('event_list'))
+        try:
+            add_user_event(user_email, name, budget)
+            flash("Event added successfully", "success")
+            return redirect(url_for('event_list'))
+        except UniqueViolation as e:
+            flash("Event already exists", "error")
 
     return render_template('add_event.html', form = form)
 
