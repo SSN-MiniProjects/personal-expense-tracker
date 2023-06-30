@@ -38,34 +38,53 @@ def update_transaction_by_id(t_id, email, transaction, mode, category, datestamp
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
 
-    query = "select transaction from user_transactions where id = %s"
+    query = "select transaction, event_id from user_transactions where id = %s"
     param = (t_id, )
     cursor.execute(query, param)
     res = cursor.fetchone()
     prev_amnt = res[0]
+    prev_event_id = res[1]
+    current_event_id = None if event == 'None' else event
+
+
+    ## UPDATE TRANSACTION ##
     
-    if event == "None":
-        query ='''update user_transactions 
-        set transaction=%s,
-        mode = %s,category=%s,datestamp=%s,note=%s) where id= %s'''
-        param = (transaction, mode, category, datestamp, note, t_id)
-        cursor.execute(query, param)
+    query ='''update user_transactions 
+    set transaction=%s,
+    mode = %s,category=%s,datestamp=%s,note=%s,event_id=%s where id= %s'''
+    param = (transaction, mode, category, datestamp, note, current_event_id, t_id)
+    cursor.execute(query, param)
 
-    else:
-        query ='''update user_transactions 
-        set transaction=%s,
-        mode = %s,category=%s,datestamp=%s,note=%s,event_id=%s where id= %s'''
-        param = (transaction, mode, category, datestamp, note,event, t_id)
-        cursor.execute(query, param)
 
-        # while updating spend in events, remove the previous transaction and add current transaction
+
+    ## UPDATE EVENTS ###
+    # if previous and current event is same, deduct previous transaction and add current transaction to event spent
+    if prev_event_id == event:
         query = 'update user_events set spent=spent -%s + %s where id=%s'
         param = (prev_amnt,transaction, event,)
         cursor.execute(query, param)
     
+    else:
+        # deduct the previous transaction from previous event spent only if previous event is not None
+        if prev_event_id is not None:
+            query = 'update user_events set spent=spent -%s where id=%s'
+            param = (prev_amnt, prev_event_id,)
+            cursor.execute(query, param)
+
+        # add the current transaction to current event spent only if current event is not None
+        if current_event_id is not None:
+            query = 'update user_events set spent=spent +%s where id=%s'
+            param = (transaction, current_event_id,)
+            cursor.execute(query, param)
+
+
+    
+    ## UPDATE USER PROFILE ##
     query = 'update user_profiles set total_spent=total_spent -%s + %s where login_id=%s;'
     param = (prev_amnt,transaction, login_id,)
     cursor.execute(query, param)    
+    
+    
     conn.commit()
     cursor.close()
     conn.close()
