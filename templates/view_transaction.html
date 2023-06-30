@@ -8,6 +8,7 @@
 			<option disabled selected value> -- select an option -- </option>
 			<option value="mode">Mode</option>
 			<option value="category">Category</option>
+			<option value="event">Event</option>
 			<option value="dates_between">Dates</option>
 			<option value="amounts_range">Amount</option>
 		</select>
@@ -148,35 +149,37 @@
 				contentElement.appendChild(submit_element);
 
 			}
-			else if (selectedOption === 'mode' || selectedOption == 'category') {
+			else if (selectedOption === 'mode' || selectedOption == 'category' || selectedOption == 'event') {
 				var options = ''
-			if (selectedOption === 'mode'){
-				options = {{ filters['mode'] | tojson}}
-			}
-			else{
-				options = {{ filters['category'] | tojson}}
-			}
-			console.log(options)
+				if (selectedOption === 'mode'){
+					options = {{ filters['mode'] | tojson}}
+				}
+				else if (selectedOption == 'event'){
+					options = {{ filters['event'] | tojson}}
+				}
+				else{
+					options = {{ filters['category'] | tojson}}
+				}
 
-			var select_element = document.createElement("select");
-			select_element.setAttribute("style", "width:fit-content;display:inline;margin:10px");
-			select_element.setAttribute("class", "form-control");
-			select_element.setAttribute("type", "text");
-			select_element.setAttribute("name", "input1");
-			for (var i = 0; i < options.length; i++) {
-				var option_element = document.createElement("option");
-				option_element.setAttribute("value", options[i]);
-				var text_node = document.createTextNode(options[i]);
-				option_element.appendChild(text_node)
-				select_element.appendChild(option_element)
-			}
-			label_element.innerHTML = "Available Options";
-			contentElement.appendChild(label_element);
+				var select_element = document.createElement("select");
+				select_element.setAttribute("style", "width:fit-content;display:inline;margin:10px");
+				select_element.setAttribute("class", "form-control");
+				select_element.setAttribute("type", "text");
+				select_element.setAttribute("name", "input1");
+				for (var i = 0; i < options.length; i++) {
+					var option_element = document.createElement("option");
+					option_element.setAttribute("value", options[i]);
+					var text_node = document.createTextNode(options[i]);
+					option_element.appendChild(text_node)
+					select_element.appendChild(option_element)
+				}
+				label_element.innerHTML = "Available Options";
+				contentElement.appendChild(label_element);
 
-			contentElement.appendChild(select_element);
+				contentElement.appendChild(select_element);
 
-			contentElement.appendChild(submit_element);
-		}
+				contentElement.appendChild(submit_element);
+			}	
 
 		}
 	</script>

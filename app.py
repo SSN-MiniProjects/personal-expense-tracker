@@ -304,10 +304,15 @@ def view_transaction():
     query = request.args.get('options')
     filters = {
         "category" : ["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"],
-        "mode" : ['Online', 'Cash']
+        "mode" : ['Online', 'Cash'],
+        "event" : []
     }
     
     user_email = request.cookies.get('email')
+    user_events = get_user_events(user_email)
+    for event in user_events:
+        filters["event"].append(event["name"])
+
     temp_result = get_transactions(user_email)
     result = []
     if(query=='dates_between'):
@@ -333,6 +338,11 @@ def view_transaction():
         input1 = request.args.get('input1')
         for item in temp_result:
             if item['category'] == input1:           
+                result.append(item)
+    elif (query=='event'):
+        input1 = request.args.get('input1')
+        for item in temp_result:
+            if item['event'] == input1:
                 result.append(item)
     else:
         result=temp_result
