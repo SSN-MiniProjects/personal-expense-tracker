@@ -10,6 +10,15 @@ def add_user_event(email, name, budget):
     conn = connect_db()
     cursor = conn.cursor()
     login_id = get_user_by_email(email)["id"]
+
+    ## check for same name!
+    query = 'SELECT * from user_events where login_id=%s and name=%s'
+    param = (login_id, name)
+    cursor.execute(query, param)
+    res = cursor.fetchone()
+    if res is not None:
+        raise ValueError("Event already added")
+
     query = 'INSERT INTO user_events (login_id, name, budget ) VALUES (%s,%s,%s)'
     param = (login_id, name, budget)
     res = cursor.execute(query,param)
