@@ -12,7 +12,7 @@ import datetime
 
 
 from config.db import (
-    init_db
+    init_db, TransactionFormChoices
 )
 
 import humanize
@@ -252,7 +252,10 @@ def add_new_transaction():
         event = form.event.data
         add_transaction(user_email, transaction, mode, category, datestamp, note, event)
         flash("Expense added successfully", "success")
-        return redirect(url_for('view_transaction'))
+        if request.args.get('event_id') is None:
+            return redirect(url_for('view_transaction'))
+        else:
+            return redirect(url_for('get_specific_event', id= event_id))
 
     return render_template('add_transaction.html', form = form, error = "Nil")
 
@@ -307,8 +310,8 @@ def customize():
 def view_transaction():
     query = request.args.get('options')
     filters = {
-        "category" : ["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"],
-        "mode" : ['Online', 'Cash'],
+        "category" : TransactionFormChoices.CATEGORY,
+        "mode" : TransactionFormChoices.MODE,
         "event" : []
     }
     
@@ -419,7 +422,10 @@ def update_specific_transaction(id):
         event = form.event.data
         update_transaction_by_id(data['id'], user_email,transaction, mode, category, datestamp, note, event)
         flash("Transaction updated", "success")
-        return redirect(url_for('event_list'))
+        if request.args.get('event_id') is None:
+            return redirect(url_for('view_transaction'))
+        else:
+            return redirect(url_for('get_specific_event', id= request.args.get('event_id')))
 
     return render_template('update_transaction.html', form = form)
 
@@ -431,7 +437,10 @@ def delete_specific_transaction(id):
     user_email = request.cookies.get('email')
     delete_transaction_by_id(id, user_email)
     flash("Transaction deleted", "success")
-    return redirect(url_for('view_transaction'))
+    if request.args.get('event_id') is None:
+            return redirect(url_for('view_transaction'))
+    else:
+        return redirect(url_for('get_specific_event', id= request.args.get('event_id')))
 
 @app.route('/event_list/<int:id>/delete', methods=['GET', 'POST'])
 @login_required 
