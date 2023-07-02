@@ -145,11 +145,11 @@
 				<td>{{ transactions[i]["datestamp"] }}</td>
 				<td>{{ transactions[i]["note"] }}</td>
 				<td>
-					<button class="btn btn-primary" onclick="handleEditTransaction({{transactions[i]['id']}})">
+					<button class="btn btn-primary" onclick="handleEditTransaction({{transactions[i]['id']}}, {{event['id']}})">
 						<i class="bi bi-pencil-square"></i>
 					</button>
 
-					<button class="btn btn-danger" onclick="handleDeleteTransaction({{transactions[i]['id']}})">
+					<button class="btn btn-danger" onclick="handleDeleteTransaction({{transactions[i]['id']}}, {{event['id']}})">
 						<i class="bi bi-trash3-fill"></i>
 					</button>
 				</td>
@@ -182,7 +182,7 @@
 				})
 		}
 		
-		function handleDeleteTransaction(id){
+		function handleDeleteTransaction(id, event_id){
 			Swal.fire({
 				title: 'Are you sure?',
 				text: "You won't be able to revert this!",
@@ -193,18 +193,18 @@
 				confirmButtonText: 'Yes, delete it!'
 				}).then((result) => {
 				if (result.isConfirmed) {
-					window.location.replace('/view_transaction/'+id+'/delete')				
+					window.location.replace('/view_transaction/'+id+'/delete?event_id=' + event_id)				
 				
 				}
 				})
 		}
 
-		function handleEditTransaction(id){
-			window.location.href = '/view_transaction/'+id+'/update'
+		function handleEditTransaction(id, event_id){
+			window.location.href = '/view_transaction/'+id+'/update?event_id=' + event_id
 		}
 
-		function handleAddExpense(id){
-			window.location.href = '/add_transaction?event_id=' + id
+		function handleAddExpense(event_id){
+			window.location.href = '/add_transaction?event_id=' + event_id
 		}
 	</script>
 	{% endblock %}

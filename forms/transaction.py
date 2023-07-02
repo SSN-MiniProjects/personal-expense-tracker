@@ -4,6 +4,7 @@ from wtforms import StringField, SubmitField, SelectField, DateField, FloatField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 import datetime
+from config.db import TransactionFormChoices
 
 
 
@@ -13,9 +14,9 @@ class Transaction(FlaskForm):
                            InputRequired()
                            ],
                            )
-    mode = SelectField('Mode', choices=["Online","Cash"],validators=[
+    mode = SelectField('Mode', choices= TransactionFormChoices.MODE,validators=[
                            InputRequired()], render_kw={"placeholder": "Category"})
-    category = SelectField('Category', choices=["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"],validators=[
+    category = SelectField('Category', choices=TransactionFormChoices.CATEGORY,validators=[
                            InputRequired()])
     datestamp = DateField('Date of Expense',default=datetime.datetime.today,format='%Y-%m-%d',validators=[
                            InputRequired()], render_kw={"placeholder": "Date"})
