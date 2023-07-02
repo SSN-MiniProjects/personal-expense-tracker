@@ -362,14 +362,32 @@ def view_transaction():
 @login_required 
 def event_list():
     user_email = request.cookies.get('email')
-    events = get_user_events(user_email)
+    event_list = get_user_events(user_email)
+    events = []
+    for event in event_list:
+        events.append({
+            "id" : event["id"],
+            "name" : event["name"],
+            "budget_percentage" : round(event["spent"]/event["budget"]*100, 2)
+        })
+
     return render_template("event_list.html", events = events)
 
 @app.route('/event_list/<int:id>', methods=['GET'])
 @login_required 
 def get_specific_event(id):
     user_email = request.cookies.get('email')
-    event_details = get_event_by_id(id)[0]
+    result = get_event_by_id(id)[0]
+
+    event_details = {
+        "id" : result["id"],
+        "name" : result["name"],
+        "budget" : humanize.intcomma(result["budget"]),
+        "budget_percentage" : round(result["spent"]/result["budget"]*100, 2),
+        "spent" : humanize.intcomma(result["spent"]),
+
+    }
+
     event_transactions = get_transactions_by_event(id)
     return render_template("view_event.html", event = event_details, transactions=event_transactions)
 

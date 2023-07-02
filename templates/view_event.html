@@ -5,20 +5,30 @@
 
 	<div class="row">
 		<div class="col-xl-3 col-md-6 mb-5">
-			<div class="h4 mb-2 text-gray-800 text-center mt-1"> Event - {{ event["name"] }}</div>
+			<div class="h4 mb-2 text-gray-800 text-left ml-3 mt-1">
+				{{ event["name"] }}
+			</div>
 		</div>
 		<div class="col-xl-3 col-md-6 mb-5">
-				<button class="btn btn-primary" onclick="updateEvent({{event['id']}})">
-					<i class="bi bi-pencil-square"></i>
-				</button>
+			<button
+				class="btn btn-primary"
+				onclick="updateEvent({{event['id']}})"
+			>
+				<i class="bi bi-pencil-square"></i>
+			</button>
 
-				<button class="btn btn-danger" onclick="deleteEvent({{event['id']}})">
-					<i class="bi bi-trash3-fill"></i>
-				</button>
-				
+			<button
+				class="btn btn-danger"
+				onclick="deleteEvent({{event['id']}})"
+			>
+				<i class="bi bi-trash3-fill"></i>
+			</button>
 		</div>
 	</div>
 	
+	
+	
+
 	
 	<!-- Content Row -->
 
@@ -34,7 +44,9 @@
 							>
 								Budget Tracker
 							</div>
-							<div class="row no-gutters align-items-center mt-3 mb-2">
+							<div
+								class="row no-gutters align-items-center mt-3 mb-2"
+							>
 								<div class="col">
 									<div class="progress progress-sm mr-2">
 										<div
@@ -43,24 +55,23 @@
 											role="progressbar"
 											aria-valuemin="0"
 											aria-valuemax="100"
-											style="width: {{event["spent"]/event["budget"]*100}}%;"
+											style="width: {{event["budget_percentage"]}}%;"
 										></div>
-									
+									</div>
 								</div>
 							</div>
-							
+							<div
+								class="h5 mb-0 font-weight-bold text-center text-gray-800"
+							>
+								{{event["budget_percentage"]}}%
 							</div>
-								<div class="h5 mb-0 font-weight-bold text-center text-gray-800">
-									{{event["spent"]/event["budget"]*100}}%
-								</div>
-							
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+		<div class="col-xl-3 col-md-6 mb-4">
 			<div class="card border-left-success shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
@@ -70,7 +81,9 @@
 							>
 								Total Spent
 							</div>
-							<div class="h5 mb-0 mt-3 font-weight-bold text-gray-800">
+							<div
+								class="h5 mb-0 mt-3 font-weight-bold text-gray-800"
+							>
 								₹ {{ event["spent"] }}
 							</div>
 						</div>
@@ -84,7 +97,7 @@
 			</div>
 		</div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+		<div class="col-xl-3 col-md-6 mb-4">
 			<div class="card border-left-success shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
@@ -94,10 +107,11 @@
 							>
 								Budget
 							</div>
-							<div class="h5 mb-0 mt-3 font-weight-bold text-gray-800">
+							<div
+								class="h5 mb-0 mt-3 font-weight-bold text-gray-800"
+							>
 								₹ {{event["budget"]}}
 							</div>
-							
 						</div>
 
 						<div class="col-auto">
@@ -113,13 +127,16 @@
 
 	<div class="row">
 		<div class="col-xl-3 col-md-6 mt-3">
-			<div class="h4 text-gray-800 text-center mt-1"> Event Expenses</div>
+			<div class="h4 text-gray-800 text-left mt-1 ml-3">Expenses</div>
 		</div>
 		<div class="col-xl-3 col-md-6 mb-3 mt-3">
-				<button class="btn btn-primary" onclick="handleAddExpense({{event['id']}})">
-					<i class="bi bi-file-earmark-diff"></i>
-					New Expense
-				</button>
+			<button
+				class="btn btn-primary"
+				onclick="handleAddExpense({{event['id']}})"
+			>
+				<i class="bi bi-file-earmark-diff"></i>
+				New Expense
+			</button>
 		</div>
 	</div>
 
@@ -145,11 +162,17 @@
 				<td>{{ transactions[i]["datestamp"] }}</td>
 				<td>{{ transactions[i]["note"] }}</td>
 				<td>
-					<button class="btn btn-primary" onclick="handleEditTransaction({{transactions[i]['id']}}, {{event['id']}})">
+					<button
+						class="btn btn-primary"
+						onclick="handleEditTransaction({{transactions[i]['id']}}, {{event['id']}})"
+					>
 						<i class="bi bi-pencil-square"></i>
 					</button>
 
-					<button class="btn btn-danger" onclick="handleDeleteTransaction({{transactions[i]['id']}}, {{event['id']}})">
+					<button
+						class="btn btn-danger"
+						onclick="handleDeleteTransaction({{transactions[i]['id']}}, {{event['id']}})"
+					>
 						<i class="bi bi-trash3-fill"></i>
 					</button>
 				</td>
@@ -160,51 +183,54 @@
 
 	{% block javascript %}
 	<script>
-
-		function updateEvent(id){
-			window.location.href = '/event_list/'+id+'/update'
+		function updateEvent(id) {
+			window.location.href = "/event_list/" + id + "/update";
 		}
 
-		function deleteEvent(id){
+		function deleteEvent(id) {
 			Swal.fire({
-				title: 'Are you sure?',
+				title: "Are you sure?",
 				text: "This will delete all transactions created for this event!",
-				icon: 'warning',
+				icon: "warning",
 				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!'
-				}).then((result) => {
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "Yes, delete it!",
+			}).then((result) => {
 				if (result.isConfirmed) {
-					window.location.replace('/event_list/'+id+'/delete')				
-				
+					window.location.replace("/event_list/" + id + "/delete");
 				}
-				})
+			});
 		}
-		
-		function handleDeleteTransaction(id, event_id){
+
+		function handleDeleteTransaction(id, event_id) {
 			Swal.fire({
-				title: 'Are you sure?',
+				title: "Are you sure?",
 				text: "You won't be able to revert this!",
-				icon: 'warning',
+				icon: "warning",
 				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!'
-				}).then((result) => {
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "Yes, delete it!",
+			}).then((result) => {
 				if (result.isConfirmed) {
-					window.location.replace('/view_transaction/'+id+'/delete?event_id=' + event_id)				
-				
+					window.location.replace(
+						"/view_transaction/" +
+							id +
+							"/delete?event_id=" +
+							event_id
+					);
 				}
-				})
+			});
 		}
 
-		function handleEditTransaction(id, event_id){
-			window.location.href = '/view_transaction/'+id+'/update?event_id=' + event_id
+		function handleEditTransaction(id, event_id) {
+			window.location.href =
+				"/view_transaction/" + id + "/update?event_id=" + event_id;
 		}
 
-		function handleAddExpense(event_id){
-			window.location.href = '/add_transaction?event_id=' + event_id
+		function handleAddExpense(event_id) {
+			window.location.href = "/add_transaction?event_id=" + event_id;
 		}
 	</script>
 	{% endblock %}
