@@ -47,11 +47,12 @@ def get_user_events(email):
     conn.close()
     return d
 
-def get_event_by_id(id):
+def get_event_by_id(email, id):
+    login_id = get_user_by_email(email)["id"]
     conn = connect_db()
     cursor = conn.cursor()
-    query = 'SELECT id, name, budget, spent from user_events where id=%s'
-    param = (id,)
+    query = 'SELECT id, name, budget, spent from user_events where id=%s and login_id=%s'
+    param = (id, login_id)
     cursor.execute(query, param)
     result = cursor.fetchall()
     d = []

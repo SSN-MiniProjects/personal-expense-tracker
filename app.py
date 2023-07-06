@@ -376,8 +376,13 @@ def event_list():
 @login_required 
 def get_specific_event(id):
     user_email = current_user.email
-    result = get_event_by_id(id)[0]
-
+    check_event = get_event_by_id(user_email, id)
+    
+    if len(check_event) == 0:
+        flash("Event not found", "error")
+        return redirect(url_for('dashboard'))
+    
+    result = check_event[0]
     event_details = {
         "id" : result["id"],
         "name" : result["name"],
@@ -394,7 +399,14 @@ def get_specific_event(id):
 @app.route('/event_list/<int:id>/update', methods=['GET', 'POST'])
 @login_required 
 def update_event(id):
-    event_details = get_event_by_id(id)[0]
+    user_email = current_user.email
+    check_event = get_event_by_id(user_email, id)
+    
+    if len(check_event) == 0:
+        flash("Event not found", "error")
+        return redirect(url_for('dashboard'))
+    
+    event_details = check_event[0]
     form = UserEvent(name = event_details["name"], budget = event_details["budget"])
     
     if form.validate_on_submit():
@@ -410,8 +422,14 @@ def update_event(id):
 @app.route('/view_transaction/<int:id>/update', methods=['GET', 'POST'])
 @login_required 
 def update_specific_transaction(id):
-    data = get_transaction_by_id(id)[0]
     user_email = current_user.email
+    check_transaction = get_transaction_by_id(user_email, id)
+    
+    if len(check_transaction) == 0:
+        flash("Transaction not found", "error")
+        return redirect(url_for('dashboard'))
+
+    data = check_transaction[0]
     form = Transaction(
         transaction = data["transaction"], 
         mode = data["mode"],
@@ -452,6 +470,12 @@ def update_specific_transaction(id):
 @login_required 
 def delete_specific_transaction(id):
     user_email = current_user.email
+    check_transaction = get_transaction_by_id(user_email, id)
+    
+    if len(check_transaction) == 0:
+        flash("Transaction not found", "error")
+        return redirect(url_for('dashboard'))
+    
     delete_transaction_by_id(id, user_email)
     flash("Transaction deleted", "success")
     if request.args.get('event_id') is None:
@@ -462,6 +486,13 @@ def delete_specific_transaction(id):
 @app.route('/event_list/<int:id>/delete', methods=['GET', 'POST'])
 @login_required 
 def delete_specific_event(id):
+    user_email = current_user.email
+    check_event = get_event_by_id(user_email, id)
+    
+    if len(check_event) == 0:
+        flash("Event not found", "error")
+        return redirect(url_for('dashboard'))
+    
     delete_event_by_id(id)
     flash("Event deleted", "success")
     return redirect(url_for('event_list'))

@@ -125,14 +125,15 @@ def delete_transaction_by_id(t_id, email):
     param = (t_id,)
     cursor.execute(query, param)   
     conn.commit()
-
     cursor.close()
     conn.close()
-def get_transaction_by_id(t_id):
+
+def get_transaction_by_id(email, t_id):
+    login_id = get_user_by_email(email)["id"]
     conn = connect_db()
     cursor = conn.cursor()
-    query = 'SELECT id, transaction, mode, datestamp, category, event_id, note FROM user_transactions WHERE id=%s'
-    param = (t_id,)
+    query = 'SELECT id, transaction, mode, datestamp, category, event_id, note FROM user_transactions WHERE id=%s and login_id=%s'
+    param = (t_id, login_id)
     cursor.execute(query, param)
     result = cursor.fetchall()
     d = []
