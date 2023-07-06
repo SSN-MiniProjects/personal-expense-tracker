@@ -138,7 +138,6 @@ def login():
                 login_user(usr_obj, remember=True)
                 next = flask.request.args.get('next')
                 resp = make_response(redirect(next or url_for('dashboard')))
-                resp.set_cookie('email', user['email'])
                 flash("Logged In","success")
                 return resp
 
@@ -152,7 +151,9 @@ def login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    user_email = request.cookies.get('email')
+
+    
+    user_email = current_user.email
 
     Daily = get_month_graph_data(user_email, date.today())
     Monthly = get_year_graph_data(user_email, date.today())
@@ -194,7 +195,6 @@ def logout():
     logout_user()
     flash('Logged Out', 'success')
     resp = make_response(redirect(location=url_for('login')))
-    resp.set_cookie('email', expires=0)
     return redirect(url_for('login'))
 
 @app.route('/', methods=['GET', 'POST'])
@@ -210,7 +210,6 @@ def register():
             flash('This email already exists', 'error')
         else:
             resp = make_response(render_template('email_confirmation.html', email= entered_email))
-            resp.set_cookie('email', entered_email)
 
             # insert the new user credential
             add_user_credential(entered_email, entered_password)
@@ -231,7 +230,7 @@ def register():
 @login_required
 def add_new_transaction():
     event_id = request.args.get('event_id') 
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     form = Transaction()
     events = get_user_events(user_email)
 
@@ -264,7 +263,7 @@ def add_new_transaction():
 @login_required
 def add_event():
     form = UserEvent()
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
 
     if form.validate_on_submit():
         name = form.name.data
@@ -283,7 +282,7 @@ def add_event():
 @app.route('/customize', methods=['GET','POST'])
 @login_required
 def customize():
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     details = get_user_profile(user_email)
     
     form = UserProfile(
@@ -315,7 +314,7 @@ def view_transaction():
         "event" : []
     }
     
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     user_events = get_user_events(user_email)
     for event in user_events:
         filters["event"].append(event["name"])
@@ -361,7 +360,7 @@ def view_transaction():
 @app.route('/event_list', methods=['GET'])
 @login_required 
 def event_list():
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     event_list = get_user_events(user_email)
     events = []
     for event in event_list:
@@ -376,7 +375,7 @@ def event_list():
 @app.route('/event_list/<int:id>', methods=['GET'])
 @login_required 
 def get_specific_event(id):
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     result = get_event_by_id(id)[0]
 
     event_details = {
@@ -412,7 +411,7 @@ def update_event(id):
 @login_required 
 def update_specific_transaction(id):
     data = get_transaction_by_id(id)[0]
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     form = Transaction(
         transaction = data["transaction"], 
         mode = data["mode"],
@@ -452,7 +451,7 @@ def update_specific_transaction(id):
 @app.route('/view_transaction/<int:id>/delete', methods=['GET', 'POST'])
 @login_required 
 def delete_specific_transaction(id):
-    user_email = request.cookies.get('email')
+    user_email = current_user.email
     delete_transaction_by_id(id, user_email)
     flash("Transaction deleted", "success")
     if request.args.get('event_id') is None:
@@ -470,7 +469,7 @@ def delete_specific_event(id):
 # @app.route('/generate_report', methods=['GET'])
 # def generate_report():
 
-#     email = request.cookies.get('email')
+#     email = current_user.email
 
 #     # creating a pdf file to add tables 
 #     file_name = f"Report-{email}.pdf"  
