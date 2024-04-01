@@ -1,15 +1,23 @@
-import os 
-import psycopg2
+import os
+from typing import Optional, Tuple
 
-def connect_db():
-    conn = psycopg2.connect(
-        dbname = os.getenv("DB_NAME"),
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PASS"),
-        host = os.getenv("DB_HOST"),
-        port = "5432"
-    )
-    return conn
+from config.factory import Database
+
+
+def get_result(query: str, param: Tuple = None):
+    conn = Database().instance
+    cursor = conn.cursor()
+    res = None
+    if param is None:
+        res = cursor.execute(query)
+    else:
+        res = cursor.execute(query, param)
+    cursor.execute(query)
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return res
+
 
 def init_db():
     createUserCredentials = "CREATE TABLE IF NOT EXISTS user_credentials (\
@@ -37,17 +45,11 @@ def init_db():
         note VARCHAR(50),\
         FOREIGN KEY (login_id) REFERENCES USER_CREDENTIALS(id) ON DELETE CASCADE);"
 
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute(createUserCredentials)
-    cursor.execute(createUserProfile)
-    cursor.execute(createUserTransactions)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    get_result(createUserCredentials)
+    get_result(createUserProfile)
+    get_result(createUserTransactions)
 
 
 class TransactionFormChoices:
-
     MODE = ["Online", "Credit Card", "Cash"]
-    CATEGORY = ["Food","Health", "Transport", "Shopping", "Entertainment", "Bills","Debt Payment","Other"]
+    CATEGORY = ["Food", "Health", "Transport", "Shopping", "Entertainment", "Bills", "Debt Payment", "Other"]

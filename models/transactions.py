@@ -2,15 +2,15 @@ from config.db import (
     connect_db
 )
 
-from models.login_credentials import (
-    get_user_by_email
+from models.users_credentials import (
+    find_user_by_email
 )
 
 
 def add_transaction(email, transaction, mode, category, datestamp, note, event):
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     note = note.strip()
     
     if event == "None":
@@ -37,7 +37,7 @@ def update_transaction_by_id(t_id, email, transaction, mode, category, datestamp
     
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     note = note.strip()
 
     query = "select transaction, event_id from user_transactions where id = %s"
@@ -97,7 +97,7 @@ def delete_transaction_by_id(t_id, email):
     
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
 
     query = "select transaction, event_id from user_transactions where id = %s"
     param = (t_id, )
@@ -129,7 +129,7 @@ def delete_transaction_by_id(t_id, email):
     conn.close()
 
 def get_transaction_by_id(email, t_id):
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     conn = connect_db()
     cursor = conn.cursor()
     query = 'SELECT id, transaction, mode, datestamp, category, event_id, note FROM user_transactions WHERE id=%s and login_id=%s'
@@ -154,7 +154,7 @@ def get_transaction_by_id(email, t_id):
 def get_transactions(email):
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = 'SELECT id, transaction, mode, datestamp, note, category, event_id FROM user_transactions WHERE login_id = %s order by datestamp desc'
     param = (login_id,)
     cursor.execute(query, param)
@@ -208,7 +208,7 @@ def get_transactions_by_event(event_id):
 def get_daily_expense(email,required_month_str): #use format yyyy-mm-dd
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''
         select sum(transaction), extract(day from datestamp)
         from 
@@ -235,7 +235,7 @@ def get_monthly_expense(email, required_year_str):  # use format yyyy-mm-dd
 
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''
         select sum(transaction), extract(month from datestamp)
         from 
@@ -261,7 +261,7 @@ def get_monthly_expense(email, required_year_str):  # use format yyyy-mm-dd
 def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''
         select sum(transaction), category
         from 
@@ -288,7 +288,7 @@ def get_category_expense(email, required_month_str): #use format yyyy-mm-dd
 def get_day_expense(email, required_date):
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''
         select sum(transaction) from 
         public.user_transactions
@@ -306,7 +306,7 @@ def get_day_expense(email, required_date):
 def get_month_expense(email, required_date):
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''select sum(transaction)
         from 
         public.user_transactions
@@ -325,7 +325,7 @@ def get_month_expense(email, required_date):
 def get_year_expense(email, required_date):
     conn = connect_db()
     cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
+    login_id = find_user_by_email(email)["id"]
     query = '''select sum(transaction)
         from 
         public.user_transactions
