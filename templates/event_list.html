@@ -8,7 +8,7 @@
 	<div class="row">
 		{% for i in range(events|length) %}
 		<!-- Earnings (Monthly) Card Example -->
-		<div class="col-xl-3 col-md-6 mb-4">
+		<div class="col-xl-3 col-md-6 mb-4 p-3">
 			<div class="card border-left-primary shadow h-100 py-2">
 				<div class="card-body">
 					<div class="row no-gutters align-items-center">
@@ -16,7 +16,7 @@
 
 						<div class="col mr-2">
 							<div
-								class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+								class="text-xs text-left font-weight-bold text-primary text-uppercase mb-1"
 							>
 							<a href="{{ '/event_list/%s'%events[i]['id']}}" class="btn btn-link stretched-link">
 								{{ events[i]["name"] }}
@@ -26,7 +26,7 @@
 							</div>
 
 							<div class="h5 mb-0 font-weight-bold text-gray-800 ml-3">
-								{{events[i]["spent"]/events[i]["budget"]*100}}%
+								{{ events[i]["budget_percentage"]}}%
 							</div>
 							<div class="row no-gutters align-items-center mt-3 ml-3">
 								<div class="col">
@@ -37,7 +37,7 @@
 											role="progressbar"
 											aria-valuemin="0"
 											aria-valuemax="100"
-                                            style="width: {{events[i]["spent"]/events[i]["budget"]*100}}%;"
+                                            style="width: {{events[i]["budget_percentage"]}}%;"
 										></div>
 									</div>
 								</div>

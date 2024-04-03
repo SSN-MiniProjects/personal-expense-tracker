@@ -1,66 +1,58 @@
 from config.db import (
-    connect_db
+    get_result
 )
 
-from models.login_credentials import(
-    get_user_by_email
+from models.users_credentials import (
+    UserModel
 )
 
-def get_user_profile(email):
-    conn = connect_db()
-    cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
-    query = 'SELECT name, budget, phone, profession, alert from user_profiles WHERE login_id = %s'
-    param = (login_id,)
-    cursor.execute(query,param)
-    result = cursor.fetchone()
-    if result is not None:
-        return {
-            "name" : result[0],
-            "budget" : result[1],
-            "phone" : result[2],
-            "profession" : result[3],
-            "alert" : result[4]
-        }
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return result
 
-def add_user_profile(login_id):
-    conn = connect_db()
-    cursor = conn.cursor()
-    query = 'INSERT INTO user_profiles (login_id) VALUES (%s)'
-    param = (login_id,)
-    res = cursor.execute(query,param)
-    conn.commit()
-    cursor.close()
-    conn.close()
+class UserProfileModel:
 
-def update_user_profile(email, name, budget, phone, profession, alert):
-    conn = connect_db()
-    cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
-    query = 'UPDATE user_profiles set name=%s, budget=%s, phone=%s, profession=%s, alert=%s where login_id=%s'
-    param = (name, budget, phone, profession, alert, login_id)
-    res = cursor.execute(query,param)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    @staticmethod
+    def find_by_email(email:str):
+        login_id = UserModel.find_by_email(email)["id"]
+        query = 'SELECT name, budget, phone, profession, alert from user_profiles WHERE login_id = %s'
+        param = (login_id,)
+        result = get_result(query, param)
+        return result
 
-def get_spent_and_budget(email):
-    conn = connect_db()
-    cursor = conn.cursor()
-    login_id = get_user_by_email(email)["id"]
-    query = 'SELECT total_spent, budget FROM user_profiles WHERE login_id = %s'
-    param = (login_id,)
-    cursor.execute(query,param)
-    result = cursor.fetchone()
-    if result is not None:
-        return {
-            "total_expense" : result[0],
-            "budget" : result[1]
-        }
-    cursor.close()
-    conn.close()
-    return result
+    @staticmethod
+    def create(login_id:int):
+        query = 'INSERT INTO user_profiles (login_id) VALUES (%s)'
+        param = (login_id,)
+        get_result(query, param)
+
+
+    @staticmethod
+    def update(email, name, budget, phone, profession, alert):
+        login_id = UserModel.find_by_email(email)["id"]
+        query = 'UPDATE user_profiles set name=%s, budget=%s, phone=%s, profession=%s, alert=%s where login_id=%s'
+        param = (name, budget, phone, profession, alert, login_id)
+        get_result(query, param)
+
+    @staticmethod
+    def get_spent_and_budget(email):
+        login_id = UserModel.find_by_email(email)["id"]
+        query = 'SELECT total_spent, budget FROM user_profiles WHERE login_id = %s'
+        param = (login_id,)
+        result = get_result(query, param)
+        if result:
+            result = result[0]
+            return {
+                "total_expense": result[0],
+                "budget": result[1]
+            }
+        return result
+
+    @staticmethod
+    def increase_spent(amount: float, login_id: int):
+        query = 'update user_profiles set total_spent=total_spent+%s where login_id=%s;'
+        param = (amount, login_id,)
+        get_result(query, param)
+
+    @staticmethod
+    def decrease_spent(amount: float, login_id: int):
+        query = 'update user_profiles set total_spent=total_spent-%s where login_id=%s;'
+        param = (amount, login_id,)
+        get_result(query, param)
