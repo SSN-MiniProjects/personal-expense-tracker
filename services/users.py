@@ -18,7 +18,7 @@ class UserService:
 
     @staticmethod
     def is_existed(email: str):
-        return True if UserModel.find_by_email(email) is not None else False
+        return True if UserModel.find_by_email(email) else False
 
     @staticmethod
     def get(email: str):
@@ -35,7 +35,19 @@ class UserProfileService:
 
     @staticmethod
     def get(email: str):
-        return UserProfileModel.find_by_email(email)
+        result = UserProfileModel.find_by_email(email)
+
+        if result:
+            result = result[0]
+            return {
+                "name": result[0],
+                "budget": result[1],
+                "phone": result[2],
+                "profession": result[3],
+                "alert": result[4]
+            }
+
+        return result
 
     @staticmethod
     def update(email, name, budget, phone, profession, alert):
@@ -43,13 +55,10 @@ class UserProfileService:
 
     @staticmethod
     def is_valid_phone(phone_number: str):
-
         try:
             p = phonenumbers.parse(phone_number)
             if phonenumbers.is_valid_number(p):
                 return True
-
         except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
             pass
-
         return False

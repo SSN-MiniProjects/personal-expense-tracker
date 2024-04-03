@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import InputRequired, ValidationError
 from flask_login import login_required, current_user
-
+import humanize
 from config.constants import ErrorConstants
 from config.factory import AppFlask
 from services.events import EventService
@@ -25,21 +25,19 @@ class UserEvent(FlaskForm):
             raise ValidationError('Enter a valid budget')
 
 
-@app.route('/add_event', methods=['GET', 'POST'])
-@login_required
-def add_event():
+def create_event():
     form = UserEvent()
     user_email = current_user.email
-    template = render_template('add_event.html', form=form)
 
     if not form.validate_on_submit():
-        return template
+        return render_template('add_event.html', form=form)
 
+    template = render_template('add_event.html', form=form)
     if form.validate_on_submit():
         name = form.name.data
         budget = form.budget.data
 
-        if EventService.is_existed(user_email, name) is not None:
+        if EventService.is_existed_by_name(user_email, name):
             flash(ErrorConstants.DUPLICATE_EVENT_NAME, "error")
             return template
 
@@ -48,25 +46,24 @@ def add_event():
         return redirect(url_for('event_list'))
 
 
-@app.route('/event_list', methods=['GET'])
-@login_required
-def event_list():
+
+
+def show_event_list():
     user_email = current_user.email
-    events = EventService.get_event_list(user_email)
+    events = EventService.get_list(user_email)
     return render_template("event_list.html", events=events)
 
 
-@app.route('/event_list/<int:id>', methods=['GET'])
-@login_required
-def get_specific_event(id):
+
+
+
+
+def get_event(id):
     user_email = current_user.email
-    check_event = get_event_by_id(user_email, id)
-
-    if len(check_event) == 0:
-        flash("Event not found", "error")
+    if not EventService.is_existed_by_id(user_email, id):
+        flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-
-    result = check_event[0]
+    result = EventService.get(user_email, id)[0]
     event_details = {
         "id": result["id"],
         "name": result["name"],
@@ -75,45 +72,35 @@ def get_specific_event(id):
         "spent": humanize.intcomma(result["spent"]),
 
     }
-
-    event_transactions = get_transactions_by_event(id)
+    event_transactions = EventService.get_transactions(id)
     return render_template("view_event.html", event=event_details, transactions=event_transactions)
 
 
-@app.route('/event_list/<int:id>/update', methods=['GET', 'POST'])
-@login_required
-def update_event(id):
+
+
+def update_specific_event(id):
     user_email = current_user.email
-    check_event = get_event_by_id(user_email, id)
-
-    if len(check_event) == 0:
-        flash("Event not found", "error")
+    if not EventService.is_existed_by_id(user_email, id):
+        flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-
-    event_details = check_event[0]
+    event_details = EventService.get(user_email, id)[0]
     form = UserEvent(name=event_details["name"], budget=event_details["budget"])
-
-    if form.validate_on_submit():
-        name = form.name.data
-        budget = form.budget.data
-        print(name, budget)
-        update_event_by_id(event_details['id'], name, budget)
-        flash(event_details["name"] + " updated !", "success")
-        return redirect(url_for('get_specific_event', id=event_details["id"]))
-
-    return render_template('update_event.html', form=form)
+    template = render_template('update_event.html', form=form)
+    if not form.validate_on_submit():
+        return template
+    EventService.update(event_details['id'], form.name.data, form.budget.data)
+    flash(event_details["name"] + " updated !", "success")
+    return redirect(url_for('get_specific_event', id=event_details["id"]))
 
 
-@app.route('/event_list/<int:id>/delete', methods=['GET', 'POST'])
-@login_required
-def delete_specific_event(id):
+
+
+
+def delete_event(id):
     user_email = current_user.email
-    check_event = get_event_by_id(user_email, id)
-
-    if len(check_event) == 0:
-        flash("Event not found", "error")
+    if not EventService.is_existed_by_id(user_email, id):
+        flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-
-    delete_event_by_id(id)
+    EventService.delete(id, user_email)
     flash("Event deleted", "success")
     return redirect(url_for('event_list'))

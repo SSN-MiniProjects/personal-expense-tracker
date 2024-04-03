@@ -23,17 +23,13 @@ class UserProfileForm(FlaskForm):
         if not UserProfileService.is_valid_phone(phone.data):
             raise StopValidation('Enter a valid phone number')
 
-
     def validate_budget(self, budget):
         if int(budget.data) < 0:
             raise ValidationError('Enter a valid budget')
 
 
-@app.route('/customize', methods=['GET', 'POST'])
-@login_required
-def customize():
+def update_profile():
     details = UserProfileService.get(current_user.email)
-
     form = UserProfileForm(
         name=details["name"],
         budget=details["budget"],
@@ -41,11 +37,8 @@ def customize():
         profession=details["profession"],
         alert=details["alert"])
 
-    template = render_template('customize.html', form=form)
-
     if not form.validate_on_submit():
-        return template
-
+        return render_template('customize.html', form=form)
     name = form.name.data
     budget = float(form.budget.data)
     phone = form.phone.data
@@ -54,4 +47,3 @@ def customize():
     UserProfileService.update(current_user.email, name, budget, phone, profession, alert)
     flash("Profile updated successfully", "success")
     return redirect(url_for('customize'))
-

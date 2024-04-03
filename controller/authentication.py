@@ -35,9 +35,7 @@ class RegisterForm(FlaskForm):
 app = AppFlask().instance
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+def registration():
     form = RegisterForm()
     template = render_template('register.html', form=form)
     if not form.validate_on_submit():
@@ -47,13 +45,11 @@ def register():
     if UserService.is_existed(email):
         flash(ErrorConstants.DUPLICATE_EMAIL_REG, 'error')
         return template
-    # resp = make_response(render_template('email_confirmation.html', email=entered_email))
     UserService.register(email, password)
     return make_response(redirect(location=url_for('login')))
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+def start_login():
     form = LoginForm()
     template = render_template('login.html', form=form)
 
@@ -77,9 +73,7 @@ def login():
     return success_response
 
 
-@app.route('/logout', methods=['GET', 'POST'])
-@login_required
-def logout():
+def start_logout():
     logout_user()
     flash('Logged Out', 'success')
     return redirect(url_for('login'))

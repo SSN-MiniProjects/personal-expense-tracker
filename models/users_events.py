@@ -10,14 +10,14 @@ class EventModel:
         query = 'SELECT * from user_events where login_id=%s and name=%s'
         param = (login_id, event_name)
         res = get_result(query, param)
-        return res.fetchone()
+        return res
 
     @staticmethod
-    def find_by_email_id(email: str, event_id: int):
+    def find_by_email_id(email: str, event_id: int) -> list[dict]:
         login_id = UserModel.find_by_email(email)["id"]
         query = 'SELECT id, name, budget, spent from user_events where id=%s and login_id=%s'
         param = (event_id, login_id)
-        result = get_result(query, param).fetchall()
+        result = get_result(query, param)
         data = []
         for item in result:
             data.append({
@@ -65,8 +65,21 @@ class EventModel:
         param = (event_id,)
         get_result(query, param)
 
-        # delete the transactions having this event id
-        query = 'delete from user_transactions where event_id=%s'
+    @staticmethod
+    def increase_spent(amount: float, event_id: int):
+        query = 'update user_events set spent=spent+%s where id=%s'
+        param = (amount, event_id,)
+        get_result(query, param)
+
+    @staticmethod
+    def decrease_spent(amount: float, event_id: int):
+        query = 'update user_events set spent=spent-%s where id=%s'
+        param = (amount, event_id,)
+        get_result(query, param)
+
+    @staticmethod
+    def get_name(event_id: int):
+        query = 'select name from user_events where id=%s'
         param = (event_id,)
-        cursor.execute(query, param)
+        return get_result(query, param)
 

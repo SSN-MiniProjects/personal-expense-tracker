@@ -1,18 +1,21 @@
 from flask_wtf import FlaskForm
-from flask_wtf.form import _Auto
 from wtforms import StringField, SubmitField, SelectField, DateField, FloatField
-from wtforms.validators import InputRequired, Length, ValidationError
-from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms.validators import InputRequired, ValidationError
+from flask_wtf.file import FileField, FileAllowed
 import datetime
-from config.db import TransactionFormChoices
-from flask_login import login_required
 
+from config.constants import ErrorConstants
+from config.db import TransactionFormChoices
+from flask_login import login_required, current_user
+from flask import request, redirect, render_template, flash, url_for
 from config.factory import AppFlask
+from services.events import EventService
+from services.transactions import TransactionService
 
 app = AppFlask().instance
 
+
 class Transaction(FlaskForm):
-    # login_id = StringField(render_kw={"placeholder": "Login ID"})
     transaction = FloatField(label="Expense Amount", validators=[
         InputRequired()
     ],
@@ -40,13 +43,13 @@ class TransactionFile(FlaskForm):
     file = FileField('csv', validators=[
         FileAllowed(['csv'], 'CSV only!')])
     submit1 = SubmitField('submit')
-@app.route('/add_transaction', methods=['GET','POST'])
-@login_required
-def add_new_transaction():
+
+
+def add_new_expense():
     event_id = request.args.get('event_id')
     user_email = current_user.email
     form = Transaction()
-    events = get_user_events(user_email)
+    events = EventService.get_list(user_email)
 
     l = [(None, None)]
     for event in events:
@@ -56,6 +59,11 @@ def add_new_transaction():
         else:
             l.append(pair)
     form.event.choices = l
+
+    template = render_template('add_transaction.html', form=form, error="Nil")
+    if not form.validate_on_submit():
+        return template
+
     if form.validate_on_submit():
         transaction = form.transaction.data
         mode = form.mode.data
@@ -63,32 +71,32 @@ def add_new_transaction():
         datestamp = form.datestamp.data
         note = form.note.data
         event = form.event.data
-        add_transaction(user_email, transaction, mode, category, datestamp, note, event)
+
+        if event == 'None':
+            event = None
+        else:
+            event = int(event)
+
+        TransactionService.create(user_email, transaction, mode, category, datestamp, note, event)
         flash("Expense added successfully", "success")
         if request.args.get('event_id') is None:
             return redirect(url_for('view_transaction'))
         else:
-            return redirect(url_for('get_specific_event', id= event_id))
-
-    return render_template('add_transaction.html', form = form, error = "Nil")
+            return redirect(url_for('get_specific_event', id=event_id))
 
 
-@app.route('/view_transaction', methods=['GET', 'POST'])
-@login_required
-def view_transaction():
+def view_all_expenses():
     query = request.args.get('options')
     filters = {
         "category": TransactionFormChoices.CATEGORY,
         "mode": TransactionFormChoices.MODE,
         "event": []
     }
-
     user_email = current_user.email
-    user_events = get_user_events(user_email)
+    user_events = EventService.get_list(user_email)
     for event in user_events:
         filters["event"].append(event["name"])
-
-    temp_result = get_transactions(user_email)
+    temp_result = TransactionService.get_by_email(user_email)
     result = []
     if (query == 'dates_between'):
         input1 = datetime.datetime.strptime(request.args.get('input1'), "%Y-%m-%d")
@@ -121,21 +129,16 @@ def view_transaction():
                 result.append(item)
     else:
         result = temp_result
-
     return render_template('view_transaction.html', res=result, filters=filters)
 
 
-@app.route('/view_transaction/<int:id>/update', methods=['GET', 'POST'])
-@login_required
-def update_specific_transaction(id):
+def update_expense(id):
     user_email = current_user.email
-    check_transaction = get_transaction_by_id(user_email, id)
-
-    if len(check_transaction) == 0:
-        flash("Transaction not found", "error")
+    specific_transaction = TransactionService.get_by_email_id(user_email, id)
+    if len(specific_transaction) == 0:
+        flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-
-    data = check_transaction[0]
+    data = specific_transaction[0]
     form = Transaction(
         transaction=data["transaction"],
         mode=data["mode"],
@@ -143,45 +146,38 @@ def update_specific_transaction(id):
         datestamp=data["datestamp"],
         note=data["note"],
     )
-    user_events = get_user_events(user_email)
-    l = [(None, None)]
+    user_events = EventService.get_list(user_email)
+    choice_list = [(None, None)]
     for event in user_events:
         pair = (event["id"], event["name"])
         if event["id"] == data["event"]:
-            l.insert(0, pair)
+            choice_list.insert(0, pair)
         else:
-            l.append(pair)
-
-    form.event.choices = l
-
-    if form.validate_on_submit():
-        transaction = form.transaction.data
-        mode = form.mode.data
-        category = form.category.data
-        datestamp = form.datestamp.data
-        note = form.note.data
-        event = form.event.data
-        update_transaction_by_id(data['id'], user_email, transaction, mode, category, datestamp, note, event)
-        flash("Transaction updated", "success")
-        if request.args.get('event_id') is None:
-            return redirect(url_for('view_transaction'))
-        else:
-            return redirect(url_for('get_specific_event', id=request.args.get('event_id')))
-
-    return render_template('update_transaction.html', form=form)
+            choice_list.append(pair)
+    form.event.choices = choice_list
+    template = render_template('update_transaction.html', form=form)
+    if not form.validate_on_submit():
+        return template
+    transaction = form.transaction.data
+    mode = form.mode.data
+    category = form.category.data
+    datestamp = form.datestamp.data
+    note = form.note.data
+    event = form.event.data
+    TransactionService.update(data['id'], user_email, transaction, mode, category, datestamp, note, event)
+    flash("Transaction updated", "success")
+    if request.args.get('event_id') is None:
+        return redirect(url_for('view_transaction'))
+    else:
+        return redirect(url_for('get_specific_event', id=request.args.get('event_id')))
 
 
-@app.route('/view_transaction/<int:id>/delete', methods=['GET', 'POST'])
-@login_required
-def delete_specific_transaction(id):
-    user_email = current_user.email
-    check_transaction = get_transaction_by_id(user_email, id)
-
-    if len(check_transaction) == 0:
-        flash("Transaction not found", "error")
+def delete_expense(id: int):
+    user_email: str = current_user.email
+    if not TransactionService.is_existed_by_id(user_email, id):
+        flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-
-    delete_transaction_by_id(id, user_email)
+    TransactionService.delete(user_email, id)
     flash("Transaction deleted", "success")
     if request.args.get('event_id') is None:
         return redirect(url_for('view_transaction'))

@@ -6,3 +6,5 @@ class ErrorConstants:
     WRONG_PASSWORD = "Incorrect Password!"
     DUPLICATE_EMAIL_REG = "Email already exists!"
     DUPLICATE_EVENT_NAME = "Event already exists!"
+    EVENT_NOT_FOUND = "Event Not Found !"
+    TRANSACTION_NOT_FOUND = "Transaction not found!"

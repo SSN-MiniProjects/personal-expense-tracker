@@ -12,8 +12,9 @@ class UserModel:
     def find_by_id(user_id: int):
         query = 'SELECT * FROM user_credentials WHERE id = %s'
         param = (user_id,)
-        res = get_result(query, param).fetchone()
-        if res is not None:
+        res = get_result(query, param)
+        if res:
+            res = res[0]
             return {
                 "id": res[0],
                 "email": res[1],
@@ -26,7 +27,8 @@ class UserModel:
         query = 'SELECT * FROM user_credentials WHERE email = %s'
         param = (email,)
         res = get_result(query, param)
-        if res is not None:
+        if res:
+            res = res[0]
             return {
                 "id": res[0],
                 "email": res[1],
@@ -37,5 +39,5 @@ class UserModel:
     @staticmethod
     def get_count():
         query = 'SELECT count(email) FROM user_credentials'
-        result = get_result(query).fetchone()
-        return result[0]
+        result = get_result(query)
+        return result[0][0]

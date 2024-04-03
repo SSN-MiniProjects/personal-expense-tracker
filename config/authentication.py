@@ -1,10 +1,5 @@
-from factory import LoginManagerFlask, AppFlask
-
-app = AppFlask().instance
-login_manager = LoginManagerFlask().instance
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-login_manager.login_message_category = "error"
+from config.factory import LoginManagerFlask, AppFlask
+from models.users_credentials import UserModel
 
 
 class SessionUser:
@@ -31,10 +26,4 @@ class SessionUser:
         return str(self.id)
 
 
-@login_manager.user_loader
-def load_user(id):
-    user = get_user_by_id(id)
-    if user is None:
-        return None
-    usr_obj = SessionUser(user["id"], user["email"])
-    return usr_obj
+

@@ -1,44 +1,32 @@
-from flask_login import login_required
+import calendar
+from datetime import date
 
+from flask_login import login_required, current_user
+import humanize
 from config.factory import AppFlask
+from services.dashboard import DashboardService
+from flask import render_template
 
 app = AppFlask().instance
 
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
+def view_dashboard():
     user_email = current_user.email
-
-    Daily = get_month_graph_data(user_email, date.today())
-    Monthly = get_year_graph_data(user_email, date.today())
-    Category = get_category_graph_data(user_email, date.today())
-
-    result = get_spent_and_budget(user_email)
-    total_spent = result["total_expense"]
-    budget = result["budget"]
-    budget_percentage = round(total_spent / budget * 100, 2) if budget > 0 else -1
-    user_count = get_user_count()
-    today_expense = get_day_expense(user_email, date.today().strftime("%Y-%m-%d"))
-    current_month_expense = get_month_expense(user_email, date.today().strftime("%Y-%m-%d"))
-    current_year_expense = get_year_expense(user_email, date.today().strftime("%Y-%m-%d"))
-
-    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-    CardData = {
-        "TotalExpense": humanize.intcomma(total_spent),
-        "TodayExpense": humanize.intcomma(today_expense),
-        "CurrentMonthExpense": humanize.intcomma(current_month_expense),
-        "CurrentYearExpense": humanize.intcomma(current_year_expense),
-        "BudgetPercentage": budget_percentage,
-        "UserCount": humanize.intcomma(user_count),
+    card_data = DashboardService.get_card_data(user_email)
+    card_data_dict = {
+        "TotalExpense": humanize.intcomma(card_data["expense"]["total"]),
+        "TodayExpense": humanize.intcomma(card_data["expense"]["today"]),
+        "CurrentMonthExpense": humanize.intcomma(card_data["expense"]["current_month"]),
+        "CurrentYearExpense": humanize.intcomma(card_data["expense"]["current_year"]),
+        "BudgetPercentage": card_data["budget_percentage"],
+        "UserCount": humanize.intcomma(card_data["user_count"]),
+    }
+    graph_data = DashboardService.get_graph_data(user_email)
+    pie_chart_data = DashboardService.get_pie_data(user_email)
+    graph_data_dict = {
+        "ChartArea": {"labels": graph_data["daily"]["labels"], "data": graph_data["daily"]["data"]},
+        "ChartPie": {"labels": pie_chart_data["category"]["labels"], "data": pie_chart_data["category"]["data"]},
+        "ChartBar": {"labels": graph_data["monthly"]["labels"], "data": graph_data["monthly"]["data"]}
     }
 
-    Month_vice_data = [month_names[i - 1] for i in Monthly[0]]
-
-    GraphData = {
-        "ChartArea": {"labels": Daily[0], "data": Daily[1]},
-        "ChartPie": {"labels": Category[0], "data": Category[1]},
-        "ChartBar": {"labels": Month_vice_data, "data": Monthly[1]}
-    }
-    return render_template('dashboard.html', GraphData=GraphData, CardData=CardData)
+    print(card_data)
+    return render_template('dashboard.html', GraphData=graph_data_dict, CardData=card_data_dict)

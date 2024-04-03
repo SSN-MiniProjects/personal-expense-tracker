@@ -9,24 +9,19 @@ class SingletonClass(object):
     instance = None
 
     def __new__(cls):
-        if not hasattr(cls, 'instance'):
+        if cls.instance is None:
             cls.instance = super(SingletonClass, cls).__new__(cls)
         return cls.instance
 
 
 class LoginManagerFlask(SingletonClass):
-    instance = LoginManager()
+    def __init__(self):
+        self.instance = LoginManager()
 
 
 class AppFlask(SingletonClass):
-    instance = Flask(__name__)
 
-
-class Database(SingletonClass):
-    instance = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
-        host=os.getenv("DB_HOST"),
-        port="5432"
-    )
+    def __init__(self):
+        self.instance = Flask(__name__,
+                              template_folder="../templates",
+                              static_folder="../static")
