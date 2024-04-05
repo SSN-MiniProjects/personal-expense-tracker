@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 
 from config.authentication import SessionUser
@@ -119,4 +121,5 @@ def delete_specific_transaction(id):
     return delete_expense(id)
 
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=bool(os.getenv("DEBUG")))
