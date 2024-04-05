@@ -7,6 +7,7 @@ import humanize
 from config.constants import ErrorConstants
 from config.factory import AppFlask
 from services.events import EventService
+from utilities.common import CommonUtils
 
 app = AppFlask().instance
 
@@ -46,16 +47,16 @@ def create_event():
         return redirect(url_for('event_list'))
 
 
-
-
 def show_event_list():
     user_email = current_user.email
     events = EventService.get_list(user_email)
+
+    def update_budget_percentage(event):
+        event["budget_percentage"] = EventService.get_budget_percentage(user_email, event["id"], event["budget"])
+        return event
+
+    events = list(map(update_budget_percentage, events))
     return render_template("event_list.html", events=events)
-
-
-
-
 
 
 def get_event(id):
@@ -68,14 +69,12 @@ def get_event(id):
         "id": result["id"],
         "name": result["name"],
         "budget": humanize.intcomma(result["budget"]),
-        "budget_percentage": round(result["spent"] / result["budget"] * 100, 2),
+        "budget_percentage": CommonUtils.calculate_budget_percentage(result["spent"], result["budget"]),
         "spent": humanize.intcomma(result["spent"]),
 
     }
     event_transactions = EventService.get_transactions(id)
     return render_template("view_event.html", event=event_details, transactions=event_transactions)
-
-
 
 
 def update_specific_event(id):
@@ -91,9 +90,6 @@ def update_specific_event(id):
     EventService.update(event_details['id'], form.name.data, form.budget.data)
     flash(event_details["name"] + " updated !", "success")
     return redirect(url_for('get_specific_event', id=event_details["id"]))
-
-
-
 
 
 def delete_event(id):
