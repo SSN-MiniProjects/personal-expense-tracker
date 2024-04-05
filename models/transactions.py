@@ -14,7 +14,6 @@ class TransactionModel:
         query = ('INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note, event_id) '
                  'VALUES (%s,%s,%s,%s,%s,%s,%s)')
         param = (login_id, transaction, mode, category, datestamp, note, event)
-        print(param)
         get_result(query, param)
 
     @staticmethod
