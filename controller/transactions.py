@@ -18,8 +18,7 @@ app = AppFlask().instance
 class Transaction(FlaskForm):
     transaction = FloatField(label="Expense Amount", validators=[
         InputRequired()
-    ],
-                             )
+    ])
     mode = SelectField('Mode', choices=TransactionFormChoices.MODE, validators=[
         InputRequired()], render_kw={"placeholder": "Category"})
     category = SelectField('Category', choices=TransactionFormChoices.CATEGORY, validators=[
@@ -31,7 +30,8 @@ class Transaction(FlaskForm):
     submit = SubmitField('Submit')
 
     def validate_transaction(self, transaction):
-        if int(transaction.data) <= 0:
+        if not transaction.data or int(transaction.data) <= 0:
+            self.transaction.errors.clear()
             raise ValidationError('Enter a valid amount')
 
     def validate_datestamp(self, field):
@@ -60,9 +60,8 @@ def add_new_expense():
             l.append(pair)
     form.event.choices = l
 
-    template = render_template('add_transaction.html', form=form, error="Nil")
     if not form.validate_on_submit():
-        return template
+        return render_template('add_transaction.html', form=form)
 
     if form.validate_on_submit():
         transaction = form.transaction.data
@@ -155,9 +154,8 @@ def update_expense(id):
         else:
             choice_list.append(pair)
     form.event.choices = choice_list
-    template = render_template('update_transaction.html', form=form)
     if not form.validate_on_submit():
-        return template
+        return render_template('update_transaction.html', form=form)
     transaction = form.transaction.data
     mode = form.mode.data
     category = form.category.data

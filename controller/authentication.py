@@ -15,7 +15,7 @@ from services.users import UserService
 class LoginForm(FlaskForm):
     email = StringField('Email',
                         id='email_login',
-                        validators=[DataRequired()])
+                        validators=[DataRequired(), Email()])
     password = PasswordField('Password',
                              id='password_login',
                              validators=[DataRequired()])
@@ -37,33 +37,31 @@ app = AppFlask().instance
 
 def registration():
     form = RegisterForm()
-    template = render_template('register.html', form=form)
+    register_template = 'register.html'
     if not form.validate_on_submit():
-        return template
+        return render_template(register_template, form=form)
     email = form.email.data
     password = form.password.data
     if UserService.is_existed(email):
         flash(ErrorConstants.DUPLICATE_EMAIL_REG, 'error')
-        return template
+        return render_template(register_template, form=form)
     UserService.register(email, password)
     return make_response(redirect(location=url_for('login')))
 
 
 def start_login():
     form = LoginForm()
-    template = render_template('login.html', form=form)
-
+    login_template = 'login.html'
     if not form.validate_on_submit():
-        return template
-
+        return render_template(login_template, form=form)
     email = form.email.data
     if not UserService.is_existed(email):
         flash(ErrorConstants.ACCOUNT_NOT_FOUND, "error")
-        return template
+        return render_template(login_template, form=form)
     password = form.password.data
     if not UserService.validate_password(email, password):
         flash(ErrorConstants.WRONG_PASSWORD, "error")
-        return template
+        return render_template(login_template, form=form)
     user = UserService.get(email)
     usr_obj = SessionUser(user["id"], user["email"])
     login_user(usr_obj, remember=True)

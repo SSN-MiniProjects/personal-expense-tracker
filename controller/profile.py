@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired, Length, DataRequired, ValidationEr
 import phonenumbers
 from flask_login import login_required, current_user
 
+from config.constants import InputErrorMessages
 from config.factory import AppFlask
 from services.users import UserProfileService
 
@@ -13,7 +14,7 @@ app = AppFlask().instance
 
 class UserProfileForm(FlaskForm):
     name = StringField()
-    budget = StringField('Budget')
+    budget = FloatField('Budget')
     phone = StringField('Phone', render_kw={"placeholder": "Enter 10-digit number with country code"})
     profession = StringField()
     alert = BooleanField(default=False)
@@ -21,11 +22,12 @@ class UserProfileForm(FlaskForm):
 
     def validate_phone(self, phone):
         if not UserProfileService.is_valid_phone(phone.data):
-            raise StopValidation('Enter a valid phone number')
+            raise ValidationError(InputErrorMessages.NOT_VALID_PHONE)
 
     def validate_budget(self, budget):
-        if int(budget.data) < 0:
-            raise ValidationError('Enter a valid budget')
+        if not budget.data or int(budget.data) < 0:
+            self.budget.errors.clear()
+            raise ValidationError(InputErrorMessages.NOT_VALID_BUDGET)
 
 
 def update_profile():

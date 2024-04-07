@@ -1,10 +1,10 @@
 from flask import flash, redirect, url_for, render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, FloatField
 from wtforms.validators import InputRequired, ValidationError
 from flask_login import login_required, current_user
 import humanize
-from config.constants import ErrorConstants
+from config.constants import ErrorConstants, InputErrorMessages
 from config.factory import AppFlask
 from services.events import EventService
 from utilities.common import CommonUtils
@@ -16,14 +16,15 @@ class UserEvent(FlaskForm):
     name = StringField(validators=[
         InputRequired()
     ], )
-    budget = StringField('Budget', validators=[
+    budget = FloatField('Budget', validators=[
         InputRequired()
     ], )
     submit = SubmitField('Submit')
 
     def validate_budget(self, budget):
-        if int(budget.data) <= 0:
-            raise ValidationError('Enter a valid budget')
+        if not budget.data or int(budget.data) <= 0:
+            self.budget.errors.clear()
+            raise ValidationError(InputErrorMessages.NOT_VALID_BUDGET)
 
 
 def create_event():
@@ -34,17 +35,16 @@ def create_event():
         return render_template('add_event.html', form=form)
 
     template = render_template('add_event.html', form=form)
-    if form.validate_on_submit():
-        name = form.name.data
-        budget = form.budget.data
+    name = form.name.data
+    budget = form.budget.data
 
-        if EventService.is_existed_by_name(user_email, name):
-            flash(ErrorConstants.DUPLICATE_EVENT_NAME, "error")
-            return template
+    if EventService.is_existed_by_name(user_email, name):
+        flash(ErrorConstants.DUPLICATE_EVENT_NAME, "error")
+        return template
 
-        EventService.create(user_email, name, budget)
-        flash("Event added successfully", "success")
-        return redirect(url_for('event_list'))
+    EventService.create(user_email, name, budget)
+    flash("Event added successfully", "success")
+    return redirect(url_for('event_list'))
 
 
 def show_event_list():
@@ -84,9 +84,8 @@ def update_specific_event(id):
         return redirect(url_for('dashboard'))
     event_details = EventService.get(user_email, id)[0]
     form = UserEvent(name=event_details["name"], budget=event_details["budget"])
-    template = render_template('update_event.html', form=form)
     if not form.validate_on_submit():
-        return template
+        return render_template('update_event.html', form=form)
     EventService.update(event_details['id'], form.name.data, form.budget.data)
     flash(event_details["name"] + " updated !", "success")
     return redirect(url_for('get_specific_event', id=event_details["id"]))

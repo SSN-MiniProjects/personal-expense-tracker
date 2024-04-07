@@ -8,3 +8,9 @@ class ErrorConstants:
     DUPLICATE_EVENT_NAME = "Event already exists!"
     EVENT_NOT_FOUND = "Event Not Found !"
     TRANSACTION_NOT_FOUND = "Transaction not found!"
+
+
+class InputErrorMessages:
+    NOT_VALID_BUDGET = "Please enter valid budget amount"
+    NOT_VALID_AMOUNT = "Please enter valid transaction amount"
+    NOT_VALID_PHONE = "Please enter valid phone number"
