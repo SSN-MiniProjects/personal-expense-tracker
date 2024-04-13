@@ -4,16 +4,6 @@ from models.users_events import EventModel
 from models.users_profiles import UserProfileModel
 
 
-def add_spent(event: int, amount: float):
-    if event is not None:
-        EventModel.increase_spent(amount, event)
-
-
-def remove_spent(event: int, amount: float):
-    if event is not None:
-        EventModel.decrease_spent(amount, event)
-
-
 class TransactionService:
 
     @staticmethod
@@ -42,9 +32,6 @@ class TransactionService:
     def create(user_email, amount, mode, category, datestamp, note, event):
         login_id = UserModel.find_by_email(user_email)["id"]
         TransactionModel.create(login_id, amount, mode, category, datestamp, note, event)
-        UserProfileModel.increase_spent(amount, login_id)
-        if event is not None:
-            EventModel.increase_spent(amount, event)
 
     @staticmethod
     def get_by_email(user_email: str):
@@ -69,33 +56,15 @@ class TransactionService:
 
     @staticmethod
     def delete(email: str, transaction_id: int):
-        login_id = UserModel.find_by_email(email)["id"]
-        data = TransactionModel.get_event_amount(transaction_id)
-        amount = data["amount"]
-        event_id = data["event_id"]
-        UserProfileModel.decrease_spent(amount, login_id)
-        if event_id is not None:
-            EventModel.decrease_spent(amount, event_id)
         TransactionModel.delete(transaction_id)
 
     @staticmethod
     def update(transaction_id, email, amount, mode, category, datestamp, note, event):
-        login_id = UserModel.find_by_email(email)["id"]
-        data = TransactionModel.get_event_amount(transaction_id)
-        previous_amount = data["amount"]
-        previous_event_id = data["event_id"]
-
-        if previous_event_id != event:
-            remove_spent(previous_event_id, previous_amount)
-            add_spent(event, amount)
-
-        else:
-            diff = amount - previous_amount
-            if diff < 0:
-                UserProfileModel.decrease_spent(diff, login_id)
-                remove_spent(previous_event_id, diff)
-            else:
-                UserProfileModel.increase_spent(diff, login_id)
-                add_spent(previous_event_id, diff)
-
         TransactionModel.update(transaction_id, amount, mode, category, datestamp, note, event)
+
+    @staticmethod
+    def get_user_spent(login_id: int):
+        result = TransactionModel.get_sum_transactions(login_id)
+        if result:
+            return result[0][1]
+        return 0

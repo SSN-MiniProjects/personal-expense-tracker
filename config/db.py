@@ -40,7 +40,6 @@ def init_db():
         login_id INT NOT NULL,\
         name VARCHAR(30),\
         budget INT DEFAULT 0,\
-        total_spent NUMERIC DEFAULT 0,\
         phone VARCHAR(30),\
         profession VARCHAR(30),\
         alert BOOLEAN DEFAULT FALSE,\
@@ -51,7 +50,6 @@ def init_db():
             login_id INT NOT NULL,\
             name VARCHAR(30),\
             budget INT DEFAULT 0,\
-            spent NUMERIC DEFAULT 0,\
             FOREIGN KEY (login_id) REFERENCES USER_CREDENTIALS(id) ON DELETE CASCADE);"
 
     createUserTransactions = "CREATE TABLE IF NOT EXISTS user_transactions (\

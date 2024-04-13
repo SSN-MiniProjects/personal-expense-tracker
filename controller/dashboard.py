@@ -28,5 +28,4 @@ def view_dashboard():
         "ChartBar": {"labels": graph_data["monthly"]["labels"], "data": graph_data["monthly"]["data"]}
     }
 
-    print(card_data)
     return render_template('dashboard.html', GraphData=graph_data_dict, CardData=card_data_dict)

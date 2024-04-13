@@ -14,7 +14,6 @@ class TransactionModel:
         query = ('INSERT INTO user_transactions (login_id,transaction,mode,category,datestamp,note, event_id) '
                  'VALUES (%s,%s,%s,%s,%s,%s,%s)')
         param = (login_id, transaction, mode, category, datestamp, note, event)
-        print(param)
         get_result(query, param)
 
     @staticmethod
@@ -165,3 +164,19 @@ class TransactionModel:
         param = (login_id, required_date)
         res = get_result(query, param)
         return res
+
+    @staticmethod
+    def get_sum_transactions(login_id: int)->list[tuple]:
+        query = '''select login_id, sum(transaction) from public.user_transactions
+                 where login_id = %s
+                 group by 1'''
+        param = (login_id, )
+        return get_result(query, param)
+
+    @staticmethod
+    def get_sum_event_transactions(login_id: int, event_id: int):
+        query = '''select login_id, event_id, sum(transaction) from public.user_transactions
+                 where login_id = %s and event_id = %s
+                 group by 1,2'''
+        param = (login_id, event_id)
+        return get_result(query, param)

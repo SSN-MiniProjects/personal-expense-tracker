@@ -3,6 +3,8 @@ import calendar
 from models.transactions import TransactionModel
 from models.users_credentials import UserModel
 from models.users_profiles import UserProfileModel
+from services.transactions import TransactionService
+from utilities.common import CommonUtils
 
 
 class ExpenseSumType:
@@ -94,15 +96,16 @@ class DashboardService:
     @staticmethod
     def get_card_data(email: str):
         current_date = datetime.date.today()
-        result = UserProfileModel.get_spent_and_budget(email)
-        budget_percentage = round(result["total_expense"] / result["budget"] * 100, 2) if result["budget"] > 0 else -1
-
+        login_id = UserModel.find_by_email(email)["id"]
+        total_spent = TransactionService.get_user_spent(login_id)
+        budget = UserProfileModel.get_budget(login_id)[0][0]
+        budget_percentage = CommonUtils.calculate_budget_percentage(total_spent, budget) if budget > 0 else -1
         return {
             "expense": {
                 "today": ExpenseSum.get(email, current_date, ExpenseSumType.DAY),
                 "current_month": ExpenseSum.get(email, current_date, ExpenseSumType.MONTH),
                 "current_year": ExpenseSum.get(email, current_date, ExpenseSumType.YEAR),
-                "total": result["total_expense"]
+                "total": total_spent
             },
             "budget_percentage": budget_percentage,
             "user_count": UserModel.get_count()

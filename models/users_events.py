@@ -1,8 +1,16 @@
 from config.db import get_result
+from models.transactions import TransactionModel
 from models.users_credentials import UserModel
 
 
 class EventModel:
+
+    @staticmethod
+    def total_spent(login_id: int, event_id: int):
+        event_spent = TransactionModel.get_sum_event_transactions(login_id, event_id)
+        if event_spent:
+            return event_spent[0][2]
+        return 0
 
     @staticmethod
     def find_by_email_name(email: str, event_name: str):
@@ -13,20 +21,10 @@ class EventModel:
         return res
 
     @staticmethod
-    def find_by_email_id(email: str, event_id: int) -> list[dict]:
-        login_id = UserModel.find_by_email(email)["id"]
-        query = 'SELECT id, name, budget, spent from user_events where id=%s and login_id=%s'
+    def find_by_email_id(login_id: int, event_id: int) -> list:
+        query = 'SELECT id, name, budget from user_events where id=%s and login_id=%s'
         param = (event_id, login_id)
-        result = get_result(query, param)
-        data = []
-        for item in result:
-            data.append({
-                "id": item[0],
-                "name": item[1],
-                "budget": item[2],
-                "spent": item[3],
-            })
-        return data
+        return get_result(query, param)
 
     @staticmethod
     def create(email: str, name: str, budget: float):
@@ -37,20 +35,10 @@ class EventModel:
         get_result(query, param)
 
     @staticmethod
-    def find_all(email: str):
-        login_id = UserModel.find_by_email(email)["id"]
-        query = 'SELECT id, name,budget,spent from user_events where login_id=%s'
+    def find_all(login_id: int):
+        query = 'SELECT id, name,budget from user_events where login_id=%s'
         param = (login_id,)
-        result = get_result(query, param)
-        data = []
-        for item in result:
-            data.append({
-                "id": item[0],
-                "name": item[1],
-                "budget": item[2],
-                "spent": item[3],
-            })
-        return data
+        return get_result(query, param)
 
     @staticmethod
     def update(event_id: int, name: str, budget: float):
@@ -66,20 +54,7 @@ class EventModel:
         get_result(query, param)
 
     @staticmethod
-    def increase_spent(amount: float, event_id: int):
-        query = 'update user_events set spent=spent+%s where id=%s'
-        param = (amount, event_id,)
-        get_result(query, param)
-
-    @staticmethod
-    def decrease_spent(amount: float, event_id: int):
-        query = 'update user_events set spent=spent-%s where id=%s'
-        param = (amount, event_id,)
-        get_result(query, param)
-
-    @staticmethod
     def get_name(event_id: int):
         query = 'select name from user_events where id=%s'
         param = (event_id,)
         return get_result(query, param)
-
