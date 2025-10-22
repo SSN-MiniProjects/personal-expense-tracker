@@ -1,4 +1,5 @@
 name: Build Docker Image and Push to Dockerhub
+env:
 
 on:
   push:
@@ -8,13 +9,13 @@ jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Check out code
 
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image
         with:
-          image: pet-repo/app-image
+          image: pet-repo/myapp
           tags: v1, latest
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
