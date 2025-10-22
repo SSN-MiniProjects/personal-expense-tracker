@@ -1,5 +1,4 @@
 name: Build Docker Image and Push to Dockerhub
-env:
 
 on:
   push:
