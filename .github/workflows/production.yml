@@ -1,7 +1,5 @@
 name: Build Docker Image and Push to Dockerhub
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
 on:
   push:
     branches:
@@ -16,7 +14,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image
         with:
-          image: spearlindens/pet-repo/20251021
+          image: pet-repo/app-image
           tags: v1, latest
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
