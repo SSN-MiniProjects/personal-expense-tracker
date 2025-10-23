@@ -5,3 +5,4 @@ PET.db
 *.bat
 Report*.pdf
 .vercel
+.idea
