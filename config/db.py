@@ -11,7 +11,7 @@ def get_result(query: str, param: Tuple = None):
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASS"),
         host=os.getenv("DB_HOST"),
-        port="5432"
+        port=os.getenv("DB_PORT")
     )
     cursor = conn.cursor()
     res = None
