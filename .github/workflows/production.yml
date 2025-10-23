@@ -29,6 +29,6 @@ jobs:
         env:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK }}
           run: |
-            curl "$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%3Alatest"
+            URL="$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%3Alatest"; http_status=$(curl -s -o /dev/null -w "%{http_code}" "$URL"); if [ "$http_status" -eq 200 ]; then echo "✅ Success ($http_status)"; else echo "❌ Failed ($http_status)"; exit 1; fi
 
 
