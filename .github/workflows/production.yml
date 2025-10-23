@@ -24,11 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
-        name: Deploy Image to Render
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Trigger Render Deploy Hook
         env:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK }}
-          run: |
+        run: |
             URL="$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%3Alatest"; http_status=$(curl -s -o /dev/null -w "%{http_code}" "$URL"); if [ "$http_status" -eq 200 ]; then echo "✅ Success ($http_status)"; else echo "❌ Failed ($http_status)"; exit 1; fi
-
-
