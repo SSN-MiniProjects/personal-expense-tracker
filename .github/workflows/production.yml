@@ -1,4 +1,4 @@
-name: Build and Deploy App in Production
+name: Build and Deploy
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - master
 jobs:
   build:
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +22,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
   deploy:
+    environment: production
     runs-on: ubuntu-latest
     needs: build
     steps:
