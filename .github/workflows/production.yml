@@ -12,7 +12,7 @@ jobs:
         name: Check out code
 
       - uses: mr-smithers-excellent/docker-build-push@v6
-        name: Build & push Docker image
+        name: Image to Dockerhub
         with:
           image: spearlindens/pet-repo
           tags: latest
@@ -25,10 +25,10 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
-        name: Deploy to Render
+        name: Deploy Image to Render
         env:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK }}
           run: |
-            curl "$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%40latest"
+            curl "$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%3Alatest"
 
 
