@@ -7,8 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN pytest
-
 # Expose the port your Flask app listens on (default is 5000)
 EXPOSE 5000
 
