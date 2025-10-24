@@ -6,12 +6,17 @@ from psycopg2 import ProgrammingError
 
 
 def get_result(query: str, param: Tuple = None):
+    db_name = os.environ.get("DB_NAME")
+    username = os.environ.get("DB_USERNAME")
+    password = os.environ.get("DB_PASSWORD")
+    host = os.environ.get("DB_HOST")
+    port = os.environ.get("DB_PORT")
     conn = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=db_name,
+        user=username,
+        password=password,
+        host=host,
+        port=port,
     )
     cursor = conn.cursor()
     res = None
