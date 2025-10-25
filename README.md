@@ -1,6 +1,6 @@
 This is a mini project developed during our study in SSN College of Engineering
 
-Deployed on Vercel - https://personal-expense-tracker-simple.vercel.app/
+Deployed on Vercel - https://personal-expense-management-app.onrender.com
 
 Personal Expense Tracker
 
