@@ -1,0 +1,59 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out code
+
+      - name: Set up Python Version
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test with pytest
+        run: |
+          pytest
+
+  build-image:
+    environment: development
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out code
+
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        name: Image to Dockerhub
+        with:
+          image: spearlindens/pet-repo
+          tags: latest
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+  deploy-image:
+    environment: development
+    runs-on: ubuntu-latest
+    needs: build-image
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Trigger Render Deploy Hook
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          URL="$deploy_url&imgURL=docker.io%2Fspearlindens%2Fpet-repo%3Alatest"; http_status=$(curl -s -o /dev/null -w "%{http_code}" "$URL"); if [ "$http_status" -eq 200 ]; then echo "✅ Success ($http_status)"; else echo "❌ Failed ($http_status)"; exit 1; fi
