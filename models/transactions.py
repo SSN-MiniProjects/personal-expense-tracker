@@ -1,7 +1,7 @@
 import datetime
 
 from config.db import (
-    get_result
+    get_result, get_result_dict
 )
 from models.users_credentials import UserModel
 
@@ -51,10 +51,9 @@ class TransactionModel:
 
     @staticmethod
     def get_all(login_id: int) -> list:
-        query = ('SELECT id, transaction, mode, datestamp, note, category, event_id FROM user_transactions WHERE '
-                 'login_id = %s order by datestamp desc')
+        query = 'select ut.id, ut.login_id, transaction, mode, category, event_id, ue.name as event, ut.datestamp from user_transactions ut left join user_events ue on ut.event_id = ue.id where ut.login_id=%s;'
         param = (login_id,)
-        result = get_result(query, param)
+        result = get_result_dict(query, param)
         return result
 
     @staticmethod

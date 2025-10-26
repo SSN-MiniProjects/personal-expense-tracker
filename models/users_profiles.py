@@ -11,8 +11,7 @@ from models.users_credentials import (
 class UserProfileModel:
 
     @staticmethod
-    def find_by_email(email:str):
-        login_id = UserModel.find_by_email(email)["id"]
+    def find_by_login_id(login_id: int):
         query = 'SELECT name, budget, phone, profession, alert from user_profiles WHERE login_id = %s'
         param = (login_id,)
         result = get_result(query, param)
@@ -26,8 +25,7 @@ class UserProfileModel:
 
 
     @staticmethod
-    def update(email, name, budget, phone, profession, alert):
-        login_id = UserModel.find_by_email(email)["id"]
+    def update(login_id, name, budget, phone, profession, alert):
         query = 'UPDATE user_profiles set name=%s, budget=%s, phone=%s, profession=%s, alert=%s where login_id=%s'
         param = (name, budget, phone, profession, alert, login_id)
         get_result(query, param)

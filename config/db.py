@@ -1,37 +1,52 @@
+import logging
 import os
 from typing import Tuple
 
 import psycopg2
 from psycopg2 import ProgrammingError
+from psycopg2.extras import DictCursor
 
+db_name = os.environ.get("DB_NAME")
+username = os.environ.get("DB_USERNAME")
+password = os.environ.get("DB_PASSWORD")
+host = os.environ.get("DB_HOST")
+port = os.environ.get("DB_PORT")
+
+conn = psycopg2.connect(
+    dbname=db_name,
+    user=username,
+    password=password,
+    host=host,
+    port=port
+)
+conn.autocommit = True
+
+logging.basicConfig(level=logging.INFO)
 
 def get_result(query: str, param: Tuple = None):
-    db_name = os.environ.get("DB_NAME")
-    username = os.environ.get("DB_USERNAME")
-    password = os.environ.get("DB_PASSWORD")
-    host = os.environ.get("DB_HOST")
-    port = os.environ.get("DB_PORT")
-    conn = psycopg2.connect(
-        dbname=db_name,
-        user=username,
-        password=password,
-        host=host,
-        port=port,
-    )
-    cursor = conn.cursor()
-    res = None
-    if param is None:
-        cursor.execute(query)
-    else:
-        cursor.execute(query, param)
+    with conn.cursor() as cursor:
+        if param is None:
+            cursor.execute(query)
+        else:
+            cursor.execute(query, param)
+        try:
+            return cursor.fetchall() if cursor.rowcount >= 0 else []
+        except ProgrammingError as e:
+            logging.error("Error getting result from db {query} with param: {param}".format(query=query, param=param))
+            logging.error(e)
 
-    try:
-        res = cursor.fetchall()
-    except ProgrammingError:
-        pass
-    conn.commit()
-    cursor.close()
-    return res
+def get_result_dict(query: str, param: Tuple = None):
+
+    with conn.cursor(cursor_factory=DictCursor) as cursor:
+        if param is None:
+            cursor.execute(query)
+        else:
+            cursor.execute(query, param)
+        try:
+            return cursor.fetchall()
+        except ProgrammingError:
+            logging.error("Error getting result from db {query} with param: {param}".format(query=query, param=param))
+
 
 
 def init_db():

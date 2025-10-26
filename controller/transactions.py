@@ -4,6 +4,7 @@ from wtforms.validators import InputRequired, ValidationError
 from flask_wtf.file import FileField, FileAllowed
 import datetime
 
+from config.authentication import SessionUser
 from config.constants import ErrorConstants
 from config.db import TransactionFormChoices
 from flask_login import login_required, current_user
@@ -47,9 +48,10 @@ class TransactionFile(FlaskForm):
 
 def add_new_expense():
     event_id = request.args.get('event_id')
-    user_email = current_user.email
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
     form = Transaction()
-    events = EventService.get_list(user_email)
+    events = EventService.get_list(login_id)
 
     l = [(None, None)]
     for event in events:
@@ -76,7 +78,7 @@ def add_new_expense():
         else:
             event = int(event)
 
-        TransactionService.create(user_email, transaction, mode, category, datestamp, note, event)
+        TransactionService.create(login_id, transaction, mode, category, datestamp, note, event)
         flash("Expense added successfully", "success")
         if request.args.get('event_id') is None:
             return redirect(url_for('view_transaction'))
@@ -91,11 +93,12 @@ def view_all_expenses():
         "mode": TransactionFormChoices.MODE,
         "event": []
     }
-    user_email = current_user.email
-    user_events = EventService.get_list(user_email)
+    session_user: SessionUser = current_user
+    login_id = session_user.get_login_id()
+    user_events = EventService.get_list(login_id)
     for event in user_events:
         filters["event"].append(event["name"])
-    temp_result = TransactionService.get_by_email(user_email)
+    temp_result = TransactionService.get_by_login_id(login_id)
     result = []
     if (query == 'dates_between'):
         input1 = datetime.datetime.strptime(request.args.get('input1'), "%Y-%m-%d")
@@ -132,8 +135,9 @@ def view_all_expenses():
 
 
 def update_expense(id):
-    user_email = current_user.email
-    specific_transaction = TransactionService.get_by_email_id(user_email, id)
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
+    specific_transaction = TransactionService.get_by_id(login_id, id)
     if len(specific_transaction) == 0:
         flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
@@ -145,7 +149,7 @@ def update_expense(id):
         datestamp=data["datestamp"],
         note=data["note"],
     )
-    user_events = EventService.get_list(user_email)
+    user_events = EventService.get_list(login_id)
     choice_list = [(None, None)]
     for event in user_events:
         pair = (event["id"], event["name"])
@@ -162,7 +166,7 @@ def update_expense(id):
     datestamp = form.datestamp.data
     note = form.note.data
     event = form.event.data
-    TransactionService.update(data['id'], user_email, transaction, mode, category, datestamp, note, event)
+    TransactionService.update(data['id'], transaction, mode, category, datestamp, note, event)
     flash("Transaction updated", "success")
     if request.args.get('event_id') is None:
         return redirect(url_for('view_transaction'))
@@ -171,11 +175,12 @@ def update_expense(id):
 
 
 def delete_expense(id: int):
-    user_email: str = current_user.email
-    if not TransactionService.is_existed_by_id(user_email, id):
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
+    if not TransactionService.is_existed_by_id(login_id, id):
         flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-    TransactionService.delete(user_email, id)
+    TransactionService.delete(id)
     flash("Transaction deleted", "success")
     if request.args.get('event_id') is None:
         return redirect(url_for('view_transaction'))

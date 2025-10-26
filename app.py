@@ -1,11 +1,12 @@
 import os
 
 from dotenv import load_dotenv
+load_dotenv()
+
 
 from config.authentication import SessionUser
 from models.users_credentials import UserModel
 
-load_dotenv()
 
 from controller.authentication import registration, start_login, start_logout
 from controller.dashboard import view_dashboard
@@ -34,7 +35,10 @@ def load_user(id):
     user = UserModel.find_by_id(id)
     if not user:
         return None
-    usr_obj = SessionUser(user["id"], user["email"])
+    usr_obj = SessionUser(
+        user["email"],
+        user["id"]
+    )
     return usr_obj
 
 

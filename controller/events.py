@@ -4,6 +4,8 @@ from wtforms import StringField, SubmitField, FloatField
 from wtforms.validators import InputRequired, ValidationError
 from flask_login import login_required, current_user
 import humanize
+
+from config.authentication import SessionUser
 from config.constants import ErrorConstants, InputErrorMessages
 from config.factory import AppFlask
 from services.events import EventService
@@ -29,7 +31,6 @@ class UserEvent(FlaskForm):
 
 def create_event():
     form = UserEvent()
-    user_email = current_user.email
 
     if not form.validate_on_submit():
         return render_template('add_event.html', form=form)
@@ -38,21 +39,22 @@ def create_event():
     name = form.name.data
     budget = form.budget.data
 
-    if EventService.is_existed_by_name(user_email, name):
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
+    if EventService.is_existed_by_name(login_id, name):
         flash(ErrorConstants.DUPLICATE_EVENT_NAME, "error")
         return template
 
-    EventService.create(user_email, name, budget)
+    EventService.create(login_id, name, budget)
     flash("Event added successfully", "success")
     return redirect(url_for('event_list'))
 
 
 def show_event_list():
-    user_email = current_user.email
-    events = EventService.get_list(user_email)
+    events = EventService.get_list(current_user.login_id)
 
     def update_budget_percentage(event):
-        event["budget_percentage"] = EventService.get_budget_percentage(user_email, event["id"], event["budget"])
+        event["budget_percentage"] = EventService.get_budget_percentage(current_user.login_id, event["id"], event["budget"])
         return event
 
     events = list(map(update_budget_percentage, events))
@@ -60,11 +62,12 @@ def show_event_list():
 
 
 def get_event(id):
-    user_email = current_user.email
-    if not EventService.is_existed_by_id(user_email, id):
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
+    if not EventService.is_existed_by_id(login_id, id):
         flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-    result = EventService.get(user_email, id)[0]
+    result = EventService.get(login_id, id)[0]
     event_details = {
         "id": result["id"],
         "name": result["name"],
@@ -78,11 +81,12 @@ def get_event(id):
 
 
 def update_specific_event(id):
-    user_email = current_user.email
-    if not EventService.is_existed_by_id(user_email, id):
+    session_user : SessionUser = current_user
+    login_id = session_user.get_login_id()
+    if not EventService.is_existed_by_id(login_id, id):
         flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-    event_details = EventService.get(user_email, id)[0]
+    event_details = EventService.get(login_id, id)[0]
     form = UserEvent(name=event_details["name"], budget=event_details["budget"])
     if not form.validate_on_submit():
         return render_template('update_event.html', form=form)
@@ -92,10 +96,11 @@ def update_specific_event(id):
 
 
 def delete_event(id):
-    user_email = current_user.email
-    if not EventService.is_existed_by_id(user_email, id):
+    session_user : SessionUser = current_user
+
+    if not EventService.is_existed_by_id(session_user.get_login_id(), id):
         flash(ErrorConstants.EVENT_NOT_FOUND, "error")
         return redirect(url_for('dashboard'))
-    EventService.delete(id, user_email)
+    EventService.delete(id, session_user.get_login_id())
     flash("Event deleted", "success")
     return redirect(url_for('event_list'))

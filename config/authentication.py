@@ -4,13 +4,15 @@ from models.users_credentials import UserModel
 
 class SessionUser:
 
-    def __init__(self, id, email):
-        self.id = id
+    def __init__(self, email, login_id):
         self.email = email
+        self.login_id = login_id
+        self.id = login_id
 
     def to_json(self):
         return {
-            "email": self.email
+            "email": self.email,
+            "login_id": self.login_id,
         }
 
     def is_authenticated(self):
@@ -21,6 +23,9 @@ class SessionUser:
 
     def is_anonymous(self):
         return False
+
+    def get_login_id(self):
+        return str(self.login_id)
 
     def get_id(self):
         return str(self.id)
