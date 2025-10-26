@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired, Length, DataRequired, ValidationEr
 import phonenumbers
 from flask_login import login_required, current_user
 
+from config.authentication import SessionUser
 from config.constants import InputErrorMessages
 from config.factory import AppFlask
 from services.users import UserProfileService
@@ -31,7 +32,9 @@ class UserProfileForm(FlaskForm):
 
 
 def update_profile():
-    details = UserProfileService.get(current_user.email)
+    sessioned_user : SessionUser = current_user
+    login_id = sessioned_user.get_login_id()
+    details = UserProfileService.get(login_id)
     form = UserProfileForm(
         name=details["name"],
         budget=details["budget"],
