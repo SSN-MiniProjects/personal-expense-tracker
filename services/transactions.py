@@ -7,8 +7,7 @@ from models.users_profiles import UserProfileModel
 class TransactionService:
 
     @staticmethod
-    def get_by_email_id(user_email: str, transaction_id: int):
-        login_id = UserModel.find_by_email(user_email)["id"]
+    def get_by_id(login_id: int, transaction_id: int):
         result = TransactionModel.get(login_id, transaction_id)
         data = []
         for item in result:
@@ -24,18 +23,16 @@ class TransactionService:
         return data
 
     @staticmethod
-    def is_existed_by_id(email: str, transaction_id: int):
-        result = TransactionService.get_by_email_id(email, transaction_id)
+    def is_existed_by_id(login_id: int, transaction_id: int):
+        result = TransactionService.get_by_id(login_id, transaction_id)
         return False if len(result) == 0 else True
 
     @staticmethod
-    def create(user_email, amount, mode, category, datestamp, note, event):
-        login_id = UserModel.find_by_email(user_email)["id"]
+    def create(login_id, amount, mode, category, datestamp, note, event):
         TransactionModel.create(login_id, amount, mode, category, datestamp, note, event)
 
     @staticmethod
-    def get_by_email(user_email: str):
-        login_id = UserModel.find_by_email(user_email)["id"]
+    def get_by_login_id(login_id: int):
         result = TransactionModel.get_all(login_id)
         data = []
         for item in result:
@@ -55,11 +52,11 @@ class TransactionService:
         return data
 
     @staticmethod
-    def delete(email: str, transaction_id: int):
+    def delete(transaction_id: int):
         TransactionModel.delete(transaction_id)
 
     @staticmethod
-    def update(transaction_id, email, amount, mode, category, datestamp, note, event):
+    def update(transaction_id, amount, mode, category, datestamp, note, event):
         TransactionModel.update(transaction_id, amount, mode, category, datestamp, note, event)
 
     @staticmethod
