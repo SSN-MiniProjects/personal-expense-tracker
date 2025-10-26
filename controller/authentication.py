@@ -63,7 +63,7 @@ def start_login():
         flash(ErrorConstants.WRONG_PASSWORD, "error")
         return render_template(login_template, form=form)
     user = UserService.get(email)
-    usr_obj = SessionUser(user["id"], user["email"])
+    usr_obj = SessionUser(user["email"], user["login_id"])
     login_user(usr_obj, remember=True)
     redirecting_page = redirect(flask.request.args.get('next') or url_for('dashboard'))
     success_response = make_response(redirecting_page)

@@ -34,7 +34,10 @@ def load_user(id):
     user = UserModel.find_by_id(id)
     if not user:
         return None
-    usr_obj = SessionUser(user["id"], user["email"])
+    usr_obj = SessionUser(
+        user["email"],
+        user["id"]
+    )
     return usr_obj
 
 
