@@ -17,8 +17,9 @@ conn = psycopg2.connect(
     user=username,
     password=password,
     host=host,
-    port=port,
+    port=port
 )
+conn.autocommit = True
 
 logging.basicConfig(level=logging.INFO)
 
