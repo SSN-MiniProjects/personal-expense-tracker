@@ -16,8 +16,7 @@ class ExpenseSumType:
 class GraphData:
 
     @staticmethod
-    def get_daily(email: str, date: datetime.date):
-        login_id = UserModel.find_by_email(email)["id"]
+    def get_daily(login_id: int, date: datetime.date):
         result = TransactionModel.get_daily_expense(login_id, date)
         day_count = calendar.monthrange(date.year, date.month)[1]
         labels = list(range(1, day_count + 1))
@@ -30,8 +29,7 @@ class GraphData:
         }
 
     @staticmethod
-    def get_monthly(email: str, date: datetime.date):
-        login_id = UserModel.find_by_email(email)["id"]
+    def get_monthly(login_id: int, date: datetime.date):
         labels = list(calendar.month_abbr)[1:]
         data = [0] * len(labels)
         result = TransactionModel.get_monthly_expense(login_id, date)
@@ -46,8 +44,7 @@ class GraphData:
 class PieChartData:
 
     @staticmethod
-    def get_category(email: str, date: datetime.date):
-        login_id = UserModel.find_by_email(email)["id"]
+    def get_category(login_id: int, date: datetime.date):
         result = TransactionModel.get_category_expense(login_id, date)
         labels = []
         data = []
@@ -62,10 +59,8 @@ class PieChartData:
 
 class ExpenseSum:
     @staticmethod
-    def get(email: str, date: datetime.date, expense_type: str):
+    def get(login_id: int, date: datetime.date, expense_type: str):
         result = None
-        login_id = UserModel.find_by_email(email)["id"]
-
         if expense_type == ExpenseSumType.DAY:
             result = TransactionModel.get_day_expense(login_id, date)
         elif expense_type == ExpenseSumType.MONTH:
@@ -79,32 +74,32 @@ class ExpenseSum:
 class DashboardService:
 
     @staticmethod
-    def get_graph_data(email: str):
+    def get_graph_data(login_id: int):
         current_date = datetime.date.today()
         return {
-            "daily": GraphData.get_daily(email, current_date),
-            "monthly": GraphData.get_monthly(email, current_date)
+            "daily": GraphData.get_daily(login_id, current_date),
+            "monthly": GraphData.get_monthly(login_id, current_date)
         }
 
     @staticmethod
-    def get_pie_data(email: str):
+    def get_pie_data(login_id: int):
         current_date = datetime.date.today()
         return {
-            "category": PieChartData.get_category(email, current_date)
+            "category": PieChartData.get_category(login_id, current_date)
         }
 
     @staticmethod
-    def get_card_data(email: str):
+    def get_card_data(login_id: int):
         current_date = datetime.date.today()
-        login_id = UserModel.find_by_email(email)["id"]
         total_spent = TransactionService.get_user_spent(login_id)
+
         budget = UserProfileModel.get_budget(login_id)[0][0]
         budget_percentage = CommonUtils.calculate_budget_percentage(total_spent, budget) if budget > 0 else -1
         return {
             "expense": {
-                "today": ExpenseSum.get(email, current_date, ExpenseSumType.DAY),
-                "current_month": ExpenseSum.get(email, current_date, ExpenseSumType.MONTH),
-                "current_year": ExpenseSum.get(email, current_date, ExpenseSumType.YEAR),
+                "today": ExpenseSum.get(login_id, current_date, ExpenseSumType.DAY),
+                "current_month": ExpenseSum.get(login_id, current_date, ExpenseSumType.MONTH),
+                "current_year": ExpenseSum.get(login_id, current_date, ExpenseSumType.YEAR),
                 "total": total_spent
             },
             "budget_percentage": budget_percentage,

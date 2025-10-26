@@ -34,8 +34,8 @@ class UserService:
 class UserProfileService:
 
     @staticmethod
-    def get(email: str):
-        result = UserProfileModel.find_by_email(email)
+    def get(login_id: int):
+        result = UserProfileModel.find_by_login_id(login_id)
 
         if result:
             result = result[0]
@@ -50,8 +50,8 @@ class UserProfileService:
         return result
 
     @staticmethod
-    def update(email, name, budget, phone, profession, alert):
-        return UserProfileModel.update(email, name, budget, phone, profession, alert)
+    def update(login_id, name, budget, phone, profession, alert):
+        return UserProfileModel.update(login_id, name, budget, phone, profession, alert)
 
     @staticmethod
     def is_valid_phone(phone_number: str):

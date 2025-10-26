@@ -1,3 +1,7 @@
+from typing import List
+
+from psycopg2.extras import DictRow
+
 from models.transactions import TransactionModel
 from models.users_credentials import UserModel
 from models.users_events import EventModel
@@ -33,23 +37,8 @@ class TransactionService:
 
     @staticmethod
     def get_by_login_id(login_id: int):
-        result = TransactionModel.get_all(login_id)
-        data = []
-        for item in result:
-            event_id = item[6]
-            event_names = EventModel.get_name(event_id)
-            event_name = event_names[0][0] if event_names else None
-
-            data.append({
-                "id": item[0],
-                "transaction": float(item[1]),
-                "mode": item[2],
-                "datestamp": item[3],
-                "note": item[4],
-                "category": item[5],
-                "event": event_name
-            })
-        return data
+        result: List[DictRow] = TransactionModel.get_all(login_id)
+        return result
 
     @staticmethod
     def delete(transaction_id: int):

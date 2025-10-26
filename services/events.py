@@ -57,7 +57,7 @@ class EventService:
         EventModel.update(event_id, name, budget)
 
     @staticmethod
-    def delete(id: int, email: str):
+    def delete(id: int):
         EventModel.delete(id)
 
     @staticmethod
