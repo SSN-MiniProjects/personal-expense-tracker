@@ -49,6 +49,6 @@ def update_profile():
     phone = form.phone.data
     profession = form.profession.data
     alert = form.alert.data
-    UserProfileService.update(current_user.email, name, budget, phone, profession, alert)
+    UserProfileService.update(login_id, name, budget, phone, profession, alert)
     flash("Profile updated successfully", "success")
     return redirect(url_for('customize'))
