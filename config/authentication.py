@@ -7,6 +7,7 @@ class SessionUser:
     def __init__(self, email, login_id):
         self.email = email
         self.login_id = login_id
+        self.id = login_id
 
     def to_json(self):
         return {
@@ -25,6 +26,9 @@ class SessionUser:
 
     def get_login_id(self):
         return str(self.login_id)
+
+    def get_id(self):
+        return str(self.id)
 
 
 
