@@ -13,22 +13,20 @@ class EventModel:
         return 0
 
     @staticmethod
-    def find_by_email_name(email: str, event_name: str):
-        login_id = UserModel.find_by_email(email)["id"]
+    def find_by_name(login_id: int, event_name: str):
         query = 'SELECT * from user_events where login_id=%s and name=%s'
         param = (login_id, event_name)
         res = get_result(query, param)
         return res
 
     @staticmethod
-    def find_by_email_id(login_id: int, event_id: int) -> list:
+    def find_by_event_id(login_id: int, event_id: int) -> list:
         query = 'SELECT id, name, budget from user_events where id=%s and login_id=%s'
         param = (event_id, login_id)
         return get_result(query, param)
 
     @staticmethod
-    def create(email: str, name: str, budget: float):
-        login_id = UserModel.find_by_email(email)["id"]
+    def create(login_id: int, name: str, budget: float):
         name = name.strip()
         query = 'INSERT INTO user_events (login_id, name, budget ) VALUES (%s,%s,%s)'
         param = (login_id, name, budget)
