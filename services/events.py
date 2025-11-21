@@ -18,14 +18,7 @@ class EventService:
 
     @staticmethod
     def get_list(login_id: int):
-        result = EventModel.find_all(login_id)
-        events = []
-        for item in result:
-            events.append({
-                "id": item[0],
-                "name": item[1],
-                "budget": item[2]
-            })
+        events = EventModel.find_all(login_id)
         return events
 
     @staticmethod
