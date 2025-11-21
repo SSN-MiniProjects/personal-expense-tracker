@@ -1,4 +1,4 @@
-from config.db import get_result
+from config.db import get_result, get_result_dict
 from models.transactions import TransactionModel
 from models.users_credentials import UserModel
 
@@ -34,9 +34,9 @@ class EventModel:
 
     @staticmethod
     def find_all(login_id: int):
-        query = 'SELECT id, name,budget from user_events where login_id=%s'
+        query = 'SELECT id, name, budget from user_events where login_id=%s'
         param = (login_id,)
-        return get_result(query, param)
+        return get_result_dict(query, param)
 
     @staticmethod
     def update(event_id: int, name: str, budget: float):

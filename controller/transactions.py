@@ -5,13 +5,15 @@ from flask_wtf.file import FileField, FileAllowed
 import datetime
 
 from config.authentication import SessionUser
-from config.constants import ErrorConstants
+from config.constants import ErrorConstants, ExpenseHistoryFiterOptions
 from config.db import TransactionFormChoices
 from flask_login import login_required, current_user
 from flask import request, redirect, render_template, flash, url_for
 from config.factory import AppFlask
 from services.events import EventService
 from services.transactions import TransactionService
+
+from services.expense_history_filter import ExpenseHistoryFilter
 
 app = AppFlask().instance
 
@@ -87,51 +89,47 @@ def add_new_expense():
 
 
 def view_all_expenses():
-    query = request.args.get('options')
-    filters = {
-        "category": TransactionFormChoices.CATEGORY,
-        "mode": TransactionFormChoices.MODE,
-        "event": []
-    }
+
     session_user: SessionUser = current_user
     login_id = session_user.get_login_id()
     user_events = EventService.get_list(login_id)
-    for event in user_events:
-        filters["event"].append(event["name"])
-    temp_result = TransactionService.get_by_login_id(login_id)
-    result = []
-    if (query == 'dates_between'):
-        input1 = datetime.datetime.strptime(request.args.get('input1'), "%Y-%m-%d")
-        input2 = datetime.datetime.strptime(request.args.get('input2'), "%Y-%m-%d")
-        for item in temp_result:
-            item_date = datetime.datetime.strptime(str(item['datestamp']), "%Y-%m-%d")
-            if input1 <= item_date <= input2:
-                result.append(item)
-    elif (query == 'amounts_range'):
-        input1 = int(request.args.get('input1'))
-        input2 = int(request.args.get('input2'))
-        for item in temp_result:
-            item_amount = item['transaction']
-            if input1 <= item_amount <= input2:
-                result.append(item)
-    elif (query == 'mode'):
-        input1 = request.args.get('input1')
-        for item in temp_result:
-            if item['mode'] == input1:
-                result.append(item)
-    elif (query == 'category'):
-        input1 = request.args.get('input1')
-        for item in temp_result:
-            if item['category'] == input1:
-                result.append(item)
-    elif (query == 'event'):
-        input1 = request.args.get('input1')
-        for item in temp_result:
-            if item['event'] == input1:
-                result.append(item)
+
+    filters = {
+        "category": TransactionFormChoices.CATEGORY,
+        "mode": TransactionFormChoices.MODE,
+        "event": [event["name"] for event in user_events]
+    }
+
+    all_expenses = TransactionService.get_by_login_id(login_id)
+    query = request.args.get('options')
+    if query is None:
+        return render_template('view_transaction.html', res=all_expenses, filters=filters)
+
+    first_argument = request.args.get('input1')
+    second_argument = request.args.get('input2')
+
+    expense_history_filter = ExpenseHistoryFilter(all_expenses)
+    filtered_data = None
+
+    if query == ExpenseHistoryFiterOptions.DATES_BETWEEN:
+        filtered_data = expense_history_filter.by_date_range(first_argument, second_argument)
+
+    elif query == ExpenseHistoryFiterOptions.AMOUNTS_RANGE:
+        filtered_data = expense_history_filter.by_amount_range(first_argument, second_argument)
+
+    elif query == ExpenseHistoryFiterOptions.MODE:
+        filtered_data = expense_history_filter.by_mode(first_argument)
+
+    elif query == ExpenseHistoryFiterOptions.CATEGORY:
+        filtered_data = expense_history_filter.by_category(first_argument)
+
+    elif query == ExpenseHistoryFiterOptions.EVENT:
+        filtered_data = expense_history_filter.by_event(first_argument)
+
     else:
-        result = temp_result
-    return render_template('view_transaction.html', res=result, filters=filters)
+        filtered_data = all_expenses
+
+    return render_template('view_transaction.html', res=filtered_data, filters=filters)
 
 
 def update_expense(id):

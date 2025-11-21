@@ -14,3 +14,12 @@ class InputErrorMessages:
     NOT_VALID_BUDGET = "Please enter valid budget amount"
     NOT_VALID_AMOUNT = "Please enter valid transaction amount"
     NOT_VALID_PHONE = "Please enter valid phone number"
+
+
+
+class ExpenseHistoryFiterOptions:
+    CATEGORY = "category"
+    DATES_BETWEEN = "dates_between"
+    AMOUNTS_RANGE = "amounts_range"
+    MODE = "mode"
+    EVENT = "event"
