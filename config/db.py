@@ -51,6 +51,7 @@ def close_pool():
 def get_connection():
     pool = get_pool()
     conn = pool.getconn()
+    conn.autocommit = True
     try:
         yield conn
     finally:

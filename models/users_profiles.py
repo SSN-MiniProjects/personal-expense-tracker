@@ -8,7 +8,7 @@ class UserProfileModel:
         query = 'SELECT name, budget, phone, profession, alert from user_profiles WHERE login_id = %s'
         param = (login_id,)
         result = get_result_dict(query, param)
-        return result[0]
+        return result[0] if result else {"name": None, "budget": 0, "phone": None, "profession": None, "alert": False}
 
     @staticmethod
     def create(login_id:int):
@@ -27,5 +27,5 @@ class UserProfileModel:
     def get_budget(login_id: int):
         query = 'SELECT budget FROM user_profiles WHERE login_id = %s'
         param = (login_id,)
-        result =  get_result_dict(query, param)
-        return result[0]["budget"]
+        result = get_result_dict(query, param)
+        return result[0]["budget"] if result else 0
