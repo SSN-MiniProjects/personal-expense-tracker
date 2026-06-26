@@ -16,7 +16,7 @@ from controller.transactions import add_new_expense, view_all_expenses, update_e
 
 from flask_bootstrap import Bootstrap
 from config.constants import SecurityConstants
-from config.db import init_db
+from config.db import init_db, close_pool
 from config.factory import AppFlask, LoginManagerFlask
 from flask_login import login_required
 
@@ -127,3 +127,8 @@ def delete_specific_transaction(id):
 
 if __name__ == "__main__":
     app.run(debug=bool(os.getenv("DEBUG")))
+
+
+@app.teardown_appcontext
+def shutdown_db(exception=None):
+    close_pool()
