@@ -57,33 +57,26 @@ def get_connection():
         pool.putconn(conn)
 
 
-def _execute_with_retry(query: str, param: Tuple = None, retries: int = _RETRIES):
-    for attempt in range(retries):
-        try:
-            with get_connection() as conn:
-                with conn.cursor() as cursor:
-                    if param is None:
-                        cursor.execute(query)
-                    else:
-                        cursor.execute(query, param)
-                    return cursor
-        except OperationalError as e:
-            logging.warning("DB operational error (attempt %d/%d): %s", attempt + 1, retries, e)
-            if attempt < retries - 1:
-                time.sleep(_RETRY_DELAY * (2 ** attempt))
-                continue
-            raise
-    return None
-
-
 def get_result(query: str, param: Tuple = None):
     try:
-        cursor = _execute_with_retry(query, param)
-        if cursor and cursor.rowcount >= 0:
+        for attempt in range(_RETRIES):
             try:
-                return cursor.fetchall()
-            except ProgrammingError:
-                return []
+                with get_connection() as conn:
+                    with conn.cursor() as cursor:
+                        if param is None:
+                            cursor.execute(query)
+                        else:
+                            cursor.execute(query, param)
+                        try:
+                            return cursor.fetchall() if cursor.rowcount >= 0 else []
+                        except ProgrammingError:
+                            return []
+            except OperationalError as e:
+                logging.warning("DB operational error (attempt %d/%d): %s", attempt + 1, _RETRIES, e)
+                if attempt < _RETRIES - 1:
+                    time.sleep(_RETRY_DELAY * (2 ** attempt))
+                    continue
+                raise
         return []
     except Exception as e:
         logging.error("Error executing query: %s with params: %s", query, param)
