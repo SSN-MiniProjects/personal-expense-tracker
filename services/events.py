@@ -56,14 +56,4 @@ class EventService:
     @staticmethod
     def get_transactions(event_id: int) -> list[dict]:
         result = TransactionModel.get_by_event(event_id)
-        data = []
-        for item in result:
-            data.append({
-                "id": item[0],
-                "transaction": item[1],
-                "mode": item[2],
-                "datestamp": item[3],
-                "category": item[4],
-                "note": item[5]
-            })
-        return data
+        return result

@@ -14,8 +14,12 @@ class InputErrorMessages:
     NOT_VALID_BUDGET = "Please enter valid budget amount"
     NOT_VALID_AMOUNT = "Please enter valid transaction amount"
     NOT_VALID_PHONE = "Please enter valid phone number"
+    NOT_VALID_DATE = "Please enter valid date"
 
-
+class TransactionMessages:
+    EXPENSE_ADDED_SUCCESS = "Expense Added Successfully"
+    EXPENSE_UPDATED_SUCCESS = "Expense Updated Successfully"
+    EXPENSE_DELETED = "Expense Deleted Successfully"
 
 class ExpenseHistoryFiterOptions:
     CATEGORY = "category"
@@ -23,3 +27,13 @@ class ExpenseHistoryFiterOptions:
     AMOUNTS_RANGE = "amounts_range"
     MODE = "mode"
     EVENT = "event"
+
+class Templates:
+    VIEW_TRANSACTION = "view_transaction.html"
+    UPDATE_TRANSACTION = "update_transaction.html"
+
+
+class FlashMessageCategory:
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"

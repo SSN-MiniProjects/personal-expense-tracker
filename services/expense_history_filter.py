@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 class ExpenseHistoryFilter:
 
@@ -7,7 +7,7 @@ class ExpenseHistoryFilter:
         self._all_expenses = all_expenses
 
 
-    def by_date_range(self, start_string: str, end_string: str) -> List:
+    def by_date_range(self, start_string: str, end_string: str) -> List[Dict]:
         start_date = datetime.strptime(start_string, "%Y-%m-%d")
         end_date = datetime.strptime(end_string, "%Y-%m-%d")
 
@@ -19,7 +19,7 @@ class ExpenseHistoryFilter:
         return filtered_data
 
 
-    def by_amount_range(self, lower_limit: str, upper_limit: str) -> List:
+    def by_amount_range(self, lower_limit: str, upper_limit: str) -> List[Dict]:
         filtered_data = []
         for expense in self._all_expenses:
             expense_amount = expense['transaction']
@@ -28,7 +28,7 @@ class ExpenseHistoryFilter:
         return filtered_data
 
 
-    def by_category(self, category: str) -> List:
+    def by_category(self, category: str) -> List[Dict]:
         filtered_data = []
         for expense in self._all_expenses:
             if expense['category'] == category:
@@ -36,14 +36,14 @@ class ExpenseHistoryFilter:
         return filtered_data
 
 
-    def by_mode(self, mode: str) -> List:
+    def by_mode(self, mode: str) -> List[Dict]:
         filtered_data = []
         for expense in self._all_expenses:
             if expense['mode'] == mode:
                 filtered_data.append(expense)
         return filtered_data
 
-    def by_event(self, event: str) -> List:
+    def by_event(self, event: str) -> List[Dict]:
         filtered_data = []
         for expense in self._all_expenses:
             if expense['event'] == event:

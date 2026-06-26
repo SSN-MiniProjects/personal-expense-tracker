@@ -2,7 +2,7 @@ from flask import flash, redirect, url_for, render_template
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FloatField
 from wtforms.validators import InputRequired, ValidationError
-from flask_login import login_required, current_user
+from flask_login import current_user
 import humanize
 
 from config.authentication import SessionUser
@@ -52,13 +52,15 @@ def create_event():
 
 def show_event_list():
     events = EventService.get_list(current_user.login_id)
-
-    def update_budget_percentage(event):
-        event["budget_percentage"] = EventService.get_budget_percentage(current_user.login_id, event["id"], event["budget"])
-        return event
-
-    events = list(map(update_budget_percentage, events))
-    return render_template("event_list.html", events=events)
+    result = []
+    for event in events:
+        result.append({
+            "id": event["id"],
+            "name": event["name"],
+            "budget": event["budget"],
+            "budget_percentage": EventService.get_budget_percentage(current_user.login_id, event["id"], event["budget"])
+        })
+    return render_template("event_list.html", events=result)
 
 
 def get_event(id):

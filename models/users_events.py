@@ -8,9 +8,7 @@ class EventModel:
     @staticmethod
     def total_spent(login_id: int, event_id: int):
         event_spent = TransactionModel.get_sum_event_transactions(login_id, event_id)
-        if event_spent:
-            return event_spent[0][2]
-        return 0
+        return event_spent
 
     @staticmethod
     def find_by_name(login_id: int, event_name: str):
@@ -36,7 +34,8 @@ class EventModel:
     def find_all(login_id: int):
         query = 'SELECT id, name, budget from user_events where login_id=%s'
         param = (login_id,)
-        return get_result_dict(query, param)
+        result = get_result_dict(query, param)
+        return [] if not result else result
 
     @staticmethod
     def update(event_id: int, name: str, budget: float):

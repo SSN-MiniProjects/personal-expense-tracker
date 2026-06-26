@@ -35,19 +35,7 @@ class UserProfileService:
 
     @staticmethod
     def get(login_id: int):
-        result = UserProfileModel.find_by_login_id(login_id)
-
-        if result:
-            result = result[0]
-            return {
-                "name": result[0],
-                "budget": result[1],
-                "phone": result[2],
-                "profession": result[3],
-                "alert": result[4]
-            }
-
-        return result
+        return UserProfileModel.find_by_login_id(login_id)
 
     @staticmethod
     def update(login_id, name, budget, phone, profession, alert):

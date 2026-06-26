@@ -3,9 +3,6 @@ from typing import List
 from psycopg2.extras import DictRow
 
 from models.transactions import TransactionModel
-from models.users_credentials import UserModel
-from models.users_events import EventModel
-from models.users_profiles import UserProfileModel
 
 
 class TransactionService:
@@ -13,23 +10,7 @@ class TransactionService:
     @staticmethod
     def get_by_id(login_id: int, transaction_id: int):
         result = TransactionModel.get(login_id, transaction_id)
-        data = []
-        for item in result:
-            data.append({
-                "id": item[0],
-                "transaction": item[1],
-                "mode": item[2],
-                "datestamp": item[3],
-                "category": item[4],
-                "event": item[5],
-                "note": item[6]
-            })
-        return data
-
-    @staticmethod
-    def is_existed_by_id(login_id: int, transaction_id: int):
-        result = TransactionService.get_by_id(login_id, transaction_id)
-        return False if len(result) == 0 else True
+        return result
 
     @staticmethod
     def create(login_id, amount, mode, category, datestamp, note, event):
@@ -51,6 +32,4 @@ class TransactionService:
     @staticmethod
     def get_user_spent(login_id: int):
         result = TransactionModel.get_sum_transactions(login_id)
-        if result:
-            return result[0][1]
-        return 0
+        return 0 if result is None else result[0]["sum"]

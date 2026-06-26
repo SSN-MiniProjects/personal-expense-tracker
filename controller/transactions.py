@@ -5,9 +5,10 @@ from flask_wtf.file import FileField, FileAllowed
 import datetime
 
 from config.authentication import SessionUser
-from config.constants import ErrorConstants, ExpenseHistoryFiterOptions
+from config.constants import ErrorConstants, ExpenseHistoryFiterOptions, TransactionMessages, InputErrorMessages, \
+    Templates, FlashMessageCategory
 from config.db import TransactionFormChoices
-from flask_login import login_required, current_user
+from flask_login import current_user
 from flask import request, redirect, render_template, flash, url_for
 from config.factory import AppFlask
 from services.events import EventService
@@ -35,11 +36,11 @@ class Transaction(FlaskForm):
     def validate_transaction(self, transaction):
         if not transaction.data or int(transaction.data) <= 0:
             self.transaction.errors.clear()
-            raise ValidationError('Enter a valid amount')
+            raise ValidationError(InputErrorMessages.NOT_VALID_AMOUNT)
 
     def validate_datestamp(self, field):
         if field.data > datetime.date.today():
-            raise ValidationError("The date cannot be in the Future!")
+            raise ValidationError(InputErrorMessages.NOT_VALID_DATE)
 
 
 class TransactionFile(FlaskForm):
@@ -49,7 +50,9 @@ class TransactionFile(FlaskForm):
 
 
 def add_new_expense():
-    event_id = request.args.get('event_id')
+    query = request.args.get('event_id')
+
+    event_id = query
     session_user : SessionUser = current_user
     login_id = session_user.get_login_id()
     form = Transaction()
@@ -67,25 +70,24 @@ def add_new_expense():
     if not form.validate_on_submit():
         return render_template('add_transaction.html', form=form)
 
-    if form.validate_on_submit():
-        transaction = form.transaction.data
-        mode = form.mode.data
-        category = form.category.data
-        datestamp = form.datestamp.data
-        note = form.note.data
-        event = form.event.data
+    transaction = form.transaction.data
+    mode = form.mode.data
+    category = form.category.data
+    datestamp = form.datestamp.data
+    note = form.note.data
+    event = form.event.data
 
-        if event == 'None':
-            event = None
-        else:
-            event = int(event)
+    if event == 'None':
+        event = None
+    else:
+        event = int(event)
 
-        TransactionService.create(login_id, transaction, mode, category, datestamp, note, event)
-        flash("Expense added successfully", "success")
-        if request.args.get('event_id') is None:
-            return redirect(url_for('view_transaction'))
-        else:
-            return redirect(url_for('get_specific_event', id=event_id))
+    TransactionService.create(login_id, transaction, mode, category, datestamp, note, event)
+    flash(TransactionMessages.EXPENSE_ADDED_SUCCESS, FlashMessageCategory.SUCCESS)
+    if query is None:
+        return redirect(url_for('view_transaction'))
+    else:
+        return redirect(url_for('get_specific_event', id=event_id))
 
 
 def view_all_expenses():
@@ -103,13 +105,12 @@ def view_all_expenses():
     all_expenses = TransactionService.get_by_login_id(login_id)
     query = request.args.get('options')
     if query is None:
-        return render_template('view_transaction.html', res=all_expenses, filters=filters)
+        return render_template(Templates.VIEW_TRANSACTION, res=all_expenses, filters=filters)
 
     first_argument = request.args.get('input1')
     second_argument = request.args.get('input2')
 
     expense_history_filter = ExpenseHistoryFilter(all_expenses)
-    filtered_data = None
 
     if query == ExpenseHistoryFiterOptions.DATES_BETWEEN:
         filtered_data = expense_history_filter.by_date_range(first_argument, second_argument)
@@ -129,7 +130,7 @@ def view_all_expenses():
     else:
         filtered_data = all_expenses
 
-    return render_template('view_transaction.html', res=filtered_data, filters=filters)
+    return render_template(Templates.VIEW_TRANSACTION, res=filtered_data, filters=filters)
 
 
 def update_expense(id):
@@ -137,7 +138,7 @@ def update_expense(id):
     login_id = session_user.get_login_id()
     specific_transaction = TransactionService.get_by_id(login_id, id)
     if len(specific_transaction) == 0:
-        flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
+        flash(ErrorConstants.TRANSACTION_NOT_FOUND, FlashMessageCategory.ERROR)
         return redirect(url_for('dashboard'))
     data = specific_transaction[0]
     form = Transaction(
@@ -157,7 +158,7 @@ def update_expense(id):
             choice_list.append(pair)
     form.event.choices = choice_list
     if not form.validate_on_submit():
-        return render_template('update_transaction.html', form=form)
+        return render_template(Templates.UPDATE_TRANSACTION, form=form)
     transaction = form.transaction.data
     mode = form.mode.data
     category = form.category.data
@@ -165,22 +166,25 @@ def update_expense(id):
     note = form.note.data
     event = form.event.data
     TransactionService.update(data['id'], transaction, mode, category, datestamp, note, event)
-    flash("Transaction updated", "success")
-    if request.args.get('event_id') is None:
+    flash(TransactionMessages.EXPENSE_UPDATED_SUCCESS, FlashMessageCategory.SUCCESS)
+    query = request.args.get('event_id')
+    if query is None:
         return redirect(url_for('view_transaction'))
     else:
-        return redirect(url_for('get_specific_event', id=request.args.get('event_id')))
+        return redirect(url_for('get_specific_event', id=query))
 
 
 def delete_expense(id: int):
     session_user : SessionUser = current_user
     login_id = session_user.get_login_id()
-    if not TransactionService.is_existed_by_id(login_id, id):
-        flash(ErrorConstants.TRANSACTION_NOT_FOUND, "error")
+    transaction = TransactionService.get_by_id(login_id, id)
+    if not transaction:
+        flash(ErrorConstants.TRANSACTION_NOT_FOUND, FlashMessageCategory.ERROR)
         return redirect(url_for('dashboard'))
     TransactionService.delete(id)
-    flash("Transaction deleted", "success")
-    if request.args.get('event_id') is None:
+    flash(TransactionMessages.EXPENSE_DELETED, FlashMessageCategory.SUCCESS)
+    query = request.args.get('event_id')
+    if query is None:
         return redirect(url_for('view_transaction'))
     else:
-        return redirect(url_for('get_specific_event', id=request.args.get('event_id')))
+        return redirect(url_for('get_specific_event', id=query))

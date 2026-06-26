@@ -1,4 +1,4 @@
-from config.db import get_result
+from config.db import get_result, get_result_dict
 
 
 class UserModel:
@@ -39,5 +39,5 @@ class UserModel:
     @staticmethod
     def get_count():
         query = 'SELECT count(email) FROM user_credentials'
-        result = get_result(query)
-        return result[0][0]
+        result = get_result_dict(query)
+        return result[0]["count"]

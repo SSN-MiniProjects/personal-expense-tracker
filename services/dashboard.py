@@ -22,7 +22,7 @@ class GraphData:
         labels = list(range(1, day_count + 1))
         data = [0] * len(labels)
         for item in result:
-            data[item["day"] - 1] = int(item["sum"])
+            data[int(item["day"]) - 1] = int(item["sum"])
         return {
             "labels": labels,
             "data": data
@@ -34,7 +34,7 @@ class GraphData:
         data = [0] * len(labels)
         result = TransactionModel.get_monthly_expense(login_id, date)
         for item in result:
-            data[item["month"] - 1] = int(item["sum"])
+            data[int(item["month"]) - 1] = int(item["sum"])
         return {
             "labels": labels,
             "data": data
@@ -67,8 +67,7 @@ class ExpenseSum:
             result = TransactionModel.get_month_expense(login_id, date)
         elif expense_type == ExpenseSumType.YEAR:
             result = TransactionModel.get_year_expense(login_id, date)
-
-        return result[0][0] if result else 0
+        return result
 
 
 class DashboardService:
@@ -93,7 +92,7 @@ class DashboardService:
         current_date = datetime.date.today()
         total_spent = TransactionService.get_user_spent(login_id)
 
-        budget = UserProfileModel.get_budget(login_id)[0][0]
+        budget = UserProfileModel.get_budget(login_id)
         budget_percentage = CommonUtils.calculate_budget_percentage(total_spent, budget) if budget > 0 else -1
         return {
             "expense": {
