@@ -32,4 +32,4 @@ class TransactionService:
     @staticmethod
     def get_user_spent(login_id: int):
         result = TransactionModel.get_sum_transactions(login_id)
-        return 0 if result is None else result[0]["sum"]
+        return result[0]["sum"] if result else 0
